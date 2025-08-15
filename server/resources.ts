@@ -1,4 +1,5 @@
 import { readFile } from 'fs/promises';
+import { existsSync } from 'fs';
 import path from 'path';
 
 export interface MCPResource {
@@ -9,6 +10,21 @@ export interface MCPResource {
   handler: () => Promise<string>;
 }
 
+function resolveFirstExisting(...candidates: string[]): string {
+  for (const p of candidates) {
+    if (existsSync(p)) return p;
+  }
+  // Return first candidate to produce a helpful error if none exist
+  return candidates[0];
+}
+
+function resolveDirFirstExisting(...dirs: string[]): string {
+  return resolveFirstExisting(...dirs);
+}
+
+const serverRoot = process.cwd();
+const seedRoot = path.resolve(serverRoot, '..', 'seed');
+
 export const resources: MCPResource[] = [
   {
     uri: 'devai://policy',
@@ -16,7 +32,10 @@ export const resources: MCPResource[] = [
     description: 'Core DevAI policy document that must be followed',
     mimeType: 'text/markdown',
     handler: async () => {
-      const policyPath = path.resolve(process.cwd(), 'policy.md');
+      const policyPath = resolveFirstExisting(
+        path.resolve(serverRoot, 'policy.md'),
+        path.resolve(seedRoot, 'policy.md')
+      );
       return await readFile(policyPath, 'utf8');
     },
   },
@@ -27,7 +46,10 @@ export const resources: MCPResource[] = [
     description: 'Comprehensive DevAI knowledge base and documentation',
     mimeType: 'text/markdown',
     handler: async () => {
-      const kbPath = path.resolve(process.cwd(), 'data', 'kb.md');
+      const kbPath = resolveFirstExisting(
+        path.resolve(serverRoot, 'data', 'kb.md'),
+        path.resolve(seedRoot, 'data', 'kb.md')
+      );
       return await readFile(kbPath, 'utf8');
     },
   },
@@ -38,7 +60,10 @@ export const resources: MCPResource[] = [
     description: 'Core configuration for DevAI project structure',
     mimeType: 'text/yaml',
     handler: async () => {
-      const configPath = path.resolve(process.cwd(), 'core-config.yaml');
+      const configPath = resolveFirstExisting(
+        path.resolve(serverRoot, 'core-config.yaml'),
+        path.resolve(seedRoot, 'core-config.yaml')
+      );
       return await readFile(configPath, 'utf8');
     },
   },
@@ -49,7 +74,10 @@ export const resources: MCPResource[] = [
     description: 'Collection of DevAI templates for document creation',
     mimeType: 'text/yaml',
     handler: async () => {
-      const templatesDir = path.resolve(process.cwd(), 'templates');
+      const templatesDir = resolveDirFirstExisting(
+        path.resolve(serverRoot, 'templates'),
+        path.resolve(seedRoot, 'templates')
+      );
       const { readdir } = await import('fs/promises');
       const files = await readdir(templatesDir);
       const templateFiles = files.filter((f) => f.endsWith('.yaml'));
@@ -71,7 +99,10 @@ export const resources: MCPResource[] = [
     description: 'Collection of DevAI workflow definitions',
     mimeType: 'text/yaml',
     handler: async () => {
-      const workflowsDir = path.resolve(process.cwd(), 'workflows');
+      const workflowsDir = resolveDirFirstExisting(
+        path.resolve(serverRoot, 'workflows'),
+        path.resolve(seedRoot, 'workflows')
+      );
       const { readdir } = await import('fs/promises');
       const files = await readdir(workflowsDir);
       const workflowFiles = files.filter((f) => f.endsWith('.yaml'));
@@ -93,7 +124,10 @@ export const resources: MCPResource[] = [
     description: 'Collection of DevAI agent definitions',
     mimeType: 'text/markdown',
     handler: async () => {
-      const agentsDir = path.resolve(process.cwd(), 'agents');
+      const agentsDir = resolveDirFirstExisting(
+        path.resolve(serverRoot, 'agents'),
+        path.resolve(seedRoot, 'agents')
+      );
       const { readdir } = await import('fs/promises');
       const files = await readdir(agentsDir);
       const agentFiles = files.filter((f) => f.endsWith('.md'));
@@ -115,7 +149,10 @@ export const resources: MCPResource[] = [
     description: 'Collection of DevAI task definitions',
     mimeType: 'text/markdown',
     handler: async () => {
-      const tasksDir = path.resolve(process.cwd(), 'tasks');
+      const tasksDir = resolveDirFirstExisting(
+        path.resolve(serverRoot, 'tasks'),
+        path.resolve(seedRoot, 'tasks')
+      );
       const { readdir } = await import('fs/promises');
       const files = await readdir(tasksDir);
       const taskFiles = files.filter((f) => f.endsWith('.md'));
@@ -137,7 +174,10 @@ export const resources: MCPResource[] = [
     description: 'Collection of DevAI quality assurance checklists',
     mimeType: 'text/markdown',
     handler: async () => {
-      const checklistsDir = path.resolve(process.cwd(), 'checklists');
+      const checklistsDir = resolveDirFirstExisting(
+        path.resolve(serverRoot, 'checklists'),
+        path.resolve(seedRoot, 'checklists')
+      );
       const { readdir } = await import('fs/promises');
       const files = await readdir(checklistsDir);
       const checklistFiles = files.filter((f) => f.endsWith('.md'));
@@ -159,10 +199,9 @@ export const resources: MCPResource[] = [
     description: 'Technical preferences and standards for DevAI projects',
     mimeType: 'text/markdown',
     handler: async () => {
-      const prefsPath = path.resolve(
-        process.cwd(),
-        'data',
-        'technical-preferences.md'
+      const prefsPath = resolveFirstExisting(
+        path.resolve(serverRoot, 'data', 'technical-preferences.md'),
+        path.resolve(seedRoot, 'data', 'technical-preferences.md')
       );
       return await readFile(prefsPath, 'utf8');
     },
@@ -174,10 +213,9 @@ export const resources: MCPResource[] = [
     description: 'Manifest of available DevAI tools',
     mimeType: 'application/json',
     handler: async () => {
-      const manifestPath = path.resolve(
-        process.cwd(),
-        'tools',
-        'manifest.json'
+      const manifestPath = resolveFirstExisting(
+        path.resolve(serverRoot, 'tools', 'manifest.json'),
+        path.resolve(seedRoot, 'tools', 'manifest.json')
       );
       return await readFile(manifestPath, 'utf8');
     },

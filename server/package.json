@@ -11,7 +11,8 @@
     "start": "node dist/index.js",
     "mcp": "tsx index.ts",
     "db:migrate": "psql $DATABASE_URL -f ../seed/database/schema.sql",
-    "db:reset": "psql $DATABASE_URL -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;' && npm run db:migrate"
+    "db:reset": "psql $DATABASE_URL -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;' && npm run db:migrate",
+    "test": "vitest run"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.4.0",
@@ -23,7 +24,8 @@
   },
   "devDependencies": {
     "tsx": "^4.16.2",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.5"
   },
   "engines": {
     "node": ">=18.0.0"

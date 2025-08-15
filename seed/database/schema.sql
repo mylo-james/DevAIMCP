@@ -1,0 +1,9 @@
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE IF NOT EXISTS memories (
+	id BIGSERIAL PRIMARY KEY,
+	project_id BIGINT NOT NULL,
+	content TEXT NOT NULL,
+	embedding vector(1536),
+	created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

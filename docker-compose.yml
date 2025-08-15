@@ -20,9 +20,9 @@ services:
     networks:
       - devai-network
 
-  # PostgreSQL Database
+  # PostgreSQL Database with pgvector
   postgres:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg16
     container_name: devai-postgres
     restart: unless-stopped
     environment:

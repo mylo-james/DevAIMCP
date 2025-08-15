@@ -14,17 +14,16 @@ import { z } from 'zod';
 import { resources } from './resources.ts';
 
 // Seed imports (dev mode wiring)
-import type { ProjectManagerRequest } from '../seed/tools/project-manager.ts';
-import '../seed/tools/project-manager.ts';
-import '../seed/tools/memory-manager.ts';
-import '../seed/tools/data-exporter.ts';
-import '../seed/lib/policy-engine.ts';
-import '../seed/lib/agent-context.ts';
-import '../seed/tools/shard-doc.ts';
-import '../seed/tools/story-manager.ts';
-import '../seed/tools/workflow-executor.ts';
-import '../seed/tools/git-workflow.ts';
-import '../seed/tools/test-runner.ts';
+import { manageProject } from '../seed/tools/project-manager.ts';
+import { manageMemory } from '../seed/tools/memory-manager.ts';
+import { exportData } from '../seed/tools/data-exporter.ts';
+import { validatePolicy } from '../seed/lib/policy-engine.ts';
+import { switchAgent } from '../seed/lib/agent-context.ts';
+import { shardDocument } from '../seed/tools/shard-doc.ts';
+import { manageStory } from '../seed/tools/story-manager.ts';
+import { executeWorkflow } from '../seed/tools/workflow-executor.ts';
+import { executeGitWorkflow } from '../seed/tools/git-workflow.ts';
+import { runTests } from '../seed/tools/test-runner.ts';
 
 // Initialize the MCP server
 const server = new Server(
@@ -142,14 +141,8 @@ const combinedTools = [
 			type: 'object',
 			properties: {
 				query: { type: 'string', description: 'Search query' },
-				projectId: {
-					type: 'number',
-					description: 'Project ID to search within',
-				},
-				memoryType: {
-					type: 'string',
-					description: 'Filter by memory type',
-				},
+				projectId: { type: 'number', description: 'Project ID to search within' },
+				memoryType: { type: 'string', description: 'Filter by memory type' },
 				limit: { type: 'number', description: 'Maximum results to return' },
 			},
 			required: ['query'],
@@ -289,19 +282,65 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 });
 
 // ----------------------------------------------------------------------------
-// Tool execution routing (stubbed for now; wired in later stories)
+// Tool execution routing
 // ----------------------------------------------------------------------------
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-	const { name } = request.params;
-	return {
-		content: [
+const PolicySchema = z.object({ action: z.string(), context: z.string(), agent: z.string().optional() });
+const WorkflowSchema = z.object({ workflowType: z.string(), projectId: z.number(), steps: z.array(z.any()).optional() });
+const StorySchema = z.object({ action: z.enum(['create','update','list','get']), projectId: z.number() }).passthrough();
+const GitSchema = z.object({ action: z.enum(['commit','branch','merge','pr']) }).passthrough();
+const TestSchema = z.object({ test_type: z.enum(['unit','integration','e2e']).optional(), pattern: z.string().optional(), watch: z.boolean().optional() });
+const DataExportSchema = z.object({ action: z.string(), format: z.string().optional(), projectId: z.number().optional(), outputPath: z.string().optional(), includeEmbeddings: z.boolean().optional() }).passthrough();
+const ProjectCreateSchema = z.object({ name: z.string() }).passthrough();
+const ProjectGetSchema = z.object({ projectId: z.number() });
+const ProjectListSchema = z.object({}).passthrough();
+const ProjectContextSchema = z.object({ projectId: z.number(), query: z.string().optional() });
+const MemoryStoreSchema = z.object({ projectId: z.number(), memoryType: z.string(), content: z.string() }).passthrough();
+const MemorySearchSchema = z.object({ query: z.string(), projectId: z.number().optional(), memoryType: z.string().optional(), limit: z.number().optional() });
+
+export async function handleCallTool(name: string, args: any) {
+	switch (name) {
+		case 'devai_project_create':
+			ProjectCreateSchema.parse(args);
+			return await manageProject({ action: 'create', ...args });
+		case 'devai_project_get':
+			return await manageProject({ action: 'get', ...ProjectGetSchema.parse(args) });
+		case 'devai_project_list':
+			ProjectListSchema.parse(args);
+			return await manageProject({ action: 'list', ...args });
+		case 'devai_project_context':
+			return await manageProject({ action: 'context', ...ProjectContextSchema.parse(args) });
+		case 'devai_memory_store':
+			return await manageMemory({ action: 'store', ...MemoryStoreSchema.parse(args) });
+		case 'devai_memory_search':
+			return await manageMemory({ action: 'search', ...MemorySearchSchema.parse(args) });
+		case 'devai_policy_validate':
+			return await validatePolicy(...Object.values(PolicySchema.parse(args)));
+		case 'devai_workflow_execute':
 			{
-				type: 'text',
-				text: `Tool ${name} is declared but not yet implemented in this build.`,
-			},
-		],
-	};
+				const parsed = WorkflowSchema.parse(args);
+				return await executeWorkflow(parsed.workflowType, parsed.projectId, parsed.steps);
+			}
+		case 'devai_story_manage':
+			return await manageStory(StorySchema.parse(args));
+		case 'devai_git_workflow':
+			return await executeGitWorkflow(GitSchema.parse(args));
+		case 'devai_test_run':
+			return await runTests(...Object.values(TestSchema.parse(args)) as any);
+		case 'devai_data_export':
+			return await exportData(DataExportSchema.parse(args));
+		default:
+			throw new Error(`Unknown tool: ${name}`);
+	}
+}
+
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
+	const { name, arguments: args } = request.params;
+	try {
+		return await handleCallTool(name, args);
+	} catch (error) {
+		return { content: [{ type: 'text', text: `Error executing tool ${name}: ${(error as Error).message}` }] };
+	}
 });
 
 // ----------------------------------------------------------------------------

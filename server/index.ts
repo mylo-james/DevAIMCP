@@ -8,31 +8,63 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 
-// Import our tools from seed
-import { manageProject } from '../seed/tools/project-manager.js';
-import { manageMemory } from '../seed/tools/memory-manager.js';
-import { exportData } from '../seed/tools/data-exporter.js';
-import { validatePolicy } from '../seed/lib/policy-engine.js';
-import { switchAgent } from '../seed/lib/agent-context.js';
-import { shardDocument } from '../seed/tools/shard-doc.js';
-import { manageStory } from '../seed/tools/story-manager.js';
-import { executeWorkflow } from '../seed/tools/workflow-executor.js';
-import { executeGitWorkflow } from '../seed/tools/git-workflow.js';
-import { runTests } from '../seed/tools/test-runner.js';
+// Dynamic import loader for seed tools to support dev (.ts via tsx) and prod (dist/.js)
+let manageProject: any;
+let manageMemory: any;
+let exportData: any;
+let validatePolicy: any;
+let switchAgent: any;
+let manageStory: any;
+let executeWorkflow: any;
+let executeGitWorkflow: any;
+let runTests: any;
+
+let seedLoaded = false;
+async function ensureSeedLoaded(): Promise<void> {
+  if (seedLoaded) return;
+  const build = process.env.DEVAI_SEED_BUILD || 'ts';
+  const importFrom = async (p: string) => (await import(p as any)) as any;
+  if (build === 'ts') {
+    const base = '../seed/';
+    const tools = base + 'tools/';
+    const lib = base + 'lib/';
+    const ext = '.ts';
+    ({ manageProject } = await importFrom(tools + 'project-manager' + ext));
+    ({ manageMemory } = await importFrom(tools + 'memory-manager' + ext));
+    ({ exportData } = await importFrom(tools + 'data-exporter' + ext));
+    ({ validatePolicy } = await importFrom(lib + 'policy-engine' + ext));
+    ({ switchAgent } = await importFrom(lib + 'agent-context' + ext));
+    ({ manageStory } = await importFrom(tools + 'story-manager' + ext));
+    ({ executeWorkflow } = await importFrom(tools + 'workflow-executor' + ext));
+    ({ executeGitWorkflow } = await importFrom(tools + 'git-workflow' + ext));
+    ({ runTests } = await importFrom(tools + 'test-runner' + ext));
+  } else {
+    const base = '../seed/dist/';
+    const tools = base + 'tools/';
+    const lib = base + 'lib/';
+    const ext = '.js';
+    ({ manageProject } = await importFrom(tools + 'project-manager' + ext));
+    ({ manageMemory } = await importFrom(tools + 'memory-manager' + ext));
+    ({ exportData } = await importFrom(tools + 'data-exporter' + ext));
+    ({ validatePolicy } = await importFrom(lib + 'policy-engine' + ext));
+    ({ switchAgent } = await importFrom(lib + 'agent-context' + ext));
+    ({ manageStory } = await importFrom(tools + 'story-manager' + ext));
+    ({ executeWorkflow } = await importFrom(tools + 'workflow-executor' + ext));
+    ({ executeGitWorkflow } = await importFrom(tools + 'git-workflow' + ext));
+    ({ runTests } = await importFrom(tools + 'test-runner' + ext));
+  }
+  seedLoaded = true;
+}
 
 // Initialize the MCP server
-const server = new Server(
-  {
-    name: 'devai-mcp-server',
-    version: '1.0.0',
+const server = new Server({
+  name: 'devai-mcp-server',
+  version: '1.0.0',
+  capabilities: {
+    tools: {},
+    resources: {},
   },
-  {
-    capabilities: {
-      tools: {},
-      resources: {},
-    },
-  }
-);
+});
 
 // ============================================================================
 // PROJECT MANAGEMENT TOOLS
@@ -328,7 +360,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 // ============================================================================
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args } = request.params;
+  await ensureSeedLoaded();
+  const name = (request.params as any).name as string;
+  const args = ((request.params as any).arguments || {}) as any;
 
   try {
     switch (name) {
@@ -379,11 +413,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new Error(`Unknown tool: ${name}`);
     }
   } catch (error) {
+    const msg = (error as any)?.message || String(error);
     return {
       content: [
         {
           type: 'text',
-          text: `Error executing tool ${name}: ${error.message}`,
+          text: `Error executing tool ${name}: ${msg}`,
         },
       ],
     };
@@ -395,12 +430,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 // ============================================================================
 
 async function main() {
+  if (process.env.NODE_ENV === 'test') return; // avoid starting transport during tests
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('DevAI MCP Server started');
 }
 
-main().catch((error) => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
-});
+if (process.env.NODE_ENV !== 'test') {
+  main().catch((error) => {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  });
+}

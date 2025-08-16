@@ -8,10 +8,11 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
-# Copy server source code
+# Copy server source code and seed dist for runtime
 COPY . .
+COPY ../seed/dist ./seed/dist
 
 # Build the application
 RUN npm run build

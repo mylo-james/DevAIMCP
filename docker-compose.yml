@@ -4,8 +4,8 @@ services:
   # DevAI MCP Server
   devai-mcp-server:
     build:
-      context: ./server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: server/Dockerfile
     container_name: devai-mcp-server
     restart: unless-stopped
     environment:
@@ -17,12 +17,13 @@ services:
         condition: service_healthy
     volumes:
       - ./server/.env:/app/.env:ro
+      - ./seed:/app/seed:ro
     networks:
       - devai-network
 
   # PostgreSQL Database
   postgres:
-    image: postgres:15-alpine
+    image: pgvector/pgvector:pg16
     container_name: devai-postgres
     restart: unless-stopped
     environment:
@@ -32,6 +33,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./seed/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./seed/database/extensions.sql:/docker-entrypoint-initdb.d/00-extensions.sql:ro
     ports:
       - '5432:5432'
     healthcheck:

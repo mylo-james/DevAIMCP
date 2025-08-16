@@ -1,6 +1,6 @@
-import { query } from '../lib/database.js';
-import { manageMemory } from './memory-manager.js';
-import { manageStory } from './story-manager.js';
+import { query } from '../lib/database.ts';
+import { manageMemory } from './memory-manager.ts';
+import { manageStory } from './story-manager.ts';
 
 // Main BMAD tool executor
 export async function executeBmadTool(

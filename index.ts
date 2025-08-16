@@ -43,6 +43,7 @@ let executeWorkflow: any;
 let executeGitWorkflow: any;
 let runTests: any;
 let bmadExecutor: any;
+let vendorBmad: any;
 
 let seedLoaded = false;
 async function ensureSeedLoaded(): Promise<void> {
@@ -64,6 +65,10 @@ async function ensureSeedLoaded(): Promise<void> {
     ({ executeWorkflow } = await importFrom(tools + 'workflow-executor' + ext));
     ({ executeGitWorkflow } = await importFrom(tools + 'git-workflow' + ext));
     ({ runTests } = await importFrom(tools + 'test-runner' + ext));
+    ({ executeBmadTool: bmadExecutor } = await importFrom(
+      tools + 'bmad-executor' + ext
+    ));
+    vendorBmad = await importFrom(tools + 'vendor-bmad' + ext);
   } else {
     dbg('ensureSeedLoaded: loading seed in JS (dist) mode');
     const base = './seed/dist/';
@@ -79,6 +84,10 @@ async function ensureSeedLoaded(): Promise<void> {
     ({ executeWorkflow } = await importFrom(tools + 'workflow-executor' + ext));
     ({ executeGitWorkflow } = await importFrom(tools + 'git-workflow' + ext));
     ({ runTests } = await importFrom(tools + 'test-runner' + ext));
+    ({ executeBmadTool: bmadExecutor } = await importFrom(
+      tools + 'bmad-executor' + ext
+    ));
+    vendorBmad = await importFrom(tools + 'vendor-bmad' + ext);
   }
   seedLoaded = true;
   dbg('ensureSeedLoaded: seed modules loaded');
@@ -369,6 +378,86 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
 
+      // Vendored BMAD utility tools (optional helpers)
+      {
+        name: 'devai_vendor_web_builder',
+        description:
+          'Build a DevAI/BMAD web bundle from an agent or team id (vendored tool)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            agentOrTeam: {
+              type: 'string',
+              description: 'Agent or team id to build',
+            },
+            outDir: {
+              type: 'string',
+              description: 'Output directory (default: dist)',
+            },
+          },
+          required: ['agentOrTeam'],
+        },
+      },
+      {
+        name: 'devai_vendor_yaml_format',
+        description: 'Format a YAML file using vendored formatter',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            filePath: {
+              type: 'string',
+              description: 'YAML file path to format',
+            },
+          },
+          required: ['filePath'],
+        },
+      },
+      {
+        name: 'devai_vendor_flatten',
+        description:
+          'Flatten inputs using vendored flattener into an output path',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            inputPath: {
+              type: 'string',
+              description: 'Input directory/file to flatten',
+            },
+            outPath: { type: 'string', description: 'Output path' },
+          },
+          required: ['inputPath', 'outPath'],
+        },
+      },
+      {
+        name: 'devai_vendor_version_bump',
+        description:
+          'Run vendored version bump helper (semantic-release advisory)',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            level: {
+              type: 'string',
+              enum: ['patch', 'minor', 'major'],
+              description: 'Version bump level (advisory)',
+            },
+          },
+        },
+      },
+      {
+        name: 'devai_vendor_resolve_deps',
+        description: 'Resolve agent/team dependencies using vendored resolver',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            agentOrTeam: {
+              type: 'string',
+              description: 'Agent id or team yaml id',
+            },
+          },
+          required: ['agentOrTeam'],
+        },
+      },
+
       // BMAD Agent Tools - Convert Zod schemas to JSON schemas
       ...bmadTools.map((tool) => ({
         name: tool.name,
@@ -516,6 +605,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'devai_data_export':
         return await exportData(args);
+
+      // Vendored BMAD utility tools
+      case 'devai_vendor_web_builder':
+        return await vendorBmad.runBmadWebBuilder(args);
+      case 'devai_vendor_yaml_format':
+        return await vendorBmad.runBmadYamlFormat(args);
+      case 'devai_vendor_flatten':
+        return await vendorBmad.runBmadFlatten(args);
+      case 'devai_vendor_version_bump':
+        return await vendorBmad.runBmadVersionBump(args);
+      case 'devai_vendor_resolve_deps':
+        return await vendorBmad.runBmadResolveDeps(args);
 
       // BMAD Agent Tools
       case 'bmad_po_create_epic':

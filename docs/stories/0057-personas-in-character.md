@@ -1,7 +1,7 @@
 ### Story 57: Define and enforce named personas with in-character behavior
 
 - **ID**: 57
-- **Status**: todo
+- **Status**: completed
 - **Priority**: high
 - **Story Points**: 5
 - **Created At**: 2025-08-16T04:17:57.707Z

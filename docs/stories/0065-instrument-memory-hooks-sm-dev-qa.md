@@ -1,7 +1,7 @@
 ### Story 65: Instrument post-job memory writing across SM/Dev/QA
 
 - **ID**: 65
-- **Status**: todo
+- **Status**: completed
 - **Priority**: medium
 - **Story Points**: 3
 - **Created At**: 2025-08-16T04:18:24.641Z

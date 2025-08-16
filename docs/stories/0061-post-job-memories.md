@@ -1,7 +1,7 @@
 ### Story 61: Mandatory post-job memory updates (story, summary, critical learnings)
 
 - **ID**: 61
-- **Status**: todo
+- **Status**: completed
 - **Priority**: medium
 - **Story Points**: 5
 - **Created At**: 2025-08-16T04:18:11.114Z

@@ -1,7 +1,7 @@
 ### Story 56: Orchestrator-first DevAI mode (natural language, no @commands)
 
 - **ID**: 56
-- **Status**: todo
+- **Status**: completed
 - **Priority**: high
 - **Story Points**: 5
 - **Created At**: 2025-08-16T04:17:52.189Z

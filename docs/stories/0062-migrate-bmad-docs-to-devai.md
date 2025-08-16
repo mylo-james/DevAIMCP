@@ -1,7 +1,7 @@
 ### Story 62: Migrate BMAD docs to DevAI: rename and align procedures
 
 - **ID**: 62
-- **Status**: todo
+- **Status**: completed
 - **Priority**: high
 - **Story Points**: 8
 - **Created At**: 2025-08-16T04:18:14.406Z

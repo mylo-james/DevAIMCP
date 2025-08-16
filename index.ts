@@ -33,24 +33,26 @@ process.on('unhandledRejection', (reason) => {
 });
 
 // Dynamic import loader for seed tools to support dev (.ts via tsx) and prod (dist/.js)
-let manageProject: Record<string, unknown>;
-let manageMemory: Record<string, unknown>;
-let exportData: Record<string, unknown>;
-let validatePolicy: Record<string, unknown>;
-let manageStory: Record<string, unknown>;
-let executeWorkflow: Record<string, unknown>;
-let executeGitWorkflow: Record<string, unknown>;
-let runTests: Record<string, unknown>;
-let bmadExecutor: Record<string, unknown>;
-let vendorBmad: Record<string, unknown>;
-let orchestratorService: Record<string, unknown>;
-let personaService: Record<string, unknown>;
-let importanceManager: Record<string, unknown>;
-let authorizationService: Record<string, unknown>;
-let devWorkflowEngine: Record<string, unknown>;
-let enhancedMemoryManager: Record<string, unknown>;
-let retrievalService: Record<string, unknown>;
-let hitlService: Record<string, unknown>;
+let manageProject: any;
+let manageMemory: any;
+let exportData: any;
+let validatePolicy: any;
+let switchAgent: any;
+let manageStory: any;
+let executeWorkflow: any;
+let executeGitWorkflow: any;
+let runTests: any;
+let bmadExecutor: any;
+let vendorBmad: any;
+let orchestratorService: any;
+let personaService: any;
+let importanceManager: any;
+let authorizationService: any;
+let devWorkflowEngine: any;
+let enhancedMemoryManager: any;
+let retrievalService: any;
+let hitlService: any;
+let notificationService: any;
 
 let seedLoaded = false;
 async function ensureSeedLoaded(): Promise<void> {
@@ -83,6 +85,7 @@ async function ensureSeedLoaded(): Promise<void> {
     ({ EnhancedMemoryManager: enhancedMemoryManager } = await importFrom(lib + 'memory-manager-enhanced' + ext));
     ({ RetrievalService: retrievalService } = await importFrom(lib + 'retrieval-service' + ext));
     ({ HITLService: hitlService } = await importFrom(lib + 'hitl-service' + ext));
+    ({ NotificationService: notificationService } = await importFrom(lib + 'notification-service' + ext));
   } else {
     dbg('ensureSeedLoaded: loading seed in JS (dist) mode');
     const base = './seed/dist/';
@@ -109,6 +112,7 @@ async function ensureSeedLoaded(): Promise<void> {
     ({ EnhancedMemoryManager: enhancedMemoryManager } = await importFrom(lib + 'memory-manager-enhanced' + ext));
     ({ RetrievalService: retrievalService } = await importFrom(lib + 'retrieval-service' + ext));
     ({ HITLService: hitlService } = await importFrom(lib + 'hitl-service' + ext));
+    ({ NotificationService: notificationService } = await importFrom(lib + 'notification-service' + ext));
   }
   seedLoaded = true;
   dbg('ensureSeedLoaded: seed modules loaded');
@@ -971,6 +975,61 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
 
+      // DevAI Notification Tools
+      {
+        name: 'devai_notify_completion',
+        description: 'Send notification when agent completes their work to reduce HITL times',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID who completed the work' },
+            actorRole: { type: 'string', description: 'Role of the actor (e.g., Scrum Master, Developer, QA)' },
+            storyId: { type: 'number', description: 'Story ID that was worked on' },
+            jobType: { type: 'string', description: 'Type of job completed (e.g., story_draft, implementation, validation)' },
+            completionDetails: {
+              type: 'object',
+              properties: {
+                challenges: { type: 'string', description: 'Any challenges encountered during the work' },
+                nextSteps: { type: 'string', description: 'Next steps or recommendations' },
+                url: { type: 'string', description: 'URL to view the completed work' },
+                confidence: { type: 'number', description: 'Confidence level in the completion (0-1)' },
+              },
+              description: 'Additional details about the completion',
+            },
+          },
+          required: ['actorId', 'actorRole', 'storyId', 'jobType'],
+        },
+      },
+      {
+        name: 'devai_configure_notification',
+        description: 'Configure notification settings for an actor',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID to configure notifications for' },
+            notificationType: { 
+              type: 'string', 
+              enum: ['pushover', 'ifttt', 'webhook', 'email'],
+              description: 'Type of notification service' 
+            },
+            configData: { type: 'object', description: 'Configuration data for the notification service' },
+          },
+          required: ['actorId', 'notificationType', 'configData'],
+        },
+      },
+      {
+        name: 'devai_test_notification',
+        description: 'Test notification configuration for an actor',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID to test notifications for' },
+            notificationType: { type: 'string', description: 'Type of notification to test' },
+          },
+          required: ['actorId', 'notificationType'],
+        },
+      },
+
       // BMAD Agent Tools - Convert Zod schemas to JSON schemas
       ...bmadTools.map((tool) => ({
         name: tool.name,
@@ -1463,6 +1522,50 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: 'text',
               text: JSON.stringify(await hitlService.getHITLStats()),
+            },
+          ],
+        };
+
+      // Notification Service
+      case 'devai_notify_completion':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await notificationService.getInstance().notifyAgentCompletion(
+                args.actorId,
+                args.actorRole,
+                args.storyId,
+                args.jobType,
+                args.completionDetails
+              )),
+            },
+          ],
+        };
+
+      case 'devai_configure_notification':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await notificationService.getInstance().configureNotification(
+                args.actorId,
+                args.notificationType,
+                args.configData
+              )),
+            },
+          ],
+        };
+
+      case 'devai_test_notification':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await notificationService.getInstance().testNotification(
+                args.actorId,
+                args.notificationType
+              )),
             },
           ],
         };

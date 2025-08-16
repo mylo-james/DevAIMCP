@@ -322,6 +322,35 @@ CREATE TABLE IF NOT EXISTS policies (
 CREATE INDEX IF NOT EXISTS idx_policies_active ON policies (active);
 CREATE INDEX IF NOT EXISTS idx_policies_rules_gin ON policies USING GIN (rules);
 
+-- Notification Configurations
+CREATE TABLE IF NOT EXISTS notification_configs (
+	id BIGSERIAL PRIMARY KEY,
+	actor_id INTEGER NOT NULL REFERENCES personas(id) ON DELETE CASCADE,
+	notification_type TEXT NOT NULL CHECK (notification_type IN ('pushover', 'ifttt', 'webhook', 'email')),
+	config_data JSONB NOT NULL,
+	is_active BOOLEAN NOT NULL DEFAULT TRUE,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	UNIQUE(actor_id, notification_type)
+);
+
+CREATE INDEX IF NOT EXISTS idx_notification_configs_actor_id ON notification_configs (actor_id);
+CREATE INDEX IF NOT EXISTS idx_notification_configs_type ON notification_configs (notification_type);
+CREATE INDEX IF NOT EXISTS idx_notification_configs_active ON notification_configs (is_active);
+
+-- Notification Logs
+CREATE TABLE IF NOT EXISTS notification_logs (
+	id BIGSERIAL PRIMARY KEY,
+	actor_id INTEGER NOT NULL REFERENCES personas(id) ON DELETE CASCADE,
+	title TEXT NOT NULL,
+	message TEXT NOT NULL,
+	results JSONB NOT NULL,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notification_logs_actor_id ON notification_logs (actor_id);
+CREATE INDEX IF NOT EXISTS idx_notification_logs_created_at ON notification_logs (created_at);
+
 DO $$ BEGIN
 	IF NOT EXISTS (
 		SELECT 1 FROM pg_trigger WHERE tgname = 'set_personas_updated_at'
@@ -388,6 +417,16 @@ DO $$ BEGIN
 	) THEN
 		CREATE TRIGGER set_policies_updated_at
 		BEFORE UPDATE ON policies
+		FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+	END IF;
+END $$;
+
+DO $$ BEGIN
+	IF NOT EXISTS (
+		SELECT 1 FROM pg_trigger WHERE tgname = 'set_notification_configs_updated_at'
+	) THEN
+		CREATE TRIGGER set_notification_configs_updated_at
+		BEFORE UPDATE ON notification_configs
 		FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 	END IF;
 END $$;

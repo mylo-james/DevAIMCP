@@ -1,6 +1,7 @@
 import { query, createStory, updateStory, getStoryById } from './database.ts';
 import { ImportanceManager } from './importance-manager.ts';
 import { EnhancedMemoryManager } from './memory-manager-enhanced.ts';
+import { NotificationService } from './notification-service.ts';
 
 export interface Defect {
   id: number;
@@ -110,6 +111,23 @@ export class DevWorkflowEngine {
       confidence: 0.9,
     });
     
+    // Send notification for SM completion
+    try {
+      await NotificationService.getInstance().notifyAgentCompletion(
+        smActorId,
+        'Scrum Master',
+        storyId,
+        'story_draft',
+        {
+          nextSteps: 'Story draft completed and handed off to Developer for implementation',
+          confidence: 0.9,
+        }
+      );
+    } catch (error) {
+      // Log notification error but don't fail the workflow
+      console.error('Failed to send SM completion notification:', error);
+    }
+    
     return workflow;
   }
   
@@ -154,6 +172,23 @@ export class DevWorkflowEngine {
       jobResult: { story_id: storyId, status: 'completed' },
       confidence: 0.95,
     });
+    
+    // Send notification for Dev completion
+    try {
+      await NotificationService.getInstance().notifyAgentCompletion(
+        devActorId,
+        'Developer',
+        storyId,
+        'implementation',
+        {
+          nextSteps: 'Implementation completed and handed off to QA for validation',
+          confidence: 0.95,
+        }
+      );
+    } catch (error) {
+      // Log notification error but don't fail the workflow
+      console.error('Failed to send Dev completion notification:', error);
+    }
     
     return workflow;
   }
@@ -202,6 +237,24 @@ export class DevWorkflowEngine {
       jobResult: { story_id: storyId, approved: true, push_result: pushResult },
       confidence: 0.9,
     });
+    
+    // Send notification for QA approval
+    try {
+      await NotificationService.getInstance().notifyAgentCompletion(
+        qaActorId,
+        'QA',
+        storyId,
+        'validation',
+        {
+          nextSteps: 'Story approved and auto-pushed to repository',
+          confidence: 0.9,
+          url: pushResult?.url,
+        }
+      );
+    } catch (error) {
+      // Log notification error but don't fail the workflow
+      console.error('Failed to send QA approval notification:', error);
+    }
     
     return { workflow, pushResult };
   }
@@ -282,6 +335,24 @@ export class DevWorkflowEngine {
       confidence: 0.85,
     });
     
+    // Send notification for QA rejection
+    try {
+      await NotificationService.getInstance().notifyAgentCompletion(
+        qaActorId,
+        'QA',
+        storyId,
+        'validation',
+        {
+          challenges: `Defect created: ${defectTitle} - ${defectDescription}`,
+          nextSteps: `Defect fix story #${newStory.id} created and assigned to Developer`,
+          confidence: 0.85,
+        }
+      );
+    } catch (error) {
+      // Log notification error but don't fail the workflow
+      console.error('Failed to send QA rejection notification:', error);
+    }
+    
     return { workflow, defect, newStoryId: newStory.id };
   }
   
@@ -326,6 +397,23 @@ export class DevWorkflowEngine {
       jobResult: { story_id: storyId, status: 'fix_completed' },
       confidence: 0.9,
     });
+    
+    // Send notification for Dev defect fix completion
+    try {
+      await NotificationService.getInstance().notifyAgentCompletion(
+        devActorId,
+        'Developer',
+        storyId,
+        'defect_fix',
+        {
+          nextSteps: 'Defect fix completed and handed off to QA for re-validation',
+          confidence: 0.9,
+        }
+      );
+    } catch (error) {
+      // Log notification error but don't fail the workflow
+      console.error('Failed to send Dev defect fix notification:', error);
+    }
     
     return workflow;
   }

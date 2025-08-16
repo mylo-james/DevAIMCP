@@ -152,6 +152,43 @@ const bmadExecuteChecklist = {
   }),
 };
 
+// DevAI Notification Tools
+const devaiNotifyCompletion = {
+  name: 'devai_notify_completion',
+  description: 'Send notification when agent completes their work to reduce HITL times',
+  inputSchema: z.object({
+    actorId: z.number().describe('Actor ID who completed the work'),
+    actorRole: z.string().describe('Role of the actor (e.g., Scrum Master, Developer, QA)'),
+    storyId: z.number().describe('Story ID that was worked on'),
+    jobType: z.string().describe('Type of job completed (e.g., story_draft, implementation, validation)'),
+    completionDetails: z.object({
+      challenges: z.string().optional().describe('Any challenges encountered during the work'),
+      nextSteps: z.string().optional().describe('Next steps or recommendations'),
+      url: z.string().optional().describe('URL to view the completed work'),
+      confidence: z.number().optional().describe('Confidence level in the completion (0-1)'),
+    }).optional().describe('Additional details about the completion'),
+  }),
+};
+
+const devaiConfigureNotification = {
+  name: 'devai_configure_notification',
+  description: 'Configure notification settings for an actor',
+  inputSchema: z.object({
+    actorId: z.number().describe('Actor ID to configure notifications for'),
+    notificationType: z.enum(['pushover', 'ifttt', 'webhook', 'email']).describe('Type of notification service'),
+    configData: z.record(z.any()).describe('Configuration data for the notification service'),
+  }),
+};
+
+const devaiTestNotification = {
+  name: 'devai_test_notification',
+  description: 'Test notification configuration for an actor',
+  inputSchema: z.object({
+    actorId: z.number().describe('Actor ID to test notifications for'),
+    notificationType: z.string().describe('Type of notification to test'),
+  }),
+};
+
 export const tools = [
   // Product Owner Tools
   bmadPoCreateEpic,
@@ -177,4 +214,9 @@ export const tools = [
   // Common Tools
   bmadCorrectCourse,
   bmadExecuteChecklist,
+
+  // DevAI Notification Tools
+  devaiNotifyCompletion,
+  devaiConfigureNotification,
+  devaiTestNotification,
 ] as const;

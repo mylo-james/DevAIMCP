@@ -6,5 +6,10 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     passWithNoTests: false,
+    server: {
+      deps: {
+        inline: ['../lib/**/*.ts']
+      }
+    }
   },
 });

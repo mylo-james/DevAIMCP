@@ -4,13 +4,24 @@
   "private": true,
   "type": "module",
   "description": "DevAI MCP Server - AI development intelligence platform",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "DEVAI_SEED_BUILD=ts tsx index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "mcp": "DEVAI_SEED_BUILD=ts tsx index.ts",
     "http": "DEVAI_SEED_BUILD=ts tsx http-server.ts",
+    "test": "npm run test:seed && npm run test:main",
+    "test:seed": "cd seed && npm test",
+    "test:main": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "npm run test:coverage:seed && npm run test:coverage:main",
+    "test:coverage:seed": "cd seed && npx vitest run --coverage",
+    "test:coverage:main": "vitest run --coverage",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write .",
+    "clean": "rm -rf dist coverage",
     "db:migrate": "psql $DATABASE_URL -f ./seed/database/schema.sql",
     "db:reset": "psql $DATABASE_URL -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;' && npm run db:migrate"
   },
@@ -25,8 +36,14 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vitest/coverage-v8": "^2.1.9",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
     "tsx": "^4.16.2",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^2.1.9"
   },
   "engines": {
     "node": ">=18.0.0"

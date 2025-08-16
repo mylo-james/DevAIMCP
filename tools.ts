@@ -1,180 +1,275 @@
+/**
+ * DevAI MCP Server Tools
+ * BMAD methodology tools organized by agent type
+ */
+
 import { z } from 'zod';
 
-// BMAD Product Owner Tools
-const bmadPoCreateEpic = {
-  name: 'bmad_po_create_epic',
-  description:
-    'Create epic for brownfield projects using BMAD Product Owner methodology',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    context: z.string().optional().describe('Project context or requirements'),
-    existingSystemInfo: z
-      .string()
-      .optional()
-      .describe('Information about existing system'),
-  }),
-};
+/**
+ * Tool interface for type safety
+ */
+export interface MCPTool {
+  name: string;
+  description: string;
+  inputSchema: z.ZodSchema;
+}
 
-const bmadPoCreateStory = {
-  name: 'bmad_po_create_story',
-  description:
-    'Create user story from requirements using BMAD Product Owner methodology',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    requirements: z.string().describe('Story requirements or description'),
-    epicId: z.number().optional().describe('Parent epic ID'),
-  }),
-};
+/**
+ * BMAD Agent types
+ */
+export const BMAD_AGENTS = ['po', 'sm', 'dev', 'architect', 'qa'] as const;
+export type BMADAgent = typeof BMAD_AGENTS[number];
 
-const bmadPoShardDoc = {
-  name: 'bmad_po_shard_doc',
-  description:
-    'Break large documents into manageable chunks using BMAD methodology',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    documentPath: z.string().describe('Path to document to shard'),
-    destinationPath: z
-      .string()
-      .describe('Destination directory for sharded files'),
-  }),
-};
+/**
+ * Project types
+ */
+export const PROJECT_TYPES = ['greenfield', 'brownfield'] as const;
+export type ProjectType = typeof PROJECT_TYPES[number];
 
-const bmadPoValidateStory = {
-  name: 'bmad_po_validate_story',
-  description: 'Validate story draft using BMAD Product Owner checklist',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    storyId: z.number().describe('Story ID to validate'),
-  }),
-};
+/**
+ * Test scope options
+ */
+export const TEST_SCOPES = ['unit', 'integration', 'all'] as const;
+export type TestScope = typeof TEST_SCOPES[number];
 
-// BMAD Scrum Master Tools
-const bmadSmDraft = {
-  name: 'bmad_sm_draft',
-  description: 'Create next story using BMAD Scrum Master methodology',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    epicId: z.number().optional().describe('Parent epic ID'),
-    previousStoryId: z
-      .number()
-      .optional()
-      .describe('Previous story ID for context'),
-  }),
-};
+/**
+ * Common schemas
+ */
+const commonSchemas = {
+  projectId: z.number().describe('Project ID'),
+  storyId: z.number().describe('Story ID'),
+  epicId: z.number().optional().describe('Parent epic ID'),
+  context: z.string().optional().describe('Project context or requirements'),
+  requirements: z.string().describe('Requirements or description'),
+  issue: z.string().describe('Issue or problem description'),
+  agent: z.enum(BMAD_AGENTS).describe('BMAD agent type'),
+  projectType: z.enum(PROJECT_TYPES).describe('Project type'),
+  testScope: z.enum(TEST_SCOPES).optional().describe('Scope of tests to run'),
+  checklistType: z.string().describe('Specific checklist to execute'),
+  documentPath: z.string().describe('Path to document'),
+  destinationPath: z.string().describe('Destination directory'),
+  existingSystemInfo: z.string().optional().describe('Information about existing system'),
+  previousStoryId: z.number().optional().describe('Previous story ID for context'),
+} as const;
 
-const bmadSmStoryChecklist = {
-  name: 'bmad_sm_story_checklist',
-  description:
-    'Execute story draft checklist using BMAD Scrum Master methodology',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    storyId: z.number().describe('Story ID to check'),
-  }),
-};
+/**
+ * BMAD Product Owner Tools
+ */
+const productOwnerTools: MCPTool[] = [
+  {
+    name: 'bmad_po_create_epic',
+    description: 'Create epic for brownfield projects using BMAD Product Owner methodology',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      context: commonSchemas.context,
+      existingSystemInfo: commonSchemas.existingSystemInfo,
+    }),
+  },
+  {
+    name: 'bmad_po_create_story',
+    description: 'Create user story from requirements using BMAD Product Owner methodology',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      requirements: commonSchemas.requirements,
+      epicId: commonSchemas.epicId,
+    }),
+  },
+  {
+    name: 'bmad_po_shard_doc',
+    description: 'Break large documents into manageable chunks using BMAD methodology',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      documentPath: commonSchemas.documentPath,
+      destinationPath: commonSchemas.destinationPath,
+    }),
+  },
+  {
+    name: 'bmad_po_validate_story',
+    description: 'Validate story draft using BMAD Product Owner checklist',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      storyId: commonSchemas.storyId,
+    }),
+  },
+];
 
-// BMAD Developer Tools
-const bmadDevDevelopStory = {
-  name: 'bmad_dev_develop_story',
-  description: 'Implement story using BMAD Developer methodology and workflow',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    storyId: z.number().describe('Story ID to implement'),
-  }),
-};
+/**
+ * BMAD Scrum Master Tools
+ */
+const scrumMasterTools: MCPTool[] = [
+  {
+    name: 'bmad_sm_draft',
+    description: 'Create next story using BMAD Scrum Master methodology',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      epicId: commonSchemas.epicId,
+      previousStoryId: commonSchemas.previousStoryId,
+    }),
+  },
+  {
+    name: 'bmad_sm_story_checklist',
+    description: 'Execute story draft checklist using BMAD Scrum Master methodology',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      storyId: commonSchemas.storyId,
+    }),
+  },
+];
 
-const bmadDevRunTests = {
-  name: 'bmad_dev_run_tests',
-  description: 'Execute linting and tests using BMAD Developer standards',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    testScope: z
-      .string()
-      .optional()
-      .describe('Scope of tests to run (unit, integration, all)'),
-  }),
-};
+/**
+ * BMAD Developer Tools
+ */
+const developerTools: MCPTool[] = [
+  {
+    name: 'bmad_dev_develop_story',
+    description: 'Implement story using BMAD Developer methodology and workflow',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      storyId: commonSchemas.storyId,
+    }),
+  },
+  {
+    name: 'bmad_dev_run_tests',
+    description: 'Execute linting and tests using BMAD Developer standards',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      testScope: commonSchemas.testScope,
+    }),
+  },
+  {
+    name: 'bmad_dev_explain',
+    description: 'Explain recent development work for learning purposes using BMAD Developer methodology',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      context: z.string().describe('What to explain (recent changes, decisions, etc.)'),
+    }),
+  },
+];
 
-const bmadDevExplain = {
-  name: 'bmad_dev_explain',
-  description: 'Explain recent development work for learning purposes',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    context: z
-      .string()
-      .describe('What to explain (recent changes, decisions, etc.)'),
-  }),
-};
+/**
+ * BMAD Architect Tools
+ */
+const architectTools: MCPTool[] = [
+  {
+    name: 'bmad_architect_design',
+    description: 'Create system architecture using BMAD Architect methodology',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      requirements: commonSchemas.requirements,
+      projectType: commonSchemas.projectType,
+    }),
+  },
+];
 
-// BMAD Architect Tools
-const bmadArchitectDesign = {
-  name: 'bmad_architect_design',
-  description: 'Create system architecture using BMAD Architect methodology',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    requirements: z.string().describe('Architecture requirements'),
-    projectType: z.enum(['greenfield', 'brownfield']).describe('Project type'),
-  }),
-};
+/**
+ * BMAD QA Tools
+ */
+const qaTools: MCPTool[] = [
+  {
+    name: 'bmad_qa_review_story',
+    description: 'Review and validate story implementation using BMAD QA methodology',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      storyId: commonSchemas.storyId,
+    }),
+  },
+];
 
-// BMAD QA Tools
-const bmadQaReviewStory = {
-  name: 'bmad_qa_review_story',
-  description:
-    'Review and validate story implementation using BMAD QA methodology',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    storyId: z.number().describe('Story ID to review'),
-  }),
-};
+/**
+ * BMAD Common Tools
+ */
+const commonTools: MCPTool[] = [
+  {
+    name: 'bmad_correct_course',
+    description: 'Execute course correction workflow for any BMAD agent',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      agent: commonSchemas.agent,
+      issue: commonSchemas.issue,
+    }),
+  },
+  {
+    name: 'bmad_execute_checklist',
+    description: 'Execute agent-specific checklist from BMAD methodology',
+    inputSchema: z.object({
+      projectId: commonSchemas.projectId,
+      agent: commonSchemas.agent,
+      checklistType: commonSchemas.checklistType,
+    }),
+  },
+];
 
-// BMAD Common Tools
-const bmadCorrectCourse = {
-  name: 'bmad_correct_course',
-  description: 'Execute course correction workflow for any BMAD agent',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    agent: z
-      .enum(['po', 'sm', 'dev', 'architect', 'qa'])
-      .describe('Agent requesting course correction'),
-    issue: z.string().describe('Issue or problem requiring course correction'),
-  }),
-};
+/**
+ * All BMAD tools organized by category
+ */
+export const bmadTools = {
+  productOwner: productOwnerTools,
+  scrumMaster: scrumMasterTools,
+  developer: developerTools,
+  architect: architectTools,
+  qa: qaTools,
+  common: commonTools,
+} as const;
 
-const bmadExecuteChecklist = {
-  name: 'bmad_execute_checklist',
-  description: 'Execute agent-specific checklist from BMAD methodology',
-  inputSchema: z.object({
-    projectId: z.number().describe('Project ID'),
-    agent: z
-      .enum(['po', 'sm', 'dev', 'architect', 'qa'])
-      .describe('Agent type'),
-    checklistType: z.string().describe('Specific checklist to execute'),
-  }),
-};
+/**
+ * Flattened array of all tools for MCP server
+ */
+export const tools: MCPTool[] = [
+  ...productOwnerTools,
+  ...scrumMasterTools,
+  ...developerTools,
+  ...architectTools,
+  ...qaTools,
+  ...commonTools,
+];
 
-export const tools = [
-  // Product Owner Tools
-  bmadPoCreateEpic,
-  bmadPoCreateStory,
-  bmadPoShardDoc,
-  bmadPoValidateStory,
+/**
+ * Get tools by agent type
+ */
+export function getToolsByAgent(agent: BMADAgent): MCPTool[] {
+  switch (agent) {
+    case 'po':
+      return bmadTools.productOwner;
+    case 'sm':
+      return bmadTools.scrumMaster;
+    case 'dev':
+      return bmadTools.developer;
+    case 'architect':
+      return bmadTools.architect;
+    case 'qa':
+      return bmadTools.qa;
+    default:
+      return [];
+  }
+}
 
-  // Scrum Master Tools
-  bmadSmDraft,
-  bmadSmStoryChecklist,
+/**
+ * Get all tool names
+ */
+export function getAllToolNames(): string[] {
+  return tools.map(tool => tool.name);
+}
 
-  // Developer Tools
-  bmadDevDevelopStory,
-  bmadDevRunTests,
-  bmadDevExplain,
+/**
+ * Find tool by name
+ */
+export function findToolByName(name: string): MCPTool | undefined {
+  return tools.find(tool => tool.name === name);
+}
 
-  // Architect Tools
-  bmadArchitectDesign,
-
-  // QA Tools
-  bmadQaReviewStory,
-
-  // Common Tools
-  bmadCorrectCourse,
-  bmadExecuteChecklist,
-] as const;
+/**
+ * Validate tool input against schema
+ */
+export function validateToolInput(toolName: string, input: unknown): boolean {
+  const tool = findToolByName(toolName);
+  if (!tool) {
+    return false;
+  }
+  
+  try {
+    tool.inputSchema.parse(input);
+    return true;
+  } catch {
+    return false;
+  }
+}

@@ -8,35 +8,36 @@ type Project = {
 	metadata?: Record<string, unknown>;
 };
 
-const projects: Project[] = [];
-let nextId = 1;
+import { createProject, getProjectById, listProjects } from '../lib/database.ts';
 
 export async function manageProject(args: any) {
 	const action = args.action as string;
 	switch (action) {
 		case 'create': {
-			const project: Project = {
-				id: nextId++,
+			const created = await createProject({
+				id: 0 as any,
 				name: args.name,
 				description: args.description,
 				repository_url: args.repository_url,
 				language: args.language,
 				framework: args.framework,
 				metadata: args.metadata,
-			};
-			projects.push(project);
-			return { content: [{ type: 'text', text: JSON.stringify(project) }] };
+				created_at: '' as any,
+				updated_at: '' as any,
+			});
+			return { content: [{ type: 'text', text: JSON.stringify(created) }] };
 		}
 		case 'get': {
-			const project = projects.find((p) => p.id === Number(args.projectId));
+			const project = await getProjectById(Number(args.projectId));
 			if (!project) return { content: [{ type: 'text', text: 'Not found' }] };
 			return { content: [{ type: 'text', text: JSON.stringify(project) }] };
 		}
 		case 'list': {
+			const projects = await listProjects();
 			return { content: [{ type: 'text', text: JSON.stringify(projects) }] };
 		}
 		case 'context': {
-			const project = projects.find((p) => p.id === Number(args.projectId));
+			const project = await getProjectById(Number(args.projectId));
 			const context = project ? `Context for ${project.name}` : '';
 			return { content: [{ type: 'text', text: context }] };
 		}

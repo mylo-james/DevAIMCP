@@ -9,33 +9,36 @@ type Memory = {
 	createdAt: string;
 };
 
-const memories: Memory[] = [];
+import { generateEmbedding, semanticSearchMemories, storeMemory } from '../lib/database.ts';
 
 export async function manageMemory(args: any) {
 	const action = args.action as string;
 	switch (action) {
 		case 'store': {
-			const m: Memory = {
-				projectId: Number(args.projectId),
-				memoryType: args.memoryType,
+			const embedding = await generateEmbedding(args.content);
+			await storeMemory({
+				id: 0 as any,
+				project_id: Number(args.projectId),
+				memory_type: args.memoryType,
 				content: args.content,
 				context: args.context,
 				reasoning: args.reasoning,
 				confidence: args.confidence,
 				tags: args.tags,
-				createdAt: new Date().toISOString(),
-			};
-			memories.push(m);
+				embedding,
+				created_at: '' as any,
+				updated_at: '' as any,
+			});
 			return { content: [{ type: 'text', text: 'stored' }] };
 		}
 		case 'search': {
-			const q = (args.query as string).toLowerCase();
-			const projectId = args.projectId ? Number(args.projectId) : undefined;
-			const filtered = memories.filter((m) => {
-				const inProject = projectId ? m.projectId === projectId : true;
-				return inProject && (m.content.toLowerCase().includes(q) || (m.context || '').toLowerCase().includes(q));
+			const list = await semanticSearchMemories({
+				queryText: String(args.query),
+				projectId: args.projectId ? Number(args.projectId) : undefined,
+				memoryType: args.memoryType,
+				limit: args.limit ? Number(args.limit) : 10,
 			});
-			return { content: [{ type: 'text', text: JSON.stringify(filtered) }] };
+			return { content: [{ type: 'text', text: JSON.stringify(list) }] };
 		}
 		default:
 			return { content: [{ type: 'text', text: 'Unknown action' }] };

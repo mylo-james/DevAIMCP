@@ -119,3 +119,27 @@ DO $$ BEGIN
 		FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 	END IF;
 END $$;
+
+-- Policies
+CREATE TABLE IF NOT EXISTS policies (
+	id BIGSERIAL PRIMARY KEY,
+	name TEXT NOT NULL,
+	description TEXT,
+	rules JSONB NOT NULL,
+	active BOOLEAN NOT NULL DEFAULT TRUE,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_policies_active ON policies (active);
+CREATE INDEX IF NOT EXISTS idx_policies_rules_gin ON policies USING GIN (rules);
+
+DO $$ BEGIN
+	IF NOT EXISTS (
+		SELECT 1 FROM pg_trigger WHERE tgname = 'set_policies_updated_at'
+	) THEN
+		CREATE TRIGGER set_policies_updated_at
+		BEFORE UPDATE ON policies
+		FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+	END IF;
+END $$;

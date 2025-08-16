@@ -9,7 +9,12 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "db:setup": "psql $DATABASE_URL -f ./database/schema.sql"
+    "db:setup": "psql $DATABASE_URL -f ./database/schema.sql",
+    "cli:project:create": "node -e \"(async()=>{const {manageProject}=await import('./tools/project-manager.ts');const r=await manageProject({action:'create',name:process.env.NAME,description:process.env.DESCRIPTION});console.log(r.content[0].text)})()\"",
+    "cli:memory:store": "node -e \"(async()=>{const {manageMemory}=await import('./tools/memory-manager.ts');const r=await manageMemory({action:'store',projectId:process.env.PROJECT_ID,content:process.env.CONTENT,memoryType:process.env.MEMORY_TYPE||'insight'});console.log(r.content[0].text)})()\"",
+    "cli:memory:search": "node -e \"(async()=>{const {manageMemory}=await import('./tools/memory-manager.ts');const r=await manageMemory({action:'search',query:process.env.QUERY,projectId:process.env.PROJECT_ID});console.log(r.content[0].text)})()\"",
+    "cli:story:create": "node -e \"(async()=>{const {manageStory}=await import('./tools/story-manager.ts');const r=await manageStory({action:'create',projectId:process.env.PROJECT_ID,title:process.env.TITLE});console.log(r.content[0].text)})()\"",
+    "cli:export:summary": "node -e \"(async()=>{const {exportData}=await import('./tools/data-exporter.ts');const r=await exportData({action:'summary'});console.log(r.content[0].text)})()\""
   },
   "dependencies": {
     "dotenv": "^16.4.5",

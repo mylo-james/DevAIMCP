@@ -1,0 +1,28 @@
+# Cursor Rules for DevAI MCP Server
+
+## Process Management
+- ALWAYS use `is_background: true` when starting servers, databases, or any long-running processes
+- NEVER start servers in the foreground unless explicitly debugging startup issues
+- Add timeouts or use background processes to avoid freezing the conversation
+- When testing server startup, use background mode and then check process status separately
+
+## Code Quality
+- Fix TypeScript compilation errors before addressing linting warnings
+- Use proper type annotations to avoid implicit 'any' types
+- Handle undefined values properly with null checks or optional chaining
+- Follow the existing code style and patterns in the codebase
+
+## Database and Configuration
+- Ensure database connections are properly configured before starting services
+- Use environment variables for configuration when possible
+- Handle missing dependencies gracefully with proper error messages
+
+## Testing
+- Run tests after making changes to ensure functionality is preserved
+- Fix failing tests before proceeding with new features
+- Use the existing test patterns and frameworks (vitest, jest)
+
+## Error Handling
+- Provide clear error messages for debugging
+- Handle edge cases and potential failures gracefully
+- Log errors appropriately for production environments

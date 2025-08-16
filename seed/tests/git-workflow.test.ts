@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { executeGitWorkflow } from '../tools/git-workflow.ts';
 
 describe('Git workflow', () => {

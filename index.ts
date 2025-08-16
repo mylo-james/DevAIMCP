@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { tools as bmadTools } from './tools.js';
 
 // Basic debug logger
-function dbg(...args: any[]) {
+function dbg(...args: unknown[]) {
   // Always log to stderr for MCP tooling visibility
   try {
     // Avoid crashing on circular
@@ -27,7 +27,7 @@ process.on('unhandledRejection', (reason) => {
   dbg(
     'unhandledRejection',
     typeof reason === 'object' && reason !== null
-      ? (reason as any).stack || String(reason)
+      ? (reason as { stack?: string }).stack || String(reason)
       : String(reason)
   );
 });
@@ -58,7 +58,7 @@ let seedLoaded = false;
 async function ensureSeedLoaded(): Promise<void> {
   if (seedLoaded) return;
   const build = process.env.DEVAI_SEED_BUILD || 'ts';
-  const importFrom = async (p: string) => (await import(p as any)) as any;
+  const importFrom = async (p: string) => (await import(p)) as Record<string, unknown>;
   if (build === 'ts') {
     dbg('ensureSeedLoaded: loading seed in TS mode');
     const base = './seed/';
@@ -69,7 +69,6 @@ async function ensureSeedLoaded(): Promise<void> {
     ({ manageMemory } = await importFrom(tools + 'memory-manager' + ext));
     ({ exportData } = await importFrom(tools + 'data-exporter' + ext));
     ({ validatePolicy } = await importFrom(lib + 'policy-engine' + ext));
-    ({ switchAgent } = await importFrom(lib + 'agent-context' + ext));
     ({ manageStory } = await importFrom(tools + 'story-manager' + ext));
     ({ executeWorkflow } = await importFrom(tools + 'workflow-executor' + ext));
     ({ executeGitWorkflow } = await importFrom(tools + 'git-workflow' + ext));
@@ -97,7 +96,6 @@ async function ensureSeedLoaded(): Promise<void> {
     ({ manageMemory } = await importFrom(tools + 'memory-manager' + ext));
     ({ exportData } = await importFrom(tools + 'data-exporter' + ext));
     ({ validatePolicy } = await importFrom(lib + 'policy-engine' + ext));
-    ({ switchAgent } = await importFrom(lib + 'agent-context' + ext));
     ({ manageStory } = await importFrom(tools + 'story-manager' + ext));
     ({ executeWorkflow } = await importFrom(tools + 'workflow-executor' + ext));
     ({ executeGitWorkflow } = await importFrom(tools + 'git-workflow' + ext));
@@ -1043,15 +1041,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 });
 
 // Helper function to convert Zod schema to JSON Schema
-function zodToJsonSchema(schema: z.ZodType<any>): any {
+function zodToJsonSchema(schema: z.ZodType<unknown>): Record<string, unknown> {
   // Simple conversion for our BMAD tools - extend as needed
   if (schema instanceof z.ZodObject) {
     const shape = schema.shape;
-    const properties: any = {};
+    const properties: Record<string, unknown> = {};
     const required: string[] = [];
 
     for (const [key, value] of Object.entries(shape)) {
-      const zodField = value as z.ZodType<any>;
+      const zodField = value as z.ZodType<unknown>;
 
       if (zodField instanceof z.ZodString) {
         properties[key] = {
@@ -1118,8 +1116,8 @@ function zodToJsonSchema(schema: z.ZodType<any>): any {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   dbg('CallToolRequest received');
   await ensureSeedLoaded();
-  const name = (request.params as any).name as string;
-  const args = ((request.params as any).arguments || {}) as any;
+  const name = (request.params as Record<string, unknown>).name as string;
+  const args = ((request.params as Record<string, unknown>).arguments || {}) as Record<string, unknown>;
   try {
     dbg(
       'CallTool name=',
@@ -1133,7 +1131,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
       })()
     );
-  } catch {}
+  } catch (error) {
+    dbg('Error in debug logging:', error);
+  }
 
   try {
     switch (name) {
@@ -1210,7 +1210,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
 
-      case 'devai_importance_get_ranked':
+      case 'devai_importance_get_ranked': {
         const { generateEmbedding } = await import('./seed/lib/database.ts');
         const queryEmbedding = await generateEmbedding(args.query);
         return {
@@ -1226,6 +1226,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+      }
 
       case 'devai_importance_nightly_decay':
         return {
@@ -1648,8 +1649,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new Error(`Unknown tool: ${name}`);
     }
   } catch (error) {
-    const msg = (error as any)?.message || String(error);
-    const stack = (error as any)?.stack || msg;
+    const msg = (error as { message?: string })?.message || String(error);
+    const stack = (error as { stack?: string })?.stack || msg;
     dbg('CallTool error for', name, stack);
     return {
       content: [

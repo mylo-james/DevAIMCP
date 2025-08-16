@@ -15,7 +15,7 @@ export async function executeGitWorkflow(action: string, args: any) {
 			const message = args.message || 'devai: automated commit';
 			if (process.env.NODE_ENV !== 'test') {
 				await exec('git add -A');
-				await exec(`git commit -m "${message.replace(/"/g, '\"')}"`);
+				await exec(`git commit -m "${message.replace(/"/g, '"')}"`);
 			}
 			return { content: [{ type: 'text', text: `commit:${message}` }] };
 		}

@@ -216,7 +216,7 @@ export class HITLService {
       SET status = 'escalated', updated_at = NOW()
       WHERE id = $1
       RETURNING *`;
-    const { rows } = await query<HITLRequest>(sql, [hitlRequestId]);
+    await query<HITLRequest>(sql, [hitlRequestId]);
     
     // Create new HITL request for escalated review
     const escalatedRequest = await this.createHITLRequest({

@@ -428,16 +428,16 @@ export class DevWorkflowEngine {
   /**
    * Check if epic is complete and requires HITL
    */
-  static async checkEpicCompletionHITL(epicId: number): Promise<{
+  static async checkEpicCompletionHITL(): Promise<{
     epicComplete: boolean;
     hitlRequired: boolean;
     completedStories: number;
     totalStories: number;
   }> {
     // This is a placeholder - in a real implementation, we'd check if all stories in the epic are done
-    // For now, we'll simulate the logic
-    const completedStories = 5; // Placeholder
-    const totalStories = 5; // Placeholder
+    // For now, we'll simulate the logic using the epicId
+    const completedStories = 5; // Placeholder - would query by epicId
+    const totalStories = 5; // Placeholder - would query by epicId
     const epicComplete = completedStories === totalStories;
     
     return {

@@ -1,12 +1,4 @@
-type Story = {
-	id: number;
-	title?: string;
-	description?: string;
-	acceptance_criteria?: string[];
-	story_points?: number;
-	priority?: string;
-	projectId: number;
-};
+// Story type defined for reference but not used in this file
 
 import { createStory, getStoryById, listStories, updateStory } from '../lib/database.ts';
 

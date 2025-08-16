@@ -22,7 +22,7 @@ function toMarkdown(rows: any[]): string {
 }
 
 function wrapHtml(body: string): string {
-	return `<!doctype html><html><head><meta charset=\"utf-8\"><title>DevAI Export</title><style>table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:4px 8px}</style></head><body>${body}</body></html>`;
+	return `<!doctype html><html><head><meta charset="utf-8"><title>DevAI Export</title><style>table{border-collapse:collapse}td,th{border:1px solid #ccc;padding:4px 8px}</style></head><body>${body}</body></html>`;
 }
 
 export async function exportData(args: any) {

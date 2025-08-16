@@ -21,35 +21,35 @@ export async function executeBmadTool(
     switch (`${agent}_${command}`) {
       // Product Owner Commands
       case 'po_create-epic':
-        return await executePoCreateEpic(args, agentDef);
+        return await executePoCreateEpic(args);
       case 'po_create-story':
-        return await executePoCreateStory(args, agentDef);
+        return await executePoCreateStory(args);
       case 'po_shard-doc':
-        return await executePoShardDoc(args, agentDef);
+        return await executePoShardDoc(args);
       case 'po_validate-story':
-        return await executePoValidateStory(args, agentDef);
+        return await executePoValidateStory(args);
 
       // Scrum Master Commands
       case 'sm_draft':
-        return await executeSmDraft(args, agentDef);
+        return await executeSmDraft(args);
       case 'sm_story-checklist':
-        return await executeSmStoryChecklist(args, agentDef);
+        return await executeSmStoryChecklist(args);
 
       // Developer Commands
       case 'dev_develop-story':
-        return await executeDevDevelopStory(args, agentDef);
+        return await executeDevDevelopStory(args);
       case 'dev_run-tests':
-        return await executeDevRunTests(args, agentDef);
+        return await executeDevRunTests(args);
       case 'dev_explain':
-        return await executeDevExplain(args, agentDef);
+        return await executeDevExplain(args);
 
       // Architect Commands
       case 'architect_design':
-        return await executeArchitectDesign(args, agentDef);
+        return await executeArchitectDesign(args);
 
       // QA Commands
       case 'qa_review-story':
-        return await executeQaReviewStory(args, agentDef);
+        return await executeQaReviewStory(args);
 
       // Common Commands
       case 'po_correct-course':
@@ -57,14 +57,14 @@ export async function executeBmadTool(
       case 'dev_correct-course':
       case 'architect_correct-course':
       case 'qa_correct-course':
-        return await executeCorrectCourse(agent, args, agentDef);
+        return await executeCorrectCourse(agent, args);
 
       case 'po_execute-checklist':
       case 'sm_execute-checklist':
       case 'dev_execute-checklist':
       case 'architect_execute-checklist':
       case 'qa_execute-checklist':
-        return await executeChecklist(agent, args, agentDef);
+        return await executeChecklist(agent, args);
 
       default:
         throw new Error(
@@ -166,21 +166,10 @@ async function getBmadTask(taskName: string): Promise<string | null> {
   return result.rows.length > 0 ? result.rows[0].content : null;
 }
 
-// Get BMAD template from memories
-async function getBmadTemplate(templateName: string): Promise<string | null> {
-  const result = await query(
-    `SELECT content FROM memories 
-     WHERE content LIKE '%Path: %templates/${templateName}%' 
-     OR content LIKE '%Path: bmad-core/templates/${templateName}%'
-     LIMIT 1`,
-    []
-  );
-
-  return result.rows.length > 0 ? result.rows[0].content : null;
-}
+// BMAD template retrieval function - not currently used
 
 // Product Owner Command Implementations
-async function executePoCreateEpic(args: any, agentDef: any) {
+async function executePoCreateEpic(args: any) {
   const task = await getBmadTask('brownfield-create-epic');
   if (!task) {
     throw new Error('BMAD task brownfield-create-epic not found');
@@ -225,7 +214,7 @@ async function executePoCreateEpic(args: any, agentDef: any) {
   };
 }
 
-async function executePoCreateStory(args: any, agentDef: any) {
+async function executePoCreateStory(args: any) {
   const task = await getBmadTask('brownfield-create-story');
   if (!task) {
     throw new Error('BMAD task brownfield-create-story not found');
@@ -282,7 +271,7 @@ ${storyResult.content[0].text}
   };
 }
 
-async function executePoShardDoc(args: any, agentDef: any) {
+async function executePoShardDoc(args: any) {
   const task = await getBmadTask('shard-doc');
   if (!task) {
     throw new Error('BMAD task shard-doc not found');
@@ -317,7 +306,7 @@ async function executePoShardDoc(args: any, agentDef: any) {
   };
 }
 
-async function executePoValidateStory(args: any, agentDef: any) {
+async function executePoValidateStory(args: any) {
   const task = await getBmadTask('validate-next-story');
   if (!task) {
     throw new Error('BMAD task validate-next-story not found');
@@ -354,7 +343,7 @@ async function executePoValidateStory(args: any, agentDef: any) {
 }
 
 // Scrum Master Command Implementations
-async function executeSmDraft(args: any, agentDef: any) {
+async function executeSmDraft(args: any) {
   const task = await getBmadTask('create-next-story');
   if (!task) {
     throw new Error('BMAD task create-next-story not found');
@@ -390,7 +379,7 @@ async function executeSmDraft(args: any, agentDef: any) {
   };
 }
 
-async function executeSmStoryChecklist(args: any, agentDef: any) {
+async function executeSmStoryChecklist(args: any) {
   return {
     content: [
       {
@@ -424,7 +413,7 @@ async function executeSmStoryChecklist(args: any, agentDef: any) {
 }
 
 // Developer Command Implementations (simplified - would need full implementation)
-async function executeDevDevelopStory(args: any, agentDef: any) {
+async function executeDevDevelopStory(args: any) {
   return {
     content: [
       {
@@ -462,7 +451,7 @@ async function executeDevDevelopStory(args: any, agentDef: any) {
   };
 }
 
-async function executeDevRunTests(args: any, agentDef: any) {
+async function executeDevRunTests(args: any) {
   return {
     content: [
       {
@@ -499,7 +488,7 @@ async function executeDevRunTests(args: any, agentDef: any) {
   };
 }
 
-async function executeDevExplain(args: any, agentDef: any) {
+async function executeDevExplain(args: any) {
   return {
     content: [
       {
@@ -539,7 +528,7 @@ Following the "explain as if training a junior engineer" approach:
 }
 
 // Architect, QA, and Common Command Implementations (simplified)
-async function executeArchitectDesign(args: any, agentDef: any) {
+async function executeArchitectDesign(args: any) {
   return {
     content: [
       {
@@ -564,7 +553,7 @@ ${
   };
 }
 
-async function executeQaReviewStory(args: any, agentDef: any) {
+async function executeQaReviewStory(args: any) {
   return {
     content: [
       {
@@ -584,8 +573,8 @@ Senior developer-level code review and validation
   };
 }
 
-async function executeCorrectCourse(agent: string, args: any, agentDef: any) {
-  const task = await getBmadTask('correct-course');
+async function executeCorrectCourse(agent: string, args: any) {
+  // const task = await getBmadTask('correct-course'); // Not currently used
 
   return {
     content: [
@@ -606,7 +595,7 @@ Systematic problem analysis and resolution following BMAD methodology
   };
 }
 
-async function executeChecklist(agent: string, args: any, agentDef: any) {
+async function executeChecklist(agent: string, args: any) {
   return {
     content: [
       {

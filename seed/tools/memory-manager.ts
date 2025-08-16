@@ -1,13 +1,4 @@
-type Memory = {
-	projectId: number;
-	memoryType: string;
-	content: string;
-	context?: string;
-	reasoning?: string;
-	confidence?: number;
-	tags?: string[];
-	createdAt: string;
-};
+// Memory type defined for reference but not used in this file
 
 import { generateEmbedding, semanticSearchMemories, storeMemory } from '../lib/database.ts';
 

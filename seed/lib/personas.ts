@@ -122,7 +122,7 @@ export class PersonaService {
     });
     
     // Generate in-character response
-    const inCharacterResponse = this.generateInCharacterResponse(context.persona, userInput);
+    const inCharacterResponse = this.generateInCharacterResponse(context.persona);
     
     // Determine which procedures and checklists to follow
     const proceduresFollowed = this.selectRelevantProcedures(context.persona, userInput);
@@ -190,9 +190,9 @@ export class PersonaService {
     };
   }
   
-  private static generateInCharacterResponse(persona: Persona, userInput: string): string {
+  private static generateInCharacterResponse(persona: Persona): string {
     const personalityPrefix = this.getPersonalityPrefix(persona);
-    const roleSpecificResponse = this.getRoleSpecificResponse(persona.role, userInput);
+    const roleSpecificResponse = this.getRoleSpecificResponse(persona.role);
     
     return `${personalityPrefix} ${roleSpecificResponse}`;
   }
@@ -213,7 +213,7 @@ export class PersonaService {
     }
   }
   
-  private static getRoleSpecificResponse(role: string, userInput: string): string {
+  private static getRoleSpecificResponse(role: string): string {
     switch (role) {
       case 'Scrum Master':
         return 'Let me help you organize this work into manageable stories and coordinate the team effort.';

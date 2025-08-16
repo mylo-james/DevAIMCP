@@ -1,4 +1,4 @@
-import { query, getProjectById } from './database.ts';
+import { getProjectById } from './database.ts';
 
 export interface DevAISession {
   id: string;
@@ -78,7 +78,7 @@ export class OrchestratorService {
     }
     
     // Analyze input and determine best persona
-    const routedPersona = await this.routeToPersona(params.userInput, session);
+    const routedPersona = await this.routeToPersona(params.userInput);
     
     // Update session context
     session.currentPersona = routedPersona;
@@ -87,7 +87,7 @@ export class OrchestratorService {
     return {
       response: `I understand you want to ${params.userInput}. Let me connect you with our ${routedPersona} who specializes in this area.`,
       routedPersona,
-      nextSteps: this.getNextSteps(routedPersona, params.userInput),
+      nextSteps: this.getNextSteps(routedPersona),
     };
   }
   
@@ -143,7 +143,7 @@ export class OrchestratorService {
     ];
   }
   
-  private static async routeToPersona(userInput: string, session: DevAISession): Promise<string> {
+  private static async routeToPersona(userInput: string): Promise<string> {
     const input = userInput.toLowerCase();
     
     // Simple routing logic based on keywords - can be enhanced with ML later
@@ -167,7 +167,7 @@ export class OrchestratorService {
     return 'Scrum Master';
   }
   
-  private static getNextSteps(persona: string, userInput: string): string[] {
+  private static getNextSteps(persona: string): string[] {
     switch (persona) {
       case 'Scrum Master':
         return ['Analyze requirements', 'Create or update stories', 'Plan sprint work'];

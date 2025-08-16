@@ -46,6 +46,12 @@ let bmadExecutor: any;
 let vendorBmad: any;
 let orchestratorService: any;
 let personaService: any;
+let importanceManager: any;
+let authorizationService: any;
+let devWorkflowEngine: any;
+let enhancedMemoryManager: any;
+let retrievalService: any;
+let hitlService: any;
 
 let seedLoaded = false;
 async function ensureSeedLoaded(): Promise<void> {
@@ -73,6 +79,12 @@ async function ensureSeedLoaded(): Promise<void> {
     vendorBmad = await importFrom(tools + 'vendor-bmad' + ext);
     ({ OrchestratorService: orchestratorService } = await importFrom(lib + 'orchestrator' + ext));
     ({ PersonaService: personaService } = await importFrom(lib + 'personas' + ext));
+    ({ ImportanceManager: importanceManager } = await importFrom(lib + 'importance-manager' + ext));
+    ({ AuthorizationService: authorizationService } = await importFrom(lib + 'authorization' + ext));
+    ({ DevWorkflowEngine: devWorkflowEngine } = await importFrom(lib + 'dev-workflow' + ext));
+    ({ EnhancedMemoryManager: enhancedMemoryManager } = await importFrom(lib + 'memory-manager-enhanced' + ext));
+    ({ RetrievalService: retrievalService } = await importFrom(lib + 'retrieval-service' + ext));
+    ({ HITLService: hitlService } = await importFrom(lib + 'hitl-service' + ext));
   } else {
     dbg('ensureSeedLoaded: loading seed in JS (dist) mode');
     const base = './seed/dist/';
@@ -94,6 +106,12 @@ async function ensureSeedLoaded(): Promise<void> {
     vendorBmad = await importFrom(tools + 'vendor-bmad' + ext);
     ({ OrchestratorService: orchestratorService } = await importFrom(lib + 'orchestrator' + ext));
     ({ PersonaService: personaService } = await importFrom(lib + 'personas' + ext));
+    ({ ImportanceManager: importanceManager } = await importFrom(lib + 'importance-manager' + ext));
+    ({ AuthorizationService: authorizationService } = await importFrom(lib + 'authorization' + ext));
+    ({ DevWorkflowEngine: devWorkflowEngine } = await importFrom(lib + 'dev-workflow' + ext));
+    ({ EnhancedMemoryManager: enhancedMemoryManager } = await importFrom(lib + 'memory-manager-enhanced' + ext));
+    ({ RetrievalService: retrievalService } = await importFrom(lib + 'retrieval-service' + ext));
+    ({ HITLService: hitlService } = await importFrom(lib + 'hitl-service' + ext));
   }
   seedLoaded = true;
   dbg('ensureSeedLoaded: seed modules loaded');
@@ -248,6 +266,427 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: 'devai_persona_list',
         description: 'List all available personas',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+
+      // Importance Management tools
+      {
+        name: 'devai_importance_increment',
+        description: 'Increment importance score for actor-resource pair on confirmed hit',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID' },
+            resourceId: { type: 'number', description: 'Resource ID' },
+          },
+          required: ['actorId', 'resourceId'],
+        },
+      },
+      {
+        name: 'devai_importance_get_ranked',
+        description: 'Get resources ranked by vector similarity and actor importance',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID' },
+            query: { type: 'string', description: 'Search query for vector similarity' },
+            projectId: { type: 'number', description: 'Optional project ID filter' },
+            limit: { type: 'number', description: 'Maximum results to return' },
+          },
+          required: ['actorId', 'query'],
+        },
+      },
+      {
+        name: 'devai_importance_nightly_decay',
+        description: 'Run nightly decay process for active actors',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+      {
+        name: 'devai_kb_resource_create',
+        description: 'Create a new knowledge base resource',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            projectId: { type: 'number', description: 'Project ID' },
+            uri: { type: 'string', description: 'Resource URI' },
+            type: { type: 'string', description: 'Resource type' },
+            content: { type: 'string', description: 'Resource content' },
+            accessTags: { 
+              type: 'array', 
+              items: { type: 'string' },
+              description: 'Access control tags' 
+            },
+            metadata: { type: 'object', description: 'Additional metadata' },
+          },
+          required: ['projectId', 'uri', 'type'],
+        },
+      },
+
+      // Authorization tools
+      {
+        name: 'devai_auth_generate_key',
+        description: 'Generate a new actor key for authorization',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID' },
+            scopes: { 
+              type: 'array', 
+              items: { type: 'string' },
+              description: 'Access scopes for the key' 
+            },
+            expiresInDays: { type: 'number', description: 'Key expiration in days' },
+          },
+          required: ['actorId'],
+        },
+      },
+      {
+        name: 'devai_auth_validate_key',
+        description: 'Validate an actor key',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            key: { type: 'string', description: 'Actor key to validate' },
+          },
+          required: ['key'],
+        },
+      },
+      {
+        name: 'devai_auth_check_access',
+        description: 'Check if actor has access to a resource',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID' },
+            resourceId: { type: 'number', description: 'Resource ID' },
+          },
+          required: ['actorId', 'resourceId'],
+        },
+      },
+      {
+        name: 'devai_auth_get_audit_log',
+        description: 'Get audit log of access decisions',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Filter by actor ID' },
+            resourceId: { type: 'number', description: 'Filter by resource ID' },
+            decision: { 
+              type: 'string', 
+              enum: ['allow', 'deny'],
+              description: 'Filter by decision type' 
+            },
+            limit: { type: 'number', description: 'Maximum results to return' },
+          },
+        },
+      },
+
+      // Development Workflow tools
+      {
+        name: 'devai_workflow_start',
+        description: 'Start SM→Dev→QA workflow for a story',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            storyId: { type: 'number', description: 'Story ID' },
+            epicId: { type: 'number', description: 'Optional epic ID' },
+          },
+          required: ['storyId'],
+        },
+      },
+      {
+        name: 'devai_workflow_sm_complete',
+        description: 'SM completes story draft and hands off to Dev',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            storyId: { type: 'number', description: 'Story ID' },
+            smActorId: { type: 'number', description: 'SM Actor ID' },
+          },
+          required: ['storyId', 'smActorId'],
+        },
+      },
+      {
+        name: 'devai_workflow_dev_complete',
+        description: 'Dev completes implementation and hands off to QA',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            storyId: { type: 'number', description: 'Story ID' },
+            devActorId: { type: 'number', description: 'Dev Actor ID' },
+          },
+          required: ['storyId', 'devActorId'],
+        },
+      },
+      {
+        name: 'devai_workflow_qa_approve',
+        description: 'QA approves story and triggers auto-push',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            storyId: { type: 'number', description: 'Story ID' },
+            qaActorId: { type: 'number', description: 'QA Actor ID' },
+          },
+          required: ['storyId', 'qaActorId'],
+        },
+      },
+      {
+        name: 'devai_workflow_qa_reject',
+        description: 'QA rejects story, creates defect, and triggers storification',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            storyId: { type: 'number', description: 'Story ID' },
+            qaActorId: { type: 'number', description: 'QA Actor ID' },
+            defectTitle: { type: 'string', description: 'Defect title' },
+            defectDescription: { type: 'string', description: 'Defect description' },
+            severity: { 
+              type: 'string', 
+              enum: ['low', 'medium', 'high', 'critical'],
+              description: 'Defect severity' 
+            },
+          },
+          required: ['storyId', 'qaActorId', 'defectTitle', 'defectDescription'],
+        },
+      },
+      {
+        name: 'devai_workflow_get_state',
+        description: 'Get current workflow state for a story',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            storyId: { type: 'number', description: 'Story ID' },
+          },
+          required: ['storyId'],
+        },
+      },
+
+      // Post-Job Memory tools
+      {
+        name: 'devai_memory_post_job_store',
+        description: 'Store mandatory post-job memory with story reference and critical learnings',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID' },
+            storyId: { type: 'number', description: 'Story ID reference' },
+            jobType: { type: 'string', description: 'Type of job completed' },
+            summary: { type: 'string', description: 'Concise summary of actions' },
+            criticalLearnings: { 
+              type: 'array', 
+              items: { type: 'string' },
+              description: 'Critical learnings from the job' 
+            },
+            confidence: { type: 'number', description: 'Confidence level (0-1)' },
+            additionalTags: { 
+              type: 'array', 
+              items: { type: 'string' },
+              description: 'Additional tags for categorization' 
+            },
+          },
+          required: ['actorId', 'jobType', 'summary', 'confidence'],
+        },
+      },
+      {
+        name: 'devai_memory_post_job_search',
+        description: 'Search post-job memories semantically',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: { type: 'string', description: 'Search query' },
+            actorId: { type: 'number', description: 'Filter by actor ID' },
+            storyId: { type: 'number', description: 'Filter by story ID' },
+            jobType: { type: 'string', description: 'Filter by job type' },
+            criticalOnly: { type: 'boolean', description: 'Only return critical memories' },
+            limit: { type: 'number', description: 'Maximum results to return' },
+          },
+          required: ['query'],
+        },
+      },
+      {
+        name: 'devai_memory_execute_hook',
+        description: 'Execute post-job memory hook for an actor',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID' },
+            actorRole: { type: 'string', description: 'Actor role' },
+            storyId: { type: 'number', description: 'Story ID' },
+            jobType: { type: 'string', description: 'Job type completed' },
+            jobResult: { type: 'object', description: 'Job result data' },
+            confidence: { type: 'number', description: 'Confidence level (0-1)' },
+          },
+          required: ['actorId', 'actorRole', 'jobType', 'jobResult', 'confidence'],
+        },
+      },
+
+      // Retrieval Service tools
+      {
+        name: 'devai_retrieve',
+        description: 'Retrieve resources using vector + importance + ACL filtering',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID for importance and ACL' },
+            query: { type: 'string', description: 'Search query' },
+            projectId: { type: 'number', description: 'Optional project ID filter' },
+            resourceTypes: { 
+              type: 'array', 
+              items: { type: 'string' },
+              description: 'Optional resource type filters' 
+            },
+            limit: { type: 'number', description: 'Maximum results to return' },
+            includeGlobalRecency: { type: 'boolean', description: 'Include global recency in scoring' },
+          },
+          required: ['actorId', 'query'],
+        },
+      },
+      {
+        name: 'devai_retrieve_with_feedback',
+        description: 'Retrieve resources and increment importance for confirmed hits',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID' },
+            query: { type: 'string', description: 'Search query' },
+            projectId: { type: 'number', description: 'Optional project ID filter' },
+            confirmedResourceIds: { 
+              type: 'array', 
+              items: { type: 'number' },
+              description: 'Resource IDs that were confirmed as helpful' 
+            },
+            limit: { type: 'number', description: 'Maximum results to return' },
+          },
+          required: ['actorId', 'query'],
+        },
+      },
+      {
+        name: 'devai_retrieve_advanced',
+        description: 'Advanced retrieval with custom ranking strategies',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID' },
+            query: { type: 'string', description: 'Search query' },
+            projectId: { type: 'number', description: 'Optional project ID filter' },
+            rankingStrategy: { 
+              type: 'string', 
+              enum: ['vector_only', 'importance_only', 'combined', 'recency_boosted'],
+              description: 'Ranking strategy to use' 
+            },
+            limit: { type: 'number', description: 'Maximum results to return' },
+          },
+          required: ['actorId', 'query'],
+        },
+      },
+      {
+        name: 'devai_retrieve_stats',
+        description: 'Get retrieval statistics for an actor',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            actorId: { type: 'number', description: 'Actor ID' },
+          },
+          required: ['actorId'],
+        },
+      },
+
+      // HITL (Human-in-the-Loop) tools
+      {
+        name: 'devai_hitl_check_epic_completion',
+        description: 'Check if epic is complete and requires HITL approval',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            epicId: { type: 'number', description: 'Epic ID to check' },
+          },
+          required: ['epicId'],
+        },
+      },
+      {
+        name: 'devai_hitl_create_request',
+        description: 'Create a HITL request for human approval',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            epicId: { type: 'number', description: 'Epic ID' },
+            requesterActorId: { type: 'number', description: 'Actor requesting HITL' },
+            requestType: { 
+              type: 'string', 
+              enum: ['epic_completion', 'escalation'],
+              description: 'Type of HITL request' 
+            },
+            title: { type: 'string', description: 'Request title' },
+            description: { type: 'string', description: 'Request description' },
+            context: { type: 'object', description: 'Additional context' },
+            priority: { 
+              type: 'string', 
+              enum: ['low', 'medium', 'high', 'urgent'],
+              description: 'Request priority' 
+            },
+          },
+          required: ['epicId', 'requesterActorId', 'requestType', 'title', 'description', 'context', 'priority'],
+        },
+      },
+      {
+        name: 'devai_hitl_process_decision',
+        description: 'Process human decision on HITL request',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            hitlRequestId: { type: 'number', description: 'HITL request ID' },
+            decision: { 
+              type: 'string', 
+              enum: ['approved', 'rejected'],
+              description: 'Human decision' 
+            },
+            humanReviewer: { type: 'string', description: 'Name/ID of human reviewer' },
+            reason: { type: 'string', description: 'Reason for decision' },
+          },
+          required: ['hitlRequestId', 'decision', 'humanReviewer', 'reason'],
+        },
+      },
+      {
+        name: 'devai_hitl_escalate',
+        description: 'Escalate HITL request to next level',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            hitlRequestId: { type: 'number', description: 'HITL request ID to escalate' },
+            reason: { type: 'string', description: 'Reason for escalation' },
+          },
+          required: ['hitlRequestId', 'reason'],
+        },
+      },
+      {
+        name: 'devai_hitl_get_pending',
+        description: 'Get pending HITL requests',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            requestType: { 
+              type: 'string', 
+              enum: ['epic_completion', 'escalation'],
+              description: 'Filter by request type' 
+            },
+            priority: { 
+              type: 'string', 
+              enum: ['low', 'medium', 'high', 'urgent'],
+              description: 'Filter by priority' 
+            },
+            limit: { type: 'number', description: 'Maximum results to return' },
+          },
+        },
+      },
+      {
+        name: 'devai_hitl_get_stats',
+        description: 'Get HITL statistics and metrics',
         inputSchema: {
           type: 'object',
           properties: {},
@@ -702,6 +1141,173 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           ],
         };
 
+      // Importance management
+      case 'devai_importance_increment':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await importanceManager.incrementImportance(args.actorId, args.resourceId)),
+            },
+          ],
+        };
+
+      case 'devai_importance_get_ranked':
+        const { generateEmbedding } = await import('./seed/lib/database.ts');
+        const queryEmbedding = await generateEmbedding(args.query);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await importanceManager.getRankedResources({
+                actorId: args.actorId,
+                queryEmbedding,
+                projectId: args.projectId,
+                limit: args.limit,
+              })),
+            },
+          ],
+        };
+
+      case 'devai_importance_nightly_decay':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await importanceManager.runNightlyDecay()),
+            },
+          ],
+        };
+
+      case 'devai_kb_resource_create':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await importanceManager.createKBResource({
+                project_id: args.projectId,
+                uri: args.uri,
+                type: args.type,
+                content: args.content,
+                access_tags: args.accessTags || [],
+                metadata: args.metadata,
+              })),
+            },
+          ],
+        };
+
+      // Authorization
+      case 'devai_auth_generate_key':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await authorizationService.generateActorKey(
+                args.actorId, 
+                args.scopes, 
+                args.expiresInDays
+              )),
+            },
+          ],
+        };
+
+      case 'devai_auth_validate_key':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await authorizationService.validateActorKey(args.key)),
+            },
+          ],
+        };
+
+      case 'devai_auth_check_access':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await authorizationService.checkResourceAccess(args.actorId, args.resourceId)),
+            },
+          ],
+        };
+
+      case 'devai_auth_get_audit_log':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await authorizationService.getAuditLog(args)),
+            },
+          ],
+        };
+
+      // Development Workflow
+      case 'devai_workflow_start':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await devWorkflowEngine.startWorkflow(args.storyId, args.epicId)),
+            },
+          ],
+        };
+
+      case 'devai_workflow_sm_complete':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await devWorkflowEngine.smCompletesDraft(args.storyId, args.smActorId)),
+            },
+          ],
+        };
+
+      case 'devai_workflow_dev_complete':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await devWorkflowEngine.devCompletesImplementation(args.storyId, args.devActorId)),
+            },
+          ],
+        };
+
+      case 'devai_workflow_qa_approve':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await devWorkflowEngine.qaApproves(args.storyId, args.qaActorId)),
+            },
+          ],
+        };
+
+      case 'devai_workflow_qa_reject':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await devWorkflowEngine.qaRejects(
+                args.storyId, 
+                args.qaActorId, 
+                args.defectTitle, 
+                args.defectDescription, 
+                args.severity
+              )),
+            },
+          ],
+        };
+
+      case 'devai_workflow_get_state':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(devWorkflowEngine.getWorkflowState(args.storyId)),
+            },
+          ],
+        };
+
       // Project management
       case 'devai_project_create':
         return await manageProject({ action: 'create', ...args });
@@ -714,6 +1320,152 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'devai_project_context':
         return await manageProject({ action: 'context', ...args });
+
+      // Post-Job Memory
+      case 'devai_memory_post_job_store':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await enhancedMemoryManager.storePostJobMemory(args)),
+            },
+          ],
+        };
+
+      case 'devai_memory_post_job_search':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await enhancedMemoryManager.searchPostJobMemories(args)),
+            },
+          ],
+        };
+
+      case 'devai_memory_execute_hook':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await enhancedMemoryManager.executePostJobHook(args)),
+            },
+          ],
+        };
+
+      // Retrieval Service
+      case 'devai_retrieve':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await retrievalService.retrieve(args)),
+            },
+          ],
+        };
+
+      case 'devai_retrieve_with_feedback':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await retrievalService.searchWithFeedback(args)),
+            },
+          ],
+        };
+
+      case 'devai_retrieve_advanced':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await retrievalService.advancedSearch(args)),
+            },
+          ],
+        };
+
+      case 'devai_retrieve_stats':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await retrievalService.getRetrievalStats(args.actorId)),
+            },
+          ],
+        };
+
+      // HITL (Human-in-the-Loop)
+      case 'devai_hitl_check_epic_completion':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await hitlService.checkEpicCompletion(args.epicId)),
+            },
+          ],
+        };
+
+      case 'devai_hitl_create_request':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await hitlService.createHITLRequest({
+                epic_id: args.epicId,
+                requester_actor_id: args.requesterActorId,
+                request_type: args.requestType,
+                title: args.title,
+                description: args.description,
+                context: args.context,
+                priority: args.priority,
+              })),
+            },
+          ],
+        };
+
+      case 'devai_hitl_process_decision':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await hitlService.processHumanDecision(
+                args.hitlRequestId,
+                args.decision,
+                args.humanReviewer,
+                args.reason
+              )),
+            },
+          ],
+        };
+
+      case 'devai_hitl_escalate':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await hitlService.escalateRequest(args.hitlRequestId, args.reason)),
+            },
+          ],
+        };
+
+      case 'devai_hitl_get_pending':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await hitlService.getPendingHITLRequests(args)),
+            },
+          ],
+        };
+
+      case 'devai_hitl_get_stats':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await hitlService.getHITLStats()),
+            },
+          ],
+        };
 
       // Memory management
       case 'devai_memory_store':

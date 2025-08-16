@@ -1240,8 +1240,8 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
         };
 
       case 'devai_importance_get_ranked': {
-        const { generateEmbedding } = await import('./seed/lib/database.ts');
-        const queryEmbedding = await generateEmbedding(args.query);
+        const { generateEmbedding } = await import('./seed/lib/database');
+        const queryEmbedding = await generateEmbedding(args.query as string);
         return {
           content: [
             {

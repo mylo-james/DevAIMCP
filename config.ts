@@ -55,10 +55,10 @@ export const config: DevAIConfig = {
   DEVAI_SEED_BUILD: process.env.DEVAI_SEED_BUILD || (DEFAULT_CONFIG.DEVAI_SEED_BUILD ?? 'ts'),
 
   // Database configuration
-  DATABASE_URL: process.env.DATABASE_URL,
+  ...(process.env.DATABASE_URL && { DATABASE_URL: process.env.DATABASE_URL }),
 
   // OpenAI configuration
-  OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+  ...(process.env.OPENAI_API_KEY && { OPENAI_API_KEY: process.env.OPENAI_API_KEY }),
 
   // MCP Server configuration
   MCP_SERVER_PORT: parsePort(process.env.MCP_SERVER_PORT),

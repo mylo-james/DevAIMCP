@@ -1,6 +1,6 @@
-import { query } from '../lib/database.ts';
-import { manageMemory } from './memory-manager.ts';
-import { manageStory } from './story-manager.ts';
+import { query } from '../lib/database';
+import { manageMemory } from './memory-manager';
+import { manageStory } from './story-manager';
 
 // Main BMAD tool executor
 export async function executeBmadTool(agent: string, command: string, args: any) {
@@ -91,7 +91,7 @@ async function getBmadAgent(agent: string): Promise<any> {
     return null;
   }
 
-  return parseBmadAgent(result.rows[0].content);
+  return parseBmadAgent(result.rows[0]?.content as string);
 }
 
 // Parse BMAD agent definition from content
@@ -104,6 +104,9 @@ function parseBmadAgent(content: string): any {
 
   // Simple YAML parser for BMAD agent structure
   const yamlContent = yamlMatch[1];
+  if (!yamlContent) {
+    throw new Error('Empty YAML content found');
+  }
   const lines = yamlContent.split('\n').filter(line => line.trim());
 
   const agent: any = {
@@ -157,7 +160,7 @@ async function getBmadTask(taskName: string): Promise<string | null> {
     []
   );
 
-  return result.rows.length > 0 ? result.rows[0].content : null;
+  return result.rows.length > 0 ? (result.rows[0]?.content as string) : null;
 }
 
 // BMAD template retrieval function - not currently used
@@ -247,7 +250,7 @@ async function executePoCreateStory(args: any) {
         type: 'text',
         text: `📝 BMAD Product Owner - Story Created
         
-${storyResult.content[0].text}
+${storyResult.content[0]?.text || 'No content available'}
 
 **BMAD Methodology Applied:**
 - Structured requirements analysis

@@ -1,4 +1,4 @@
-import { query } from './database.ts';
+import { query } from './database';
 
 export interface HITLRequest {
   id: number;
@@ -92,7 +92,7 @@ export class HITLService {
       SELECT id, status FROM stories 
       WHERE epic_id = $1
     `;
-    const { rows: stories } = await query<{ id: number; status: string }>(storiesQuery, [epicId]);
+    const { rows: stories } = await query(storiesQuery, [epicId]);
 
     const totalStories = stories.length;
     const completedStories = stories.filter(s => s.status === 'done').length;
@@ -102,7 +102,7 @@ export class HITLService {
 
     if (isComplete) {
       // Check if HITL request already exists
-      const existingHITL = await query<HITLRequest>(
+      const existingHITL = await query(
         'SELECT * FROM hitl_requests WHERE epic_id = $1 AND request_type = $2',
         [epicId, 'epic_completion']
       );
@@ -124,7 +124,9 @@ export class HITLService {
         });
         hitlRequestId = hitlRequest.id;
       } else {
-        hitlRequestId = existingHITL.rows[0].id;
+        if (existingHITL.rows[0]) {
+          hitlRequestId = existingHITL.rows[0].id;
+        }
       }
     }
 
@@ -134,7 +136,7 @@ export class HITLService {
       completed_stories: completedStories,
       is_complete: isComplete,
       hitl_required: isComplete,
-      hitl_request_id: hitlRequestId,
+      ...(hitlRequestId && { hitl_request_id: hitlRequestId }),
     };
   }
 
@@ -163,8 +165,12 @@ export class HITLService {
       JSON.stringify(params.context),
       params.priority,
     ];
-    const { rows } = await query<HITLRequest>(sql, values);
+    const { rows } = await query(sql, values);
 
+    if (!rows[0]) {
+      throw new Error('Failed to create HITL request');
+    }
+    
     // Start escalation timer
     await this.startEscalationTimer(rows[0].id, params.request_type);
 
@@ -185,13 +191,16 @@ export class HITLService {
       WHERE id = $4
       RETURNING *`;
     const values = [decision, humanReviewer, reason, hitlRequestId];
-    const { rows } = await query<HITLRequest>(sql, values);
+    const { rows } = await query(sql, values);
 
     if (rows.length === 0) {
       throw new Error(`HITL request ${hitlRequestId} not found`);
     }
 
     const request = rows[0];
+    if (!request) {
+      throw new Error(`HITL request ${hitlRequestId} not found`);
+    }
 
     // Handle post-decision actions
     if (decision === 'approved' && request.request_type === 'epic_completion') {
@@ -215,7 +224,7 @@ export class HITLService {
       SET status = 'escalated', updated_at = NOW()
       WHERE id = $1
       RETURNING *`;
-    await query<HITLRequest>(sql, [hitlRequestId]);
+    await query(sql, [hitlRequestId]);
 
     // Create new HITL request for escalated review
     const escalatedRequest = await this.createHITLRequest({
@@ -239,10 +248,10 @@ export class HITLService {
    * Get HITL request by ID
    */
   static async getHITLRequest(hitlRequestId: number): Promise<HITLRequest | null> {
-    const { rows } = await query<HITLRequest>('SELECT * FROM hitl_requests WHERE id = $1', [
+    const { rows } = await query('SELECT * FROM hitl_requests WHERE id = $1', [
       hitlRequestId,
     ]);
-    return rows.length > 0 ? rows[0] : null;
+    return rows.length > 0 ? (rows[0] || null) : null;
   }
 
   /**
@@ -282,7 +291,7 @@ export class HITLService {
       params.push(filters.limit);
     }
 
-    const { rows } = await query<HITLRequest>(sql, params);
+    const { rows } = await query(sql, params);
     return rows;
   }
 
@@ -301,7 +310,7 @@ export class HITLService {
       WHERE h.status = 'pending' 
       AND h.created_at < NOW() - INTERVAL '24 hours'  -- Default timeout
     `;
-    const { rows: overdueRequests } = await query<any>(overdueQuery, []);
+    const { rows: overdueRequests } = await query(overdueQuery, []);
 
     const escalatedRequests: HITLRequest[] = [];
 
@@ -372,10 +381,11 @@ export class HITLService {
       return false;
     }
 
-    this.escalationPolicies[policyIndex] = {
+    const updatedPolicy = {
       ...this.escalationPolicies[policyIndex],
       ...updates,
     };
+    this.escalationPolicies[policyIndex] = updatedPolicy as EscalationPolicy;
 
     return true;
   }
@@ -419,7 +429,7 @@ export class HITLService {
         COUNT(*) FILTER (WHERE status = 'escalated') * 100.0 / NULLIF(COUNT(*), 0) as escalation_rate
       FROM hitl_requests
     `;
-    const { rows } = await query<any>(statsQuery, []);
+    const { rows } = await query(statsQuery, []);
 
     return {
       pending_requests: Number(rows[0].pending_requests || 0),

@@ -1,4 +1,4 @@
-import { query } from './database.ts';
+import { query } from './database';
 
 export interface NotificationConfig {
   id: number;
@@ -112,7 +112,10 @@ export class NotificationService {
     `;
 
     const values = [actorId, notificationType, JSON.stringify(configData)];
-    const { rows } = await query<NotificationConfig>(sql, values);
+    const { rows } = await query(sql, values);
+    if (!rows[0]) {
+      throw new Error('Failed to configure notification');
+    }
     return rows[0];
   }
 
@@ -121,7 +124,7 @@ export class NotificationService {
    */
   async getActorNotificationConfigs(actorId: number): Promise<NotificationConfig[]> {
     const sql = 'SELECT * FROM notification_configs WHERE actor_id = $1 AND is_active = true';
-    const { rows } = await query<NotificationConfig>(sql, [actorId]);
+    const { rows } = await query(sql, [actorId]);
     return rows;
   }
 
@@ -326,7 +329,7 @@ export class NotificationService {
   private buildCompletionMessage(
     actorRole: string,
     story: any,
-    jobType: string,
+    _jobType: string,
     completionDetails?: Record<string, any>
   ): string {
     const storyTitle = story?.title || `Story #${story?.id}`;

@@ -1,4 +1,4 @@
-import { query, generateEmbedding } from './database.ts';
+import { query, generateEmbedding } from './database';
 
 export interface PostJobMemory {
   id: number;
@@ -98,7 +98,10 @@ export class EnhancedMemoryManager {
       tags,
       embedding,
     ];
-    const { rows } = await query<PostJobMemory>(sql, values);
+    const { rows } = await query(sql, values);
+    if (!rows[0]) {
+      throw new Error('Failed to store post-job memory');
+    }
     return rows[0];
   }
 
@@ -144,7 +147,7 @@ export class EnhancedMemoryManager {
     // Store the memory
     const memory = await this.storePostJobMemory({
       actorId: params.actorId,
-      storyId: params.storyId,
+      ...(params.storyId && { storyId: params.storyId }),
       jobType: params.jobType,
       summary,
       criticalLearnings,
@@ -201,7 +204,7 @@ export class EnhancedMemoryManager {
       queryParams.push(params.limit);
     }
 
-    const { rows } = await query<any>(sql, queryParams);
+    const { rows } = await query(sql, queryParams);
 
     return rows.map(row => ({
       memory: {
@@ -225,7 +228,7 @@ export class EnhancedMemoryManager {
    * Get all post-job memories for a story
    */
   static async getStoryMemories(storyId: number): Promise<PostJobMemory[]> {
-    const { rows } = await query<PostJobMemory>(
+    const { rows } = await query(
       'SELECT * FROM post_job_memories WHERE story_id = $1 ORDER BY created_at ASC',
       [storyId]
     );
@@ -239,7 +242,7 @@ export class EnhancedMemoryManager {
    * Get critical memories across all actors
    */
   static async getCriticalMemories(limit: number = 50): Promise<PostJobMemory[]> {
-    const { rows } = await query<PostJobMemory>(
+    const { rows } = await query(
       `SELECT * FROM post_job_memories 
        WHERE 'critical' = ANY(tags) 
        ORDER BY created_at DESC 
@@ -269,7 +272,7 @@ export class EnhancedMemoryManager {
     }
   }
 
-  private static extractCriticalLearnings(jobType: string, jobResult: any): string[] {
+  private static extractCriticalLearnings(_jobType: string, jobResult: any): string[] {
     const learnings: string[] = [];
 
     // Extract learnings based on job type and result

@@ -9,11 +9,11 @@ const __dirname = path.dirname(__filename);
 const BMAD_ROOT = path.resolve(__dirname, '..', 'BMAD-METHOD');
 
 async function ensureProject(name: string, description?: string) {
-  const existing = await query<any>('SELECT * FROM projects WHERE name = $1 LIMIT 1', [name]);
+  const existing = await query('SELECT * FROM projects WHERE name = $1 LIMIT 1', [name]);
   if (existing.rows[0]) return existing.rows[0];
   return await createProject({
     name,
-    description,
+    ...(description && { description }),
     repository_url: null as any,
     language: null as any,
     framework: null as any,
@@ -58,7 +58,6 @@ async function seedBmadKnowledge(projectId: number) {
       const title = path.basename(file);
       const tags = toTags(rel);
       await storeMemory({
-        id: 0 as any,
         project_id: projectId,
         memory_type: 'doc',
         content: `# ${title}\n\nPath: ${rel}\n\n${content}`,
@@ -67,8 +66,6 @@ async function seedBmadKnowledge(projectId: number) {
         confidence: null,
         tags,
         embedding: null,
-        created_at: '' as any,
-        updated_at: '' as any,
       });
       count += 1;
       if (count % 50 === 0) console.log(`Seeded ${count} BMAD docs...`);
@@ -228,7 +225,6 @@ async function seedActorWeightedRetrieval() {
   );
   // Seed spec as a doc memory
   await storeMemory({
-    id: 0 as any,
     project_id: project.id,
     memory_type: 'spec',
     content: AWR_SPEC,
@@ -237,13 +233,10 @@ async function seedActorWeightedRetrieval() {
     confidence: null,
     tags: ['spec', 'retrieval', 'mcp'],
     embedding: null,
-    created_at: '' as any,
-    updated_at: '' as any,
   });
   // Seed checklist as stories
   for (const step of AWR_STEPS) {
     await createStory({
-      id: 0 as any,
       project_id: project.id,
       title: step.title,
       description: step.description,
@@ -251,8 +244,6 @@ async function seedActorWeightedRetrieval() {
       story_points: step.points,
       priority: step.priority,
       status: 'todo',
-      created_at: '' as any,
-      updated_at: '' as any,
     });
   }
   console.log('✅ Seeded Actor‑Weighted Retrieval spec and checklist');

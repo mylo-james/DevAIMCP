@@ -1,4 +1,4 @@
-import { query } from '../lib/database.ts';
+import { query } from '../lib/database';
 
 export async function executeWorkflow(workflowType: string, projectId: number, steps?: any[]) {
   const insert = await query(

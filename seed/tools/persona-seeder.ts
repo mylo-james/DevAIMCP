@@ -1,4 +1,4 @@
-import { PersonaService, DEFAULT_PERSONAS } from '../lib/personas.ts';
+import { PersonaService, DEFAULT_PERSONAS } from '../lib/personas';
 
 export async function seedDefaultPersonas() {
   console.log('Seeding default personas...');

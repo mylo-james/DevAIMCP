@@ -1,4 +1,4 @@
-import { query } from './database.ts';
+import { query } from './database';
 import { createHash, randomBytes } from 'crypto';
 
 export interface ActorKey {
@@ -55,8 +55,11 @@ export class AuthorizationService {
       VALUES ($1, $2, $3, $4)
       RETURNING *`;
     const values = [actorId, keyHash, scopes, expiresAt];
-    const { rows } = await query<ActorKey>(sql, values);
+    const { rows } = await query(sql, values);
 
+    if (!rows[0]) {
+      throw new Error('Failed to create actor key');
+    }
     return {
       key, // Return the plain key only once for the user to store
       keyRecord: rows[0],
@@ -80,7 +83,7 @@ export class AuthorizationService {
       JOIN personas p ON ak.actor_id = p.id
       WHERE ak.key_hash = $1 AND ak.active = true
     `;
-    const { rows } = await query<any>(sql, [keyHash]);
+    const { rows } = await query(sql, [keyHash]);
 
     if (rows.length === 0) {
       return {
@@ -113,7 +116,7 @@ export class AuthorizationService {
   static async checkResourceAccess(actorId: number, resourceId: number): Promise<AccessDecision> {
     // Get the resource and its access tags
     const resourceQuery = 'SELECT * FROM kb_resources WHERE id = $1';
-    const { rows: resourceRows } = await query<any>(resourceQuery, [resourceId]);
+    const { rows: resourceRows } = await query(resourceQuery, [resourceId]);
 
     if (resourceRows.length === 0) {
       return {
@@ -134,7 +137,7 @@ export class AuthorizationService {
       WHERE actor_id = $1 AND active = true 
       AND (expires_at IS NULL OR expires_at > NOW())
     `;
-    const { rows: scopeRows } = await query<{ scope: string }>(actorScopesQuery, [actorId]);
+    const { rows: scopeRows } = await query(actorScopesQuery, [actorId]);
     const actorScopes = scopeRows.map(row => row.scope);
 
     // Check if actor has any required scopes
@@ -147,7 +150,7 @@ export class AuthorizationService {
       reason = 'Public resource';
     } else {
       // Check if actor has any of the required tags/scopes
-      const hasRequiredScope = resourceTags.some(tag => actorScopes.includes(tag));
+      const hasRequiredScope = resourceTags.some((tag: string) => actorScopes.includes(tag));
       if (hasRequiredScope) {
         accessAllowed = true;
         reason = 'Actor has required scope';
@@ -179,7 +182,7 @@ export class AuthorizationService {
       WHERE actor_id = $1 AND active = true 
       AND (expires_at IS NULL OR expires_at > NOW())
     `;
-    const { rows: scopeRows } = await query<{ scope: string }>(actorScopesQuery, [actorId]);
+    const { rows: scopeRows } = await query(actorScopesQuery, [actorId]);
     const actorScopes = scopeRows.map(row => row.scope);
 
     // Build query to get authorized resources
@@ -200,7 +203,7 @@ export class AuthorizationService {
 
     baseQuery += ' ORDER BY r.updated_at DESC';
 
-    const { rows } = await query<any>(baseQuery, queryParams);
+    const { rows } = await query(baseQuery, queryParams);
     return rows;
   }
 
@@ -263,7 +266,7 @@ export class AuthorizationService {
       params.push(filters.limit);
     }
 
-    const { rows } = await query<AuditLogEntry>(sql, params);
+    const { rows } = await query(sql, params);
     return rows;
   }
 
@@ -282,7 +285,7 @@ export class AuthorizationService {
    * List actor keys for an actor
    */
   static async getActorKeys(actorId: number): Promise<ActorKey[]> {
-    const { rows } = await query<ActorKey>(
+    const { rows } = await query(
       'SELECT * FROM actor_keys WHERE actor_id = $1 ORDER BY created_at DESC',
       [actorId]
     );

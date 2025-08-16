@@ -1,6 +1,6 @@
-import { query, generateEmbedding } from './database.ts';
-import { AuthorizationService } from './authorization.ts';
-import { ImportanceManager } from './importance-manager.ts';
+import { query, generateEmbedding } from './database';
+import { AuthorizationService } from './authorization';
+import { ImportanceManager } from './importance-manager';
 
 export interface RetrievalResult {
   resource: any;
@@ -76,7 +76,7 @@ export class RetrievalService {
 
     sql += ` ORDER BY r.embedding <=> $1 ASC LIMIT ${(params.limit || 10) * 2}`; // Get more for filtering
 
-    const { rows } = await query<any>(sql, queryParams);
+    const { rows } = await query(sql, queryParams);
 
     return rows.map(row => ({
       resource: row,

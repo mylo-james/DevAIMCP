@@ -1,7 +1,7 @@
-import { query, createStory, updateStory, getStoryById } from './database.ts';
-import { ImportanceManager } from './importance-manager.ts';
-import { EnhancedMemoryManager } from './memory-manager-enhanced.ts';
-import { NotificationService } from './notification-service.ts';
+import { query, createStory, updateStory, getStoryById } from './database';
+import { ImportanceManager } from './importance-manager';
+import { EnhancedMemoryManager } from './memory-manager-enhanced';
+import { NotificationService } from './notification-service';
 
 export interface Defect {
   id: number;
@@ -49,7 +49,7 @@ export class DevWorkflowEngine {
     const workflow: DevWorkflowState = {
       story_id: storyId,
       current_step: 'sm_draft',
-      epic_id: epicId,
+      ...(epicId && { epic_id: epicId }),
       auto_push_enabled: true,
       steps: [
         {
@@ -478,7 +478,10 @@ export class DevWorkflowEngine {
       VALUES ($1, $2, $3, $4, $5, 'open')
       RETURNING *`;
     const values = [storyId, qaActorId, title, description, severity];
-    const { rows } = await query<Defect>(sql, values);
+    const { rows } = await query(sql, values);
+    if (!rows[0]) {
+      throw new Error('Failed to create defect');
+    }
     return rows[0];
   }
 

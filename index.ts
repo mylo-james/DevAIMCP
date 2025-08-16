@@ -44,6 +44,8 @@ let executeGitWorkflow: any;
 let runTests: any;
 let bmadExecutor: any;
 let vendorBmad: any;
+let orchestratorService: any;
+let personaService: any;
 
 let seedLoaded = false;
 async function ensureSeedLoaded(): Promise<void> {
@@ -69,6 +71,8 @@ async function ensureSeedLoaded(): Promise<void> {
       tools + 'bmad-executor' + ext
     ));
     vendorBmad = await importFrom(tools + 'vendor-bmad' + ext);
+    ({ OrchestratorService: orchestratorService } = await importFrom(lib + 'orchestrator' + ext));
+    ({ PersonaService: personaService } = await importFrom(lib + 'personas' + ext));
   } else {
     dbg('ensureSeedLoaded: loading seed in JS (dist) mode');
     const base = './seed/dist/';
@@ -88,6 +92,8 @@ async function ensureSeedLoaded(): Promise<void> {
       tools + 'bmad-executor' + ext
     ));
     vendorBmad = await importFrom(tools + 'vendor-bmad' + ext);
+    ({ OrchestratorService: orchestratorService } = await importFrom(lib + 'orchestrator' + ext));
+    ({ PersonaService: personaService } = await importFrom(lib + 'personas' + ext));
   }
   seedLoaded = true;
   dbg('ensureSeedLoaded: seed modules loaded');
@@ -174,6 +180,77 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             },
           },
           required: ['projectId'],
+        },
+      },
+
+      // DevAI Mode and Orchestrator tools
+      {
+        name: 'devai_mode_activate',
+        description: 'Activate DevAI mode and get orchestrator greeting',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            projectId: { type: 'number', description: 'Optional project ID for context' },
+            initialQuery: { type: 'string', description: 'Optional initial user query to process' },
+            userContext: { type: 'object', description: 'Optional user context information' },
+          },
+        },
+      },
+      {
+        name: 'devai_orchestrator_process',
+        description: 'Process natural language input through the orchestrator',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            sessionId: { type: 'string', description: 'DevAI session ID' },
+            userInput: { type: 'string', description: 'Natural language user input' },
+          },
+          required: ['sessionId', 'userInput'],
+        },
+      },
+      {
+        name: 'devai_persona_activate',
+        description: 'Activate a persona for in-character interaction',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            sessionId: { type: 'string', description: 'DevAI session ID' },
+            personaId: { type: 'number', description: 'Persona ID to activate' },
+          },
+          required: ['sessionId', 'personaId'],
+        },
+      },
+      {
+        name: 'devai_persona_process',
+        description: 'Process input with in-character behavior enforcement',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            sessionId: { type: 'string', description: 'DevAI session ID' },
+            userInput: { type: 'string', description: 'User input to process' },
+          },
+          required: ['sessionId', 'userInput'],
+        },
+      },
+      {
+        name: 'devai_persona_handoff',
+        description: 'Hand off conversation to another persona',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            fromSessionId: { type: 'string', description: 'Current session ID' },
+            toPersonaRole: { type: 'string', description: 'Target persona role' },
+            handoffContext: { type: 'string', description: 'Context for the handoff' },
+          },
+          required: ['fromSessionId', 'toPersonaRole', 'handoffContext'],
+        },
+      },
+      {
+        name: 'devai_persona_list',
+        description: 'List all available personas',
+        inputSchema: {
+          type: 'object',
+          properties: {},
         },
       },
 
@@ -563,6 +640,68 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
   try {
     switch (name) {
+      // DevAI Mode and Orchestrator
+      case 'devai_mode_activate':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await orchestratorService.activateDevAIMode(args)),
+            },
+          ],
+        };
+
+      case 'devai_orchestrator_process':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await orchestratorService.processNaturalLanguageInput(args)),
+            },
+          ],
+        };
+
+      // Persona management
+      case 'devai_persona_activate':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await personaService.activatePersona(args.sessionId, args.personaId)),
+            },
+          ],
+        };
+
+      case 'devai_persona_process':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await personaService.processInCharacter(args.sessionId, args.userInput)),
+            },
+          ],
+        };
+
+      case 'devai_persona_handoff':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await personaService.handoffToPersona(args.fromSessionId, args.toPersonaRole, args.handoffContext)),
+            },
+          ],
+        };
+
+      case 'devai_persona_list':
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(await personaService.getPersonas()),
+            },
+          ],
+        };
+
       // Project management
       case 'devai_project_create':
         return await manageProject({ action: 'create', ...args });

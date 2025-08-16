@@ -120,6 +120,76 @@ DO $$ BEGIN
 	END IF;
 END $$;
 
+-- Personas
+CREATE TABLE IF NOT EXISTS personas (
+	id BIGSERIAL PRIMARY KEY,
+	name TEXT NOT NULL,
+	role TEXT NOT NULL,
+	biography TEXT NOT NULL,
+	specialties JSONB NOT NULL,
+	preferences JSONB NOT NULL,
+	style TEXT NOT NULL,
+	procedures JSONB NOT NULL,
+	checklists JSONB NOT NULL,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_personas_role ON personas (role);
+CREATE INDEX IF NOT EXISTS idx_personas_name ON personas (name);
+CREATE INDEX IF NOT EXISTS idx_personas_specialties_gin ON personas USING GIN (specialties);
+
+-- Knowledge Base Resources
+CREATE TABLE IF NOT EXISTS kb_resources (
+	id BIGSERIAL PRIMARY KEY,
+	project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+	uri TEXT NOT NULL,
+	type TEXT NOT NULL,
+	content TEXT,
+	access_tags TEXT[] DEFAULT '{}',
+	metadata JSONB,
+	embedding VECTOR(1536),
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_kb_resources_project_id ON kb_resources (project_id);
+CREATE INDEX IF NOT EXISTS idx_kb_resources_type ON kb_resources (type);
+CREATE INDEX IF NOT EXISTS idx_kb_resources_access_tags_gin ON kb_resources USING GIN (access_tags);
+CREATE INDEX IF NOT EXISTS idx_kb_resources_embedding_ivfflat ON kb_resources USING ivfflat (embedding vector_cosine_ops);
+
+-- Per-Actor Importance Scoring
+CREATE TABLE IF NOT EXISTS kb_actor_importance (
+	id BIGSERIAL PRIMARY KEY,
+	actor_id INTEGER NOT NULL REFERENCES personas(id) ON DELETE CASCADE,
+	resource_id INTEGER NOT NULL REFERENCES kb_resources(id) ON DELETE CASCADE,
+	importance INTEGER NOT NULL DEFAULT 0,
+	last_touched_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	UNIQUE(actor_id, resource_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_kb_actor_importance_actor_id ON kb_actor_importance (actor_id);
+CREATE INDEX IF NOT EXISTS idx_kb_actor_importance_resource_id ON kb_actor_importance (resource_id);
+CREATE INDEX IF NOT EXISTS idx_kb_actor_importance_importance ON kb_actor_importance (importance DESC);
+CREATE INDEX IF NOT EXISTS idx_kb_actor_importance_last_touched ON kb_actor_importance (last_touched_at);
+
+-- Activity Log for tracking actor activity
+CREATE TABLE IF NOT EXISTS activity_log (
+	id BIGSERIAL PRIMARY KEY,
+	actor_id INTEGER NOT NULL REFERENCES personas(id) ON DELETE CASCADE,
+	action TEXT NOT NULL,
+	resource_id INTEGER REFERENCES kb_resources(id) ON DELETE SET NULL,
+	story_id INTEGER REFERENCES stories(id) ON DELETE SET NULL,
+	metadata JSONB,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_activity_log_actor_id ON activity_log (actor_id);
+CREATE INDEX IF NOT EXISTS idx_activity_log_created_at ON activity_log (created_at);
+CREATE INDEX IF NOT EXISTS idx_activity_log_action ON activity_log (action);
+
 -- Policies
 CREATE TABLE IF NOT EXISTS policies (
 	id BIGSERIAL PRIMARY KEY,
@@ -133,6 +203,36 @@ CREATE TABLE IF NOT EXISTS policies (
 
 CREATE INDEX IF NOT EXISTS idx_policies_active ON policies (active);
 CREATE INDEX IF NOT EXISTS idx_policies_rules_gin ON policies USING GIN (rules);
+
+DO $$ BEGIN
+	IF NOT EXISTS (
+		SELECT 1 FROM pg_trigger WHERE tgname = 'set_personas_updated_at'
+	) THEN
+		CREATE TRIGGER set_personas_updated_at
+		BEFORE UPDATE ON personas
+		FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+	END IF;
+END $$;
+
+DO $$ BEGIN
+	IF NOT EXISTS (
+		SELECT 1 FROM pg_trigger WHERE tgname = 'set_kb_resources_updated_at'
+	) THEN
+		CREATE TRIGGER set_kb_resources_updated_at
+		BEFORE UPDATE ON kb_resources
+		FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+	END IF;
+END $$;
+
+DO $$ BEGIN
+	IF NOT EXISTS (
+		SELECT 1 FROM pg_trigger WHERE tgname = 'set_kb_actor_importance_updated_at'
+	) THEN
+		CREATE TRIGGER set_kb_actor_importance_updated_at
+		BEFORE UPDATE ON kb_actor_importance
+		FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+	END IF;
+END $$;
 
 DO $$ BEGIN
 	IF NOT EXISTS (

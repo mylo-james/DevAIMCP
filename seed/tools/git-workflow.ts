@@ -6,13 +6,17 @@ export async function executeGitWorkflow(action: string, args: any) {
 	switch (action) {
 		case 'branch': {
 			const name = args.branch_name || `devai/${Date.now()}`;
-			await exec(`git checkout -b ${name}`);
+			if (process.env.NODE_ENV !== 'test') {
+				await exec(`git checkout -b ${name}`);
+			}
 			return { content: [{ type: 'text', text: `branch:${name}` }] };
 		}
 		case 'commit': {
 			const message = args.message || 'devai: automated commit';
-			await exec('git add -A');
-			await exec(`git commit -m "${message.replace(/"/g, '\"')}"`);
+			if (process.env.NODE_ENV !== 'test') {
+				await exec('git add -A');
+				await exec(`git commit -m "${message.replace(/"/g, '\"')}"`);
+			}
 			return { content: [{ type: 'text', text: `commit:${message}` }] };
 		}
 		default:

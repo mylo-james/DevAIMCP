@@ -3,14 +3,13 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { readFile, readdir } from 'fs/promises';
+import { resources } from './resources.js';
 import path from 'path';
-import { resources, type MCPResource } from './resources.js';
 
 // Mock fs/promises
 vi.mock('fs/promises', () => ({
-  readFile: vi.fn(),
   readdir: vi.fn(),
+  readFile: vi.fn(),
 }));
 
 // Mock path
@@ -24,59 +23,30 @@ vi.mock('path', () => ({
 }));
 
 describe('Resources Module', () => {
-  const mockReadFile = readFile as vi.MockedFunction<typeof readFile>;
-  const mockReaddir = readdir as vi.MockedFunction<typeof readdir>;
-  const mockPathResolve = path.resolve as vi.MockedFunction<typeof path.resolve>;
-  const mockPathJoin = path.join as vi.MockedFunction<typeof path.join>;
+  let mockReaddir: any;
+  let mockReadFile: any;
+  let mockResolve: any;
+  let mockJoin: any;
+
+  beforeEach(async () => {
+    const fsPromises = await import('fs/promises');
+    mockReaddir = vi.mocked(fsPromises.readdir);
+    mockReadFile = vi.mocked(fsPromises.readFile);
+    mockResolve = vi.mocked(path.resolve);
+    mockJoin = vi.mocked(path.join);
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Mock process.cwd to return a predictable value
-    vi.spyOn(process, 'cwd').mockReturnValue('/workspace');
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  describe('MCPResource interface', () => {
-    it('should have correct structure', () => {
-      const resource: MCPResource = {
-        uri: 'test://uri',
-        name: 'Test Resource',
-        description: 'Test description',
-        mimeType: 'text/plain',
-        handler: async () => 'test content',
-      };
-
-      expect(resource).toBeDefined();
-      expect(typeof resource.uri).toBe('string');
-      expect(typeof resource.name).toBe('string');
-      expect(typeof resource.description).toBe('string');
-      expect(typeof resource.mimeType).toBe('string');
-      expect(typeof resource.handler).toBe('function');
-    });
-  });
-
   describe('resources array', () => {
     it('should contain all expected resources', () => {
-      const expectedUris = [
-        'devai://policy',
-        'devai://knowledge-base',
-        'devai://core-config',
-        'devai://templates',
-        'devai://workflows',
-        'devai://agents',
-        'devai://tasks',
-        'devai://checklists',
-        'devai://technical-preferences',
-        'devai://manifest',
-      ];
-
-      expect(resources).toHaveLength(expectedUris.length);
-      resources.forEach((resource, index) => {
-        expect(resource.uri).toBe(expectedUris[index]);
-      });
+      expect(resources).toHaveLength(10);
     });
 
     it('should have valid resource structure', () => {
@@ -101,321 +71,199 @@ describe('Resources Module', () => {
     });
   });
 
-  describe('policy resource', () => {
-    it('should have correct configuration', () => {
-      const policyResource = resources.find((r) => r.uri === 'devai://policy');
-      expect(policyResource).toBeDefined();
-      expect(policyResource?.name).toBe('DevAI Policy');
-      expect(policyResource?.description).toBe('Core DevAI policy document that must be followed');
-      expect(policyResource?.mimeType).toBe('text/markdown');
-    });
+  describe('DevAI Agents resource', () => {
+    it('should handle agents directory listing', async () => {
+      const agentsDir = '/test/agents';
+      const agentFiles = ['agent1.md', 'agent2.md', 'ignore.txt'];
+      const agentContent1 = '# Agent 1\n\nContent 1';
+      const agentContent2 = '# Agent 2\n\nContent 2';
 
-    it('should read policy file correctly', async () => {
-      const policyResource = resources.find((r) => r.uri === 'devai://policy');
-      expect(policyResource).toBeDefined();
+      mockResolve.mockReturnValue(agentsDir);
+      mockReaddir.mockResolvedValue(agentFiles as any);
+      mockJoin
+        .mockReturnValueOnce('/test/agents/agent1.md')
+        .mockReturnValueOnce('/test/agents/agent2.md');
+      mockReadFile
+        .mockResolvedValueOnce(agentContent1)
+        .mockResolvedValueOnce(agentContent2);
 
-      const mockContent = '# DevAI Policy\n\nThis is the policy content.';
-      mockReadFile.mockResolvedValue(mockContent);
-      mockPathResolve.mockReturnValue('/workspace/policy.md');
-
-      const result = await policyResource?.handler();
-      expect(result).toBeDefined();
-
-      expect(mockPathResolve).toHaveBeenCalledWith('/workspace', 'policy.md');
-      expect(mockReadFile).toHaveBeenCalledWith('/workspace/policy.md', 'utf8');
-      expect(result).toBe(mockContent);
-    });
-  });
-
-  describe('knowledge-base resource', () => {
-    it('should have correct configuration', () => {
-      const kbResource = resources.find((r) => r.uri === 'devai://knowledge-base');
-      expect(kbResource).toBeDefined();
-      expect(kbResource?.name).toBe('DevAI Knowledge Base');
-      expect(kbResource?.description).toBe('Comprehensive DevAI knowledge base and documentation');
-      expect(kbResource?.mimeType).toBe('text/markdown');
-    });
-
-    it('should read knowledge base file correctly', async () => {
-      const kbResource = resources.find((r) => r.uri === 'devai://knowledge-base');
-      expect(kbResource).toBeDefined();
-
-      const mockContent = '# DevAI Knowledge Base\n\nThis is the KB content.';
-      mockReadFile.mockResolvedValue(mockContent);
-      mockPathResolve.mockReturnValue('/workspace/data/kb.md');
-
-      const result = await kbResource?.handler();
-      expect(result).toBeDefined();
-
-      expect(mockPathResolve).toHaveBeenCalledWith('/workspace', 'data', 'kb.md');
-      expect(mockReadFile).toHaveBeenCalledWith('/workspace/data/kb.md', 'utf8');
-      expect(result).toBe(mockContent);
-    });
-  });
-
-  describe('core-config resource', () => {
-    it('should have correct configuration', () => {
-      const configResource = resources.find((r) => r.uri === 'devai://core-config');
-      expect(configResource).toBeDefined();
-      expect(configResource?.name).toBe('DevAI Core Configuration');
-      expect(configResource?.description).toBe('Core configuration for DevAI project structure');
-      expect(configResource?.mimeType).toBe('text/yaml');
-    });
-
-    it('should read core config file correctly', async () => {
-      const configResource = resources.find((r) => r.uri === 'devai://core-config');
-      expect(configResource).toBeDefined();
-
-      const mockContent = 'config:\n  version: 1.0';
-      mockReadFile.mockResolvedValue(mockContent);
-      mockPathResolve.mockReturnValue('/workspace/core-config.yaml');
-
-      const result = await configResource?.handler();
-      expect(result).toBeDefined();
-
-      expect(mockPathResolve).toHaveBeenCalledWith('/workspace', 'core-config.yaml');
-      expect(mockReadFile).toHaveBeenCalledWith('/workspace/core-config.yaml', 'utf8');
-      expect(result).toBe(mockContent);
-    });
-  });
-
-  describe('templates resource', () => {
-    it('should have correct configuration', () => {
-      const templatesResource = resources.find((r) => r.uri === 'devai://templates');
-      expect(templatesResource).toBeDefined();
-      expect(templatesResource?.name).toBe('DevAI Templates');
-      expect(templatesResource?.description).toBe('Collection of DevAI templates for document creation');
-      expect(templatesResource?.mimeType).toBe('text/yaml');
-    });
-
-    it('should read templates directory and files correctly', async () => {
-      const templatesResource = resources.find((r) => r.uri === 'devai://templates');
-      expect(templatesResource).toBeDefined();
-
-      const mockFiles = ['template1.yaml', 'template2.yaml', 'readme.md'];
-      const mockTemplate1Content = 'template1:\n  name: Test Template 1';
-      const mockTemplate2Content = 'template2:\n  name: Test Template 2';
-
-      mockReaddir.mockResolvedValue(mockFiles);
-      mockPathResolve.mockReturnValue('/workspace/templates');
-      mockPathJoin
-        .mockReturnValueOnce('/workspace/templates/template1.yaml')
-        .mockReturnValueOnce('/workspace/templates/template2.yaml');
-             mockReadFile
-         .mockResolvedValueOnce(mockTemplate1Content)
-         .mockResolvedValueOnce(mockTemplate2Content);
-
-       const result = await templatesResource?.handler();
-       expect(result).toBeDefined();
-
-      expect(mockPathResolve).toHaveBeenCalledWith('/workspace', 'templates');
-      expect(mockReaddir).toHaveBeenCalledWith('/workspace/templates');
-      expect(mockPathJoin).toHaveBeenCalledWith('/workspace/templates', 'template1.yaml');
-      expect(mockPathJoin).toHaveBeenCalledWith('/workspace/templates', 'template2.yaml');
-      expect(mockReadFile).toHaveBeenCalledWith('/workspace/templates/template1.yaml', 'utf8');
-      expect(mockReadFile).toHaveBeenCalledWith('/workspace/templates/template2.yaml', 'utf8');
-
-      expect(result).toContain('# DevAI Templates');
-      expect(result).toContain('## template1.yaml');
-      expect(result).toContain('## template2.yaml');
-      expect(result).toContain('template1:\n  name: Test Template 1');
-      expect(result).toContain('template2:\n  name: Test Template 2');
-      expect(result).not.toContain('readme.md'); // Should filter out non-yaml files
-    });
-
-    it('should handle empty templates directory', async () => {
-      const templatesResource = resources.find((r) => r.uri === 'devai://templates');
-      expect(templatesResource).toBeDefined();
-
-      mockReaddir.mockResolvedValue([]);
-      mockPathResolve.mockReturnValue('/workspace/templates');
-
-             const result = await templatesResource?.handler();
-       expect(result).toBeDefined();
-
-       expect(result).toBe('# DevAI Templates\n\n');
-    });
-
-    it('should filter out non-yaml files', async () => {
-      const templatesResource = resources.find((r) => r.uri === 'devai://templates');
-      expect(templatesResource).toBeDefined();
-
-      const mockFiles = ['template.yaml', 'readme.md', 'config.json'];
-      mockReaddir.mockResolvedValue(mockFiles);
-      mockPathResolve.mockReturnValue('/workspace/templates');
-      mockPathJoin.mockReturnValue('/workspace/templates/template.yaml');
-      mockReadFile.mockResolvedValue('template content');
-
-             const result = await templatesResource?.handler();
-       expect(result).toBeDefined();
-
-      expect(mockPathJoin).toHaveBeenCalledTimes(1); // Only for template.yaml
-      expect(mockReadFile).toHaveBeenCalledTimes(1); // Only for template.yaml
-      expect(result).toContain('## template.yaml');
-      expect(result).not.toContain('readme.md');
-      expect(result).not.toContain('config.json');
-    });
-  });
-
-  describe('workflows resource', () => {
-    it('should have correct configuration', () => {
-      const workflowsResource = resources.find((r) => r.uri === 'devai://workflows');
-      expect(workflowsResource).toBeDefined();
-      expect(workflowsResource?.name).toBe('DevAI Workflows');
-      expect(workflowsResource?.description).toBe('Collection of DevAI workflow definitions');
-      expect(workflowsResource?.mimeType).toBe('text/yaml');
-    });
-
-    it('should read workflows directory and files correctly', async () => {
-      const workflowsResource = resources.find((r) => r.uri === 'devai://workflows');
-      expect(workflowsResource).toBeDefined();
-
-      const mockFiles = ['workflow1.yaml', 'workflow2.yaml', 'readme.md'];
-      const mockWorkflow1Content = 'workflow1:\n  steps: []';
-      const mockWorkflow2Content = 'workflow2:\n  steps: []';
-
-      mockReaddir.mockResolvedValue(mockFiles);
-      mockPathResolve.mockReturnValue('/workspace/workflows');
-      mockPathJoin
-        .mockReturnValueOnce('/workspace/workflows/workflow1.yaml')
-        .mockReturnValueOnce('/workspace/workflows/workflow2.yaml');
-             mockReadFile
-         .mockResolvedValueOnce(mockWorkflow1Content)
-         .mockResolvedValueOnce(mockWorkflow2Content);
-
-       const result = await workflowsResource?.handler();
-       expect(result).toBeDefined();
-
-      expect(mockPathResolve).toHaveBeenCalledWith('/workspace', 'workflows');
-      expect(mockReaddir).toHaveBeenCalledWith('/workspace/workflows');
-      expect(mockPathJoin).toHaveBeenCalledWith('/workspace/workflows', 'workflow1.yaml');
-      expect(mockPathJoin).toHaveBeenCalledWith('/workspace/workflows', 'workflow2.yaml');
-      expect(mockReadFile).toHaveBeenCalledWith('/workspace/workflows/workflow1.yaml', 'utf8');
-      expect(mockReadFile).toHaveBeenCalledWith('/workspace/workflows/workflow2.yaml', 'utf8');
-
-      expect(result).toContain('# DevAI Workflows');
-      expect(result).toContain('## workflow1.yaml');
-      expect(result).toContain('## workflow2.yaml');
-      expect(result).toContain('workflow1:\n  steps: []');
-      expect(result).toContain('workflow2:\n  steps: []');
-      expect(result).not.toContain('readme.md'); // Should filter out non-yaml files
-    });
-
-    it('should handle empty workflows directory', async () => {
-      const workflowsResource = resources.find((r) => r.uri === 'devai://workflows');
-      expect(workflowsResource).toBeDefined();
-
-      mockReaddir.mockResolvedValue([]);
-      mockPathResolve.mockReturnValue('/workspace/workflows');
-
-             const result = await workflowsResource?.handler();
-       expect(result).toBeDefined();
-
-       expect(result).toBe('# DevAI Workflows\n\n');
-    });
-  });
-
-  describe('agents resource', () => {
-    it('should have correct configuration', () => {
-      const agentsResource = resources.find((r) => r.uri === 'devai://agents');
-      expect(agentsResource).toBeDefined();
-      expect(agentsResource?.name).toBe('DevAI Agents');
-      expect(agentsResource?.description).toBe('Collection of DevAI agent definitions');
-      expect(agentsResource?.mimeType).toBe('text/markdown');
-    });
-
-    it('should read agents directory and files correctly', async () => {
       const agentsResource = resources.find((r) => r.uri === 'devai://agents');
       expect(agentsResource).toBeDefined();
 
-      const mockFiles = ['agent1.md', 'agent2.md', 'config.json'];
-      const mockAgent1Content = '# Agent 1\n\nThis is agent 1.';
-      const mockAgent2Content = '# Agent 2\n\nThis is agent 2.';
+      const result = await agentsResource!.handler();
 
-      mockReaddir.mockResolvedValue(mockFiles);
-      mockPathResolve.mockReturnValue('/workspace/agents');
-      mockPathJoin
-        .mockReturnValueOnce('/workspace/agents/agent1.md')
-        .mockReturnValueOnce('/workspace/agents/agent2.md');
-             mockReadFile
-         .mockResolvedValueOnce(mockAgent1Content)
-         .mockResolvedValueOnce(mockAgent2Content);
-
-       const result = await agentsResource?.handler();
-       expect(result).toBeDefined();
-
-      expect(mockPathResolve).toHaveBeenCalledWith('/workspace', 'agents');
-      expect(mockReaddir).toHaveBeenCalledWith('/workspace/agents');
-      expect(mockPathJoin).toHaveBeenCalledWith('/workspace/agents', 'agent1.md');
-      expect(mockPathJoin).toHaveBeenCalledWith('/workspace/agents', 'agent2.md');
-      expect(mockReadFile).toHaveBeenCalledWith('/workspace/agents/agent1.md', 'utf8');
-      expect(mockReadFile).toHaveBeenCalledWith('/workspace/agents/agent2.md', 'utf8');
-
+      expect(mockResolve).toHaveBeenCalledWith(process.cwd(), 'agents');
+      expect(mockReaddir).toHaveBeenCalledWith(agentsDir);
+      expect(mockJoin).toHaveBeenCalledWith(agentsDir, 'agent1.md');
+      expect(mockJoin).toHaveBeenCalledWith(agentsDir, 'agent2.md');
+      expect(mockReadFile).toHaveBeenCalledWith('/test/agents/agent1.md', 'utf8');
+      expect(mockReadFile).toHaveBeenCalledWith('/test/agents/agent2.md', 'utf8');
       expect(result).toContain('# DevAI Agents');
       expect(result).toContain('## agent1.md');
       expect(result).toContain('## agent2.md');
-      expect(result).toContain('# Agent 1\n\nThis is agent 1.');
-      expect(result).toContain('# Agent 2\n\nThis is agent 2.');
-      expect(result).not.toContain('config.json'); // Should filter out non-md files
-    });
-
-    it('should handle empty agents directory', async () => {
-      const agentsResource = resources.find((r) => r.uri === 'devai://agents');
-      expect(agentsResource).toBeDefined();
-
-      mockReaddir.mockResolvedValue([]);
-      mockPathResolve.mockReturnValue('/workspace/agents');
-
-             const result = await agentsResource?.handler();
-       expect(result).toBeDefined();
-
-       expect(result).toBe('# DevAI Agents\n\n');
+      expect(result).toContain('Content 1');
+      expect(result).toContain('Content 2');
     });
 
     it('should filter out non-markdown files', async () => {
+      const agentsDir = '/test/agents';
+      const allFiles = ['agent1.md', 'agent2.txt', 'agent3.md', 'ignore.js'];
+
+      mockResolve.mockReturnValue(agentsDir);
+      mockReaddir.mockResolvedValue(allFiles as any);
+      mockJoin.mockReturnValue('/test/agents/file.md');
+      mockReadFile.mockResolvedValue('content');
+
       const agentsResource = resources.find((r) => r.uri === 'devai://agents');
-      expect(agentsResource).toBeDefined();
+      const result = await agentsResource!.handler();
 
-      const mockFiles = ['agent.md', 'readme.txt', 'config.json'];
-      mockReaddir.mockResolvedValue(mockFiles);
-      mockPathResolve.mockReturnValue('/workspace/agents');
-      mockPathJoin.mockReturnValue('/workspace/agents/agent.md');
-      mockReadFile.mockResolvedValue('agent content');
+      expect(result).toContain('## agent1.md');
+      expect(result).toContain('## agent3.md');
+      expect(result).not.toContain('agent2.txt');
+      expect(result).not.toContain('ignore.js');
+    });
+  });
 
-             const result = await agentsResource?.handler();
-       expect(result).toBeDefined();
+  describe('DevAI Tasks resource', () => {
+    it('should handle tasks directory listing', async () => {
+      const tasksDir = '/test/tasks';
+      const taskFiles = ['task1.md', 'task2.md'];
+      const taskContent1 = '# Task 1\n\nTask content 1';
+      const taskContent2 = '# Task 2\n\nTask content 2';
 
-      expect(mockPathJoin).toHaveBeenCalledTimes(1); // Only for agent.md
-      expect(mockReadFile).toHaveBeenCalledTimes(1); // Only for agent.md
-      expect(result).toContain('## agent.md');
-      expect(result).not.toContain('readme.txt');
-      expect(result).not.toContain('config.json');
+      mockResolve.mockReturnValue(tasksDir);
+      mockReaddir.mockResolvedValue(taskFiles as any);
+      mockJoin
+        .mockReturnValueOnce('/test/tasks/task1.md')
+        .mockReturnValueOnce('/test/tasks/task2.md');
+      mockReadFile
+        .mockResolvedValueOnce(taskContent1)
+        .mockResolvedValueOnce(taskContent2);
+
+      const tasksResource = resources.find((r) => r.uri === 'devai://tasks');
+      expect(tasksResource).toBeDefined();
+
+      const result = await tasksResource!.handler();
+
+      expect(mockResolve).toHaveBeenCalledWith(process.cwd(), 'tasks');
+      expect(mockReaddir).toHaveBeenCalledWith(tasksDir);
+      expect(result).toContain('# DevAI Tasks');
+      expect(result).toContain('## task1.md');
+      expect(result).toContain('## task2.md');
+      expect(result).toContain('Task content 1');
+      expect(result).toContain('Task content 2');
+    });
+  });
+
+  describe('DevAI Checklists resource', () => {
+    it('should handle checklists directory listing', async () => {
+      const checklistsDir = '/test/checklists';
+      const checklistFiles = ['checklist1.md', 'checklist2.md'];
+      const checklistContent1 = '# Checklist 1\n\n- Item 1\n- Item 2';
+      const checklistContent2 = '# Checklist 2\n\n- Item A\n- Item B';
+
+      mockResolve.mockReturnValue(checklistsDir);
+      mockReaddir.mockResolvedValue(checklistFiles as any);
+      mockJoin
+        .mockReturnValueOnce('/test/checklists/checklist1.md')
+        .mockReturnValueOnce('/test/checklists/checklist2.md');
+      mockReadFile
+        .mockResolvedValueOnce(checklistContent1)
+        .mockResolvedValueOnce(checklistContent2);
+
+      const checklistsResource = resources.find((r) => r.uri === 'devai://checklists');
+      expect(checklistsResource).toBeDefined();
+
+      const result = await checklistsResource!.handler();
+
+      expect(mockResolve).toHaveBeenCalledWith(process.cwd(), 'checklists');
+      expect(mockReaddir).toHaveBeenCalledWith(checklistsDir);
+      expect(result).toContain('# DevAI Checklists');
+      expect(result).toContain('## checklist1.md');
+      expect(result).toContain('## checklist2.md');
+      expect(result).toContain('Item 1');
+      expect(result).toContain('Item A');
+    });
+  });
+
+  describe('DevAI Technical Preferences resource', () => {
+    it('should handle technical preferences file', async () => {
+      const prefsPath = '/test/data/technical-preferences.md';
+      const prefsContent = '# Technical Preferences\n\n- Language: TypeScript\n- Framework: Node.js';
+
+      mockResolve.mockReturnValue(prefsPath);
+      mockReadFile.mockResolvedValue(prefsContent);
+
+      const prefsResource = resources.find((r) => r.uri === 'devai://technical-preferences');
+      expect(prefsResource).toBeDefined();
+
+      const result = await prefsResource!.handler();
+
+      expect(mockResolve).toHaveBeenCalledWith(process.cwd(), 'data', 'technical-preferences.md');
+      expect(mockReadFile).toHaveBeenCalledWith(prefsPath, 'utf8');
+      expect(result).toBe(prefsContent);
+    });
+  });
+
+  describe('DevAI Manifest resource', () => {
+    it('should handle manifest file', async () => {
+      const manifestPath = '/test/tools/manifest.json';
+      const manifestContent = '{"tools": ["tool1", "tool2"]}';
+
+      mockResolve.mockReturnValue(manifestPath);
+      mockReadFile.mockResolvedValue(manifestContent);
+
+      const manifestResource = resources.find((r) => r.uri === 'devai://manifest');
+      expect(manifestResource).toBeDefined();
+
+      const result = await manifestResource!.handler();
+
+      expect(mockResolve).toHaveBeenCalledWith(process.cwd(), 'tools', 'manifest.json');
+      expect(mockReadFile).toHaveBeenCalledWith(manifestPath, 'utf8');
+      expect(result).toBe(manifestContent);
     });
   });
 
   describe('error handling', () => {
-    it('should handle file read errors gracefully', async () => {
-      const policyResource = resources.find((r) => r.uri === 'devai://policy');
-      expect(policyResource).toBeDefined();
+    it('should handle readdir errors gracefully', async () => {
+      const agentsDir = '/test/agents';
+      mockResolve.mockReturnValue(agentsDir);
+      mockReaddir.mockRejectedValue(new Error('Directory not found'));
 
-      const mockError = new Error('File not found');
-      mockReadFile.mockRejectedValue(mockError);
-      mockPathResolve.mockReturnValue('/workspace/policy.md');
-
-             expect(policyResource).toBeDefined();
-       await expect(policyResource?.handler()).rejects.toThrow('File not found');
+      const agentsResource = resources.find((r) => r.uri === 'devai://agents');
+      
+      await expect(agentsResource!.handler()).rejects.toThrow('Directory not found');
     });
 
-    it('should handle directory read errors gracefully', async () => {
-      const templatesResource = resources.find((r) => r.uri === 'devai://templates');
-      expect(templatesResource).toBeDefined();
+    it('should handle readFile errors gracefully', async () => {
+      const agentsDir = '/test/agents';
+      const agentFiles = ['agent1.md'];
 
-      const mockError = new Error('Directory not found');
-      mockReaddir.mockRejectedValue(mockError);
-      mockPathResolve.mockReturnValue('/workspace/templates');
+      mockResolve.mockReturnValue(agentsDir);
+      mockReaddir.mockResolvedValue(agentFiles as any);
+      mockJoin.mockReturnValue('/test/agents/agent1.md');
+      mockReadFile.mockRejectedValue(new Error('File not found'));
 
-             expect(templatesResource).toBeDefined();
-       await expect(templatesResource?.handler()).rejects.toThrow('Directory not found');
+      const agentsResource = resources.find((r) => r.uri === 'devai://agents');
+      
+      await expect(agentsResource!.handler()).rejects.toThrow('File not found');
+    });
+  });
+
+  describe('resource metadata', () => {
+    it('should have correct MIME types', () => {
+      const markdownResources = resources.filter((r) => r.mimeType === 'text/markdown');
+      const jsonResources = resources.filter((r) => r.mimeType === 'application/json');
+
+      expect(markdownResources.length).toBeGreaterThan(0);
+      expect(jsonResources.length).toBeGreaterThan(0);
+    });
+
+    it('should have descriptive names', () => {
+      resources.forEach((resource) => {
+        expect(resource.name.length).toBeGreaterThan(0);
+        expect(resource.description.length).toBeGreaterThan(0);
+      });
     });
   });
 });

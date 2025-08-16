@@ -1,7 +1,7 @@
 ### Story 59: Actor-scoped authorization with keys and resource ACL
 
 - **ID**: 59
-- **Status**: todo
+- **Status**: completed
 - **Priority**: high
 - **Story Points**: 8
 - **Created At**: 2025-08-16T04:18:04.063Z

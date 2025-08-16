@@ -1,7 +1,7 @@
 ### Story 64: HITL at epic completion and truth/escalation policy
 
 - **ID**: 64
-- **Status**: todo
+- **Status**: completed
 - **Priority**: high
 - **Story Points**: 5
 - **Created At**: 2025-08-16T04:18:21.587Z

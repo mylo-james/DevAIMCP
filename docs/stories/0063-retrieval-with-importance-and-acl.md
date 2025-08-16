@@ -1,7 +1,7 @@
 ### Story 63: Retrieval service: vector + actor-importance re-ranking + ACL filter
 
 - **ID**: 63
-- **Status**: todo
+- **Status**: completed
 - **Priority**: critical
 - **Story Points**: 8
 - **Created At**: 2025-08-16T04:18:18.599Z

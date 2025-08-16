@@ -1,7 +1,7 @@
 ### Story 58: Per-actor importance scoring with nightly decay
 
 - **ID**: 58
-- **Status**: todo
+- **Status**: completed
 - **Priority**: critical
 - **Story Points**: 8
 - **Created At**: 2025-08-16T04:18:01.096Z

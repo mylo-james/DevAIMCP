@@ -1,0 +1,211 @@
+{
+  "workflow_states": {
+    "story_creation": {
+      "state": "Draft",
+      "persona": "alex",
+      "description": "Story is being created and refined by Scrum Master",
+      "next_states": ["ready_for_development"],
+      "required_actions": [
+        "Define story description",
+        "Set acceptance criteria",
+        "Assign priority and points",
+        "Link to epic"
+      ]
+    },
+    "ready_for_development": {
+      "state": "Ready for Development",
+      "persona": "jordan",
+      "description": "Story is ready for developer to begin implementation",
+      "next_states": ["in_development"],
+      "required_actions": [
+        "Review story requirements",
+        "Understand acceptance criteria",
+        "Plan implementation approach"
+      ]
+    },
+    "in_development": {
+      "state": "In Development",
+      "persona": "jordan",
+      "description": "Developer is actively implementing the story",
+      "next_states": ["ready_for_qa"],
+      "required_actions": [
+        "Implement functionality",
+        "Write unit tests",
+        "Self-review code",
+        "Update story status"
+      ]
+    },
+    "ready_for_qa": {
+      "state": "Ready for QA",
+      "persona": "sam",
+      "description": "Development is complete, ready for QA testing",
+      "next_states": ["in_testing", "qa_rejected"],
+      "required_actions": [
+        "Review acceptance criteria",
+        "Plan test scenarios",
+        "Prepare test environment"
+      ]
+    },
+    "in_testing": {
+      "state": "In Testing",
+      "persona": "sam",
+      "description": "QA is actively testing the story",
+      "next_states": ["qa_approved", "qa_rejected"],
+      "required_actions": [
+        "Execute test scenarios",
+        "Validate acceptance criteria",
+        "Document any issues found"
+      ]
+    },
+    "qa_approved": {
+      "state": "QA Approved",
+      "persona": "alex",
+      "description": "QA has approved the story, ready for completion",
+      "next_states": ["completed"],
+      "required_actions": [
+        "Verify all criteria met",
+        "Update story status",
+        "Coordinate completion"
+      ]
+    },
+    "qa_rejected": {
+      "state": "QA Rejected",
+      "persona": "sam",
+      "description": "QA found issues, story needs rework",
+      "next_states": ["defect_created"],
+      "required_actions": [
+        "Create defect story",
+        "Document rejection reason",
+        "Handoff to Scrum Master"
+      ]
+    },
+    "defect_created": {
+      "state": "Defect Created",
+      "persona": "alex",
+      "description": "Defect story created from QA rejection",
+      "next_states": ["defect_in_development"],
+      "required_actions": [
+        "Create defect story",
+        "Assign to developer",
+        "Update original story status"
+      ]
+    },
+    "defect_in_development": {
+      "state": "Defect In Development",
+      "persona": "jordan",
+      "description": "Developer is fixing the defect",
+      "next_states": ["defect_ready_for_qa"],
+      "required_actions": [
+        "Investigate defect",
+        "Implement fix",
+        "Add regression tests"
+      ]
+    },
+    "defect_ready_for_qa": {
+      "state": "Defect Ready for QA",
+      "persona": "sam",
+      "description": "Defect fix is ready for re-testing",
+      "next_states": ["defect_qa_approved", "defect_qa_rejected"],
+      "required_actions": [
+        "Test defect fix",
+        "Verify original issue resolved",
+        "Run regression tests"
+      ]
+    },
+    "defect_qa_approved": {
+      "state": "Defect QA Approved",
+      "persona": "alex",
+      "description": "Defect fix approved, original story can proceed",
+      "next_states": ["ready_for_qa"],
+      "required_actions": [
+        "Close defect story",
+        "Re-activate original story",
+        "Handoff to QA for re-testing"
+      ]
+    },
+    "defect_qa_rejected": {
+      "state": "Defect QA Rejected",
+      "persona": "sam",
+      "description": "Defect fix not sufficient, needs more work",
+      "next_states": ["defect_in_development"],
+      "required_actions": [
+        "Document rejection reason",
+        "Update defect story",
+        "Handoff back to developer"
+      ]
+    },
+    "completed": {
+      "state": "Completed",
+      "persona": "alex",
+      "description": "Story is complete and accepted",
+      "next_states": [],
+      "required_actions": [
+        "Update story status",
+        "Document lessons learned",
+        "Update team metrics"
+      ]
+    }
+  },
+  "epic_workflow": {
+    "epic_planning": {
+      "state": "Planning",
+      "description": "Epic is being planned and stories defined",
+      "next_states": ["in_progress"],
+      "required_actions": [
+        "Define epic objectives",
+        "Create stories",
+        "Set timeline and milestones"
+      ]
+    },
+    "in_progress": {
+      "state": "In Progress",
+      "description": "Epic is actively being worked on",
+      "next_states": ["ready_for_hitl"],
+      "required_actions": [
+        "Track story progress",
+        "Monitor epic metrics",
+        "Address blockers and risks"
+      ]
+    },
+    "ready_for_hitl": {
+      "state": "Ready for HITL",
+      "description": "All stories complete, ready for human approval",
+      "next_states": ["hitl_approved", "hitl_rejected"],
+      "required_actions": [
+        "Verify all stories complete",
+        "Prepare epic summary",
+        "Submit for HITL approval"
+      ]
+    },
+    "hitl_approved": {
+      "state": "HITL Approved",
+      "description": "Epic approved by human reviewer",
+      "next_states": ["completed"],
+      "required_actions": [
+        "Update epic status",
+        "Document approval",
+        "Coordinate epic closure"
+      ]
+    },
+    "hitl_rejected": {
+      "state": "HITL Rejected",
+      "description": "Epic rejected by human reviewer",
+      "next_states": ["in_progress"],
+      "required_actions": [
+        "Address HITL feedback",
+        "Update epic as needed",
+        "Re-submit for approval"
+      ]
+    },
+    "completed": {
+      "state": "Completed",
+      "description": "Epic is complete and delivered",
+      "next_states": [],
+      "required_actions": [
+        "Update epic status",
+        "Document lessons learned",
+        "Update project metrics"
+      ]
+    }
+  }
+}

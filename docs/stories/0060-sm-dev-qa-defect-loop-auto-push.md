@@ -1,7 +1,7 @@
 ### Story 60: Update development workflow: SM→Dev→QA loop with defects and auto-push
 
 - **ID**: 60
-- **Status**: todo
+- **Status**: completed
 - **Priority**: high
 - **Story Points**: 8
 - **Created At**: 2025-08-16T04:18:07.945Z

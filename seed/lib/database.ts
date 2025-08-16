@@ -190,7 +190,7 @@ export async function createStory(input: Omit<Story, 'id' | 'created_at' | 'upda
 		input.project_id,
 		input.title ?? null,
 		input.description ?? null,
-		input.acceptance_criteria ?? null,
+		input.acceptance_criteria ? JSON.stringify(input.acceptance_criteria) : null,
 		input.story_points ?? null,
 		input.priority ?? null,
 		input.status ?? 'todo',

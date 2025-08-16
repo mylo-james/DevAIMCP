@@ -12,9 +12,9 @@ export enum LogLevel {
   DEBUG = 3,
 }
 
-export interface LogMeta {
-  [key: string]: any;
-}
+     export interface LogMeta {
+       [key: string]: unknown;
+     }
 
 export interface Logger {
   error(message: string, meta?: LogMeta): void;
@@ -44,7 +44,7 @@ function getLogLevel(level: string): LogLevel {
 /**
  * Safe JSON stringify that handles circular references
  */
-function safeStringify(obj: any): string {
+     function safeStringify(obj: unknown): string {
   try {
     return JSON.stringify(obj);
   } catch (error) {

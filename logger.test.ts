@@ -13,11 +13,7 @@ import {
 
 describe('Logger Module', () => {
   const originalEnv = process.env;
-  const originalConsole = {
-    log: console.log,
-    error: console.error,
-    warn: console.warn,
-  };
+  // Store original console methods for restoration
 
   let logger: Logger;
 
@@ -89,10 +85,8 @@ describe('Logger Module', () => {
   });
 
   describe('log formatting', () => {
-    it('should include timestamp in log messages', () => {
-      const before = new Date();
-      logger.info('Test message');
-      const after = new Date();
+            it('should include timestamp in log messages', () => {
+          logger.info('Test message');
 
       expect(console.log).toHaveBeenCalledWith(
         expect.stringMatching(/\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\]/)
@@ -147,8 +141,8 @@ describe('Logger Module', () => {
       );
     });
 
-    it('should handle circular references in meta data', () => {
-      const circular: any = { name: 'test' };
+             it('should handle circular references in meta data', () => {
+           const circular: Record<string, unknown> = { name: 'test' };
       circular.self = circular;
       
       logger.info('Test message', circular);

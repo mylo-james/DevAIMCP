@@ -34,7 +34,7 @@ function evaluateRules(rules: any, input: { action: string; context?: string; ag
 
 export async function validatePolicy(action: string, context?: string, agent?: string) {
 	const { rows } = await query<Policy>('SELECT * FROM policies WHERE active = TRUE');
-	let decision = { allowed: true, reasons: [] as string[] };
+	const decision = { allowed: true, reasons: [] as string[] };
 	for (const p of rows) {
 		const r = evaluateRules(p.rules, { action, context, agent });
 		if (!r.allowed) {

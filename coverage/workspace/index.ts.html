@@ -1701,10 +1701,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2726,6 +2723,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -2802,6 +2801,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -3245,7 +3245,7 @@ import {
 <span class="cstat-no" title="statement not covered" >import { tools as bmadTools } from './tools.js';</span>
 &nbsp;
 // Basic debug logger
-<span class="cstat-no" title="statement not covered" >function dbg(...args: any[]) {</span>
+<span class="cstat-no" title="statement not covered" >function dbg(...args: unknown[]) {</span>
   // Always log to stderr for MCP tooling visibility
 <span class="cstat-no" title="statement not covered" >  try {</span>
     // Avoid crashing on circular
@@ -3262,37 +3262,36 @@ import {
 <span class="cstat-no" title="statement not covered" >  dbg(</span>
 <span class="cstat-no" title="statement not covered" >    'unhandledRejection',</span>
 <span class="cstat-no" title="statement not covered" >    typeof reason === 'object' &amp;&amp; reason !== null</span>
-<span class="cstat-no" title="statement not covered" >      ? (reason as any).stack || String(reason)</span>
+<span class="cstat-no" title="statement not covered" >      ? (reason as { stack?: string }).stack || String(reason)</span>
 <span class="cstat-no" title="statement not covered" >      : String(reason)</span>
 <span class="cstat-no" title="statement not covered" >  );</span>
 <span class="cstat-no" title="statement not covered" >});</span>
 &nbsp;
 // Dynamic import loader for seed tools to support dev (.ts via tsx) and prod (dist/.js)
-<span class="cstat-no" title="statement not covered" >let manageProject: any;</span>
-<span class="cstat-no" title="statement not covered" >let manageMemory: any;</span>
-<span class="cstat-no" title="statement not covered" >let exportData: any;</span>
-<span class="cstat-no" title="statement not covered" >let validatePolicy: any;</span>
-<span class="cstat-no" title="statement not covered" >let switchAgent: any;</span>
-<span class="cstat-no" title="statement not covered" >let manageStory: any;</span>
-<span class="cstat-no" title="statement not covered" >let executeWorkflow: any;</span>
-<span class="cstat-no" title="statement not covered" >let executeGitWorkflow: any;</span>
-<span class="cstat-no" title="statement not covered" >let runTests: any;</span>
-<span class="cstat-no" title="statement not covered" >let bmadExecutor: any;</span>
-<span class="cstat-no" title="statement not covered" >let vendorBmad: any;</span>
-<span class="cstat-no" title="statement not covered" >let orchestratorService: any;</span>
-<span class="cstat-no" title="statement not covered" >let personaService: any;</span>
-<span class="cstat-no" title="statement not covered" >let importanceManager: any;</span>
-<span class="cstat-no" title="statement not covered" >let authorizationService: any;</span>
-<span class="cstat-no" title="statement not covered" >let devWorkflowEngine: any;</span>
-<span class="cstat-no" title="statement not covered" >let enhancedMemoryManager: any;</span>
-<span class="cstat-no" title="statement not covered" >let retrievalService: any;</span>
-<span class="cstat-no" title="statement not covered" >let hitlService: any;</span>
+<span class="cstat-no" title="statement not covered" >let manageProject: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let manageMemory: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let exportData: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let validatePolicy: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let manageStory: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let executeWorkflow: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let executeGitWorkflow: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let runTests: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let bmadExecutor: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let vendorBmad: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let orchestratorService: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let personaService: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let importanceManager: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let authorizationService: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let devWorkflowEngine: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let enhancedMemoryManager: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let retrievalService: Record&lt;string, unknown&gt;;</span>
+<span class="cstat-no" title="statement not covered" >let hitlService: Record&lt;string, unknown&gt;;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >let seedLoaded = false;</span>
 <span class="cstat-no" title="statement not covered" >async function ensureSeedLoaded(): Promise&lt;void&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  if (seedLoaded) return;</span>
 <span class="cstat-no" title="statement not covered" >  const build = process.env.DEVAI_SEED_BUILD || 'ts';</span>
-<span class="cstat-no" title="statement not covered" >  const importFrom = async (p: string) =&gt; (await import(p as any)) as any;</span>
+<span class="cstat-no" title="statement not covered" >  const importFrom = async (p: string) =&gt; (await import(p)) as Record&lt;string, unknown&gt;;</span>
 <span class="cstat-no" title="statement not covered" >  if (build === 'ts') {</span>
 <span class="cstat-no" title="statement not covered" >    dbg('ensureSeedLoaded: loading seed in TS mode');</span>
 <span class="cstat-no" title="statement not covered" >    const base = './seed/';</span>
@@ -3303,7 +3302,6 @@ import {
 <span class="cstat-no" title="statement not covered" >    ({ manageMemory } = await importFrom(tools + 'memory-manager' + ext));</span>
 <span class="cstat-no" title="statement not covered" >    ({ exportData } = await importFrom(tools + 'data-exporter' + ext));</span>
 <span class="cstat-no" title="statement not covered" >    ({ validatePolicy } = await importFrom(lib + 'policy-engine' + ext));</span>
-<span class="cstat-no" title="statement not covered" >    ({ switchAgent } = await importFrom(lib + 'agent-context' + ext));</span>
 <span class="cstat-no" title="statement not covered" >    ({ manageStory } = await importFrom(tools + 'story-manager' + ext));</span>
 <span class="cstat-no" title="statement not covered" >    ({ executeWorkflow } = await importFrom(tools + 'workflow-executor' + ext));</span>
 <span class="cstat-no" title="statement not covered" >    ({ executeGitWorkflow } = await importFrom(tools + 'git-workflow' + ext));</span>
@@ -3330,7 +3328,6 @@ import {
 <span class="cstat-no" title="statement not covered" >    ({ manageMemory } = await importFrom(tools + 'memory-manager' + ext));</span>
 <span class="cstat-no" title="statement not covered" >    ({ exportData } = await importFrom(tools + 'data-exporter' + ext));</span>
 <span class="cstat-no" title="statement not covered" >    ({ validatePolicy } = await importFrom(lib + 'policy-engine' + ext));</span>
-<span class="cstat-no" title="statement not covered" >    ({ switchAgent } = await importFrom(lib + 'agent-context' + ext));</span>
 <span class="cstat-no" title="statement not covered" >    ({ manageStory } = await importFrom(tools + 'story-manager' + ext));</span>
 <span class="cstat-no" title="statement not covered" >    ({ executeWorkflow } = await importFrom(tools + 'workflow-executor' + ext));</span>
 <span class="cstat-no" title="statement not covered" >    ({ executeGitWorkflow } = await importFrom(tools + 'git-workflow' + ext));</span>
@@ -4220,15 +4217,15 @@ import {
 <span class="cstat-no" title="statement not covered" >});</span>
 &nbsp;
 // Helper function to convert Zod schema to JSON Schema
-<span class="cstat-no" title="statement not covered" >function zodToJsonSchema(schema: z.ZodType&lt;any&gt;): any {</span>
+<span class="cstat-no" title="statement not covered" >function zodToJsonSchema(schema: z.ZodType&lt;unknown&gt;): Record&lt;string, unknown&gt; {</span>
   // Simple conversion for our BMAD tools - extend as needed
 <span class="cstat-no" title="statement not covered" >  if (schema instanceof z.ZodObject) {</span>
 <span class="cstat-no" title="statement not covered" >    const shape = schema.shape;</span>
-<span class="cstat-no" title="statement not covered" >    const properties: any = {};</span>
+<span class="cstat-no" title="statement not covered" >    const properties: Record&lt;string, unknown&gt; = {};</span>
 <span class="cstat-no" title="statement not covered" >    const required: string[] = [];</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    for (const [key, value] of Object.entries(shape)) {</span>
-<span class="cstat-no" title="statement not covered" >      const zodField = value as z.ZodType&lt;any&gt;;</span>
+<span class="cstat-no" title="statement not covered" >      const zodField = value as z.ZodType&lt;unknown&gt;;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      if (zodField instanceof z.ZodString) {</span>
 <span class="cstat-no" title="statement not covered" >        properties[key] = {</span>
@@ -4295,8 +4292,8 @@ import {
 <span class="cstat-no" title="statement not covered" >server.setRequestHandler(CallToolRequestSchema, async (request) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >  dbg('CallToolRequest received');</span>
 <span class="cstat-no" title="statement not covered" >  await ensureSeedLoaded();</span>
-<span class="cstat-no" title="statement not covered" >  const name = (request.params as any).name as string;</span>
-<span class="cstat-no" title="statement not covered" >  const args = ((request.params as any).arguments || {}) as any;</span>
+<span class="cstat-no" title="statement not covered" >  const name = (request.params as Record&lt;string, unknown&gt;).name as string;</span>
+<span class="cstat-no" title="statement not covered" >  const args = ((request.params as Record&lt;string, unknown&gt;).arguments || {}) as Record&lt;string, unknown&gt;;</span>
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    dbg(</span>
 <span class="cstat-no" title="statement not covered" >      'CallTool name=',</span>
@@ -4310,7 +4307,9 @@ import {
 <span class="cstat-no" title="statement not covered" >        }</span>
 <span class="cstat-no" title="statement not covered" >      })()</span>
 <span class="cstat-no" title="statement not covered" >    );</span>
-<span class="cstat-no" title="statement not covered" >  } catch {}</span>
+<span class="cstat-no" title="statement not covered" >  } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >    dbg('Error in debug logging:', error);</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  try {</span>
 <span class="cstat-no" title="statement not covered" >    switch (name) {</span>
@@ -4387,7 +4386,7 @@ import {
 <span class="cstat-no" title="statement not covered" >          ],</span>
 <span class="cstat-no" title="statement not covered" >        };</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >      case 'devai_importance_get_ranked':</span>
+<span class="cstat-no" title="statement not covered" >      case 'devai_importance_get_ranked': {</span>
 <span class="cstat-no" title="statement not covered" >        const { generateEmbedding } = await import('./seed/lib/database.ts');</span>
 <span class="cstat-no" title="statement not covered" >        const queryEmbedding = await generateEmbedding(args.query);</span>
 <span class="cstat-no" title="statement not covered" >        return {</span>
@@ -4403,6 +4402,7 @@ import {
 <span class="cstat-no" title="statement not covered" >            },</span>
 <span class="cstat-no" title="statement not covered" >          ],</span>
 <span class="cstat-no" title="statement not covered" >        };</span>
+<span class="cstat-no" title="statement not covered" >      }</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      case 'devai_importance_nightly_decay':</span>
 <span class="cstat-no" title="statement not covered" >        return {</span>
@@ -4781,8 +4781,8 @@ import {
 <span class="cstat-no" title="statement not covered" >        throw new Error(`Unknown tool: ${name}`);</span>
 <span class="cstat-no" title="statement not covered" >    }</span>
 <span class="cstat-no" title="statement not covered" >  } catch (error) {</span>
-<span class="cstat-no" title="statement not covered" >    const msg = (error as any)?.message || String(error);</span>
-<span class="cstat-no" title="statement not covered" >    const stack = (error as any)?.stack || msg;</span>
+<span class="cstat-no" title="statement not covered" >    const msg = (error as { message?: string })?.message || String(error);</span>
+<span class="cstat-no" title="statement not covered" >    const stack = (error as { stack?: string })?.stack || msg;</span>
 <span class="cstat-no" title="statement not covered" >    dbg('CallTool error for', name, stack);</span>
 <span class="cstat-no" title="statement not covered" >    return {</span>
 <span class="cstat-no" title="statement not covered" >      content: [</span>
@@ -4825,7 +4825,7 @@ import {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-16T06:19:45.582Z
+                at 2025-08-16T06:31:15.336Z
             </div>
         <script src="../prettify.js"></script>
         <script>

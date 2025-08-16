@@ -41,9 +41,9 @@ const DEFAULT_CONFIG: Partial<DevAIConfig> = {
  * Parse port number safely
  */
 function parsePort(portStr: string | undefined): number {
-  if (!portStr) return DEFAULT_CONFIG.MCP_SERVER_PORT!;
-  const port = parseInt(portStr, 10);
-  return isNaN(port) ? DEFAULT_CONFIG.MCP_SERVER_PORT! : port;
+       if (!portStr) return DEFAULT_CONFIG.MCP_SERVER_PORT ?? 3000;
+       const port = parseInt(portStr, 10);
+     return isNaN(port) ? (DEFAULT_CONFIG.MCP_SERVER_PORT ?? 3000) : port;
 }
 
 /**
@@ -51,8 +51,8 @@ function parsePort(portStr: string | undefined): number {
  */
 export const config: DevAIConfig = {
   // Server configuration
-  NODE_ENV: process.env.NODE_ENV || DEFAULT_CONFIG.NODE_ENV!,
-  DEVAI_SEED_BUILD: process.env.DEVAI_SEED_BUILD || DEFAULT_CONFIG.DEVAI_SEED_BUILD!,
+         NODE_ENV: process.env.NODE_ENV || (DEFAULT_CONFIG.NODE_ENV ?? 'development'),
+       DEVAI_SEED_BUILD: process.env.DEVAI_SEED_BUILD || (DEFAULT_CONFIG.DEVAI_SEED_BUILD ?? 'ts'),
   
   // Database configuration
   DATABASE_URL: process.env.DATABASE_URL,
@@ -68,8 +68,8 @@ export const config: DevAIConfig = {
   ENABLE_OPENAI: !!process.env.OPENAI_API_KEY,
   
   // Logging configuration
-  LOG_LEVEL: process.env.LOG_LEVEL || DEFAULT_CONFIG.LOG_LEVEL!,
-  DEBUG: process.env.DEBUG === 'true' || DEFAULT_CONFIG.DEBUG!,
+         LOG_LEVEL: process.env.LOG_LEVEL || (DEFAULT_CONFIG.LOG_LEVEL ?? 'info'),
+       DEBUG: process.env.DEBUG === 'true' || (DEFAULT_CONFIG.DEBUG ?? false),
 };
 
 /**

@@ -1,12 +1,4 @@
-type Project = {
-	id: number;
-	name: string;
-	description?: string;
-	repository_url?: string;
-	language?: string;
-	framework?: string;
-	metadata?: Record<string, unknown>;
-};
+// Project type defined for reference but not used in this file
 
 import { createProject, getProjectById, listProjects } from '../lib/database.ts';
 

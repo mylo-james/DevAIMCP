@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/355</span>
+                <span class='fraction'>0/345</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/355</span>
+                <span class='fraction'>0/345</span>
             </div>
         
             
@@ -679,18 +679,7 @@
 <a name='L614'></a><a href='#L614'>614</a>
 <a name='L615'></a><a href='#L615'>615</a>
 <a name='L616'></a><a href='#L616'>616</a>
-<a name='L617'></a><a href='#L617'>617</a>
-<a name='L618'></a><a href='#L618'>618</a>
-<a name='L619'></a><a href='#L619'>619</a>
-<a name='L620'></a><a href='#L620'>620</a>
-<a name='L621'></a><a href='#L621'>621</a>
-<a name='L622'></a><a href='#L622'>622</a>
-<a name='L623'></a><a href='#L623'>623</a>
-<a name='L624'></a><a href='#L624'>624</a>
-<a name='L625'></a><a href='#L625'>625</a>
-<a name='L626'></a><a href='#L626'>626</a>
-<a name='L627'></a><a href='#L627'>627</a>
-<a name='L628'></a><a href='#L628'>628</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<a name='L617'></a><a href='#L617'>617</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -859,17 +848,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1277,7 +1255,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1340,35 +1318,35 @@ import { manageStory } from './story-manager.ts';
 <span class="cstat-no" title="statement not covered" >    switch (`${agent}_${command}`) {</span>
       // Product Owner Commands
 <span class="cstat-no" title="statement not covered" >      case 'po_create-epic':</span>
-<span class="cstat-no" title="statement not covered" >        return await executePoCreateEpic(args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executePoCreateEpic(args);</span>
 <span class="cstat-no" title="statement not covered" >      case 'po_create-story':</span>
-<span class="cstat-no" title="statement not covered" >        return await executePoCreateStory(args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executePoCreateStory(args);</span>
 <span class="cstat-no" title="statement not covered" >      case 'po_shard-doc':</span>
-<span class="cstat-no" title="statement not covered" >        return await executePoShardDoc(args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executePoShardDoc(args);</span>
 <span class="cstat-no" title="statement not covered" >      case 'po_validate-story':</span>
-<span class="cstat-no" title="statement not covered" >        return await executePoValidateStory(args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executePoValidateStory(args);</span>
 &nbsp;
       // Scrum Master Commands
 <span class="cstat-no" title="statement not covered" >      case 'sm_draft':</span>
-<span class="cstat-no" title="statement not covered" >        return await executeSmDraft(args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executeSmDraft(args);</span>
 <span class="cstat-no" title="statement not covered" >      case 'sm_story-checklist':</span>
-<span class="cstat-no" title="statement not covered" >        return await executeSmStoryChecklist(args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executeSmStoryChecklist(args);</span>
 &nbsp;
       // Developer Commands
 <span class="cstat-no" title="statement not covered" >      case 'dev_develop-story':</span>
-<span class="cstat-no" title="statement not covered" >        return await executeDevDevelopStory(args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executeDevDevelopStory(args);</span>
 <span class="cstat-no" title="statement not covered" >      case 'dev_run-tests':</span>
-<span class="cstat-no" title="statement not covered" >        return await executeDevRunTests(args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executeDevRunTests(args);</span>
 <span class="cstat-no" title="statement not covered" >      case 'dev_explain':</span>
-<span class="cstat-no" title="statement not covered" >        return await executeDevExplain(args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executeDevExplain(args);</span>
 &nbsp;
       // Architect Commands
 <span class="cstat-no" title="statement not covered" >      case 'architect_design':</span>
-<span class="cstat-no" title="statement not covered" >        return await executeArchitectDesign(args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executeArchitectDesign(args);</span>
 &nbsp;
       // QA Commands
 <span class="cstat-no" title="statement not covered" >      case 'qa_review-story':</span>
-<span class="cstat-no" title="statement not covered" >        return await executeQaReviewStory(args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executeQaReviewStory(args);</span>
 &nbsp;
       // Common Commands
 <span class="cstat-no" title="statement not covered" >      case 'po_correct-course':</span>
@@ -1376,14 +1354,14 @@ import { manageStory } from './story-manager.ts';
 <span class="cstat-no" title="statement not covered" >      case 'dev_correct-course':</span>
 <span class="cstat-no" title="statement not covered" >      case 'architect_correct-course':</span>
 <span class="cstat-no" title="statement not covered" >      case 'qa_correct-course':</span>
-<span class="cstat-no" title="statement not covered" >        return await executeCorrectCourse(agent, args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executeCorrectCourse(agent, args);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      case 'po_execute-checklist':</span>
 <span class="cstat-no" title="statement not covered" >      case 'sm_execute-checklist':</span>
 <span class="cstat-no" title="statement not covered" >      case 'dev_execute-checklist':</span>
 <span class="cstat-no" title="statement not covered" >      case 'architect_execute-checklist':</span>
 <span class="cstat-no" title="statement not covered" >      case 'qa_execute-checklist':</span>
-<span class="cstat-no" title="statement not covered" >        return await executeChecklist(agent, args, agentDef);</span>
+<span class="cstat-no" title="statement not covered" >        return await executeChecklist(agent, args);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >      default:</span>
 <span class="cstat-no" title="statement not covered" >        throw new Error(</span>
@@ -1485,21 +1463,10 @@ import { manageStory } from './story-manager.ts';
 <span class="cstat-no" title="statement not covered" >  return result.rows.length &gt; 0 ? result.rows[0].content : null;</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-// Get BMAD template from memories
-<span class="cstat-no" title="statement not covered" >async function getBmadTemplate(templateName: string): Promise&lt;string | null&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  const result = await query(</span>
-<span class="cstat-no" title="statement not covered" >    `SELECT content FROM memories </span>
-<span class="cstat-no" title="statement not covered" >     WHERE content LIKE '%Path: %templates/${templateName}%' </span>
-<span class="cstat-no" title="statement not covered" >     OR content LIKE '%Path: bmad-core/templates/${templateName}%'</span>
-     LIMIT 1`,
-<span class="cstat-no" title="statement not covered" >    []</span>
-<span class="cstat-no" title="statement not covered" >  );</span>
-&nbsp;
-<span class="cstat-no" title="statement not covered" >  return result.rows.length &gt; 0 ? result.rows[0].content : null;</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+// BMAD template retrieval function - not currently used
 &nbsp;
 // Product Owner Command Implementations
-<span class="cstat-no" title="statement not covered" >async function executePoCreateEpic(args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executePoCreateEpic(args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  const task = await getBmadTask('brownfield-create-epic');</span>
 <span class="cstat-no" title="statement not covered" >  if (!task) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('BMAD task brownfield-create-epic not found');</span>
@@ -1544,7 +1511,7 @@ import { manageStory } from './story-manager.ts';
 <span class="cstat-no" title="statement not covered" >  };</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >async function executePoCreateStory(args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executePoCreateStory(args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  const task = await getBmadTask('brownfield-create-story');</span>
 <span class="cstat-no" title="statement not covered" >  if (!task) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('BMAD task brownfield-create-story not found');</span>
@@ -1601,7 +1568,7 @@ import { manageStory } from './story-manager.ts';
 <span class="cstat-no" title="statement not covered" >  };</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >async function executePoShardDoc(args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executePoShardDoc(args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  const task = await getBmadTask('shard-doc');</span>
 <span class="cstat-no" title="statement not covered" >  if (!task) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('BMAD task shard-doc not found');</span>
@@ -1636,7 +1603,7 @@ import { manageStory } from './story-manager.ts';
 <span class="cstat-no" title="statement not covered" >  };</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >async function executePoValidateStory(args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executePoValidateStory(args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  const task = await getBmadTask('validate-next-story');</span>
 <span class="cstat-no" title="statement not covered" >  if (!task) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('BMAD task validate-next-story not found');</span>
@@ -1673,7 +1640,7 @@ import { manageStory } from './story-manager.ts';
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
 // Scrum Master Command Implementations
-<span class="cstat-no" title="statement not covered" >async function executeSmDraft(args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executeSmDraft(args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  const task = await getBmadTask('create-next-story');</span>
 <span class="cstat-no" title="statement not covered" >  if (!task) {</span>
 <span class="cstat-no" title="statement not covered" >    throw new Error('BMAD task create-next-story not found');</span>
@@ -1709,7 +1676,7 @@ import { manageStory } from './story-manager.ts';
 <span class="cstat-no" title="statement not covered" >  };</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >async function executeSmStoryChecklist(args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executeSmStoryChecklist(args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
 <span class="cstat-no" title="statement not covered" >    content: [</span>
 <span class="cstat-no" title="statement not covered" >      {</span>
@@ -1743,7 +1710,7 @@ import { manageStory } from './story-manager.ts';
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
 // Developer Command Implementations (simplified - would need full implementation)
-<span class="cstat-no" title="statement not covered" >async function executeDevDevelopStory(args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executeDevDevelopStory(args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
 <span class="cstat-no" title="statement not covered" >    content: [</span>
 <span class="cstat-no" title="statement not covered" >      {</span>
@@ -1781,7 +1748,7 @@ import { manageStory } from './story-manager.ts';
 <span class="cstat-no" title="statement not covered" >  };</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >async function executeDevRunTests(args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executeDevRunTests(args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
 <span class="cstat-no" title="statement not covered" >    content: [</span>
 <span class="cstat-no" title="statement not covered" >      {</span>
@@ -1818,7 +1785,7 @@ import { manageStory } from './story-manager.ts';
 <span class="cstat-no" title="statement not covered" >  };</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >async function executeDevExplain(args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executeDevExplain(args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
 <span class="cstat-no" title="statement not covered" >    content: [</span>
 <span class="cstat-no" title="statement not covered" >      {</span>
@@ -1858,7 +1825,7 @@ Following the "explain as if training a junior engineer" approach:
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
 // Architect, QA, and Common Command Implementations (simplified)
-<span class="cstat-no" title="statement not covered" >async function executeArchitectDesign(args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executeArchitectDesign(args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
 <span class="cstat-no" title="statement not covered" >    content: [</span>
 <span class="cstat-no" title="statement not covered" >      {</span>
@@ -1883,7 +1850,7 @@ ${
 <span class="cstat-no" title="statement not covered" >  };</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >async function executeQaReviewStory(args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executeQaReviewStory(args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
 <span class="cstat-no" title="statement not covered" >    content: [</span>
 <span class="cstat-no" title="statement not covered" >      {</span>
@@ -1903,8 +1870,8 @@ Senior developer-level code review and validation
 <span class="cstat-no" title="statement not covered" >  };</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >async function executeCorrectCourse(agent: string, args: any, agentDef: any) {</span>
-<span class="cstat-no" title="statement not covered" >  const task = await getBmadTask('correct-course');</span>
+<span class="cstat-no" title="statement not covered" >async function executeCorrectCourse(agent: string, args: any) {</span>
+  // const task = await getBmadTask('correct-course'); // Not currently used
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
 <span class="cstat-no" title="statement not covered" >    content: [</span>
@@ -1925,7 +1892,7 @@ Systematic problem analysis and resolution following BMAD methodology
 <span class="cstat-no" title="statement not covered" >  };</span>
 <span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >async function executeChecklist(agent: string, args: any, agentDef: any) {</span>
+<span class="cstat-no" title="statement not covered" >async function executeChecklist(agent: string, args: any) {</span>
 <span class="cstat-no" title="statement not covered" >  return {</span>
 <span class="cstat-no" title="statement not covered" >    content: [</span>
 <span class="cstat-no" title="statement not covered" >      {</span>
@@ -1951,7 +1918,7 @@ Systematic validation following agent-specific checklist
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-08-16T06:19:52.140Z
+                at 2025-08-16T06:31:14.358Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

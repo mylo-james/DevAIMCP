@@ -6,10 +6,10 @@
   "description": "DevAI MCP Server - AI development intelligence platform",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx index.ts",
+    "dev": "DEVAI_SEED_BUILD=ts tsx index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "mcp": "tsx index.ts",
+    "mcp": "DEVAI_SEED_BUILD=ts tsx index.ts",
     "db:migrate": "psql $DATABASE_URL -f ../seed/database/schema.sql",
     "db:reset": "psql $DATABASE_URL -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;' && npm run db:migrate"
   },

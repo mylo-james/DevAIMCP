@@ -1,0 +1,27 @@
+{
+  "name": "devai-seed",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx --watch tools/project-manager.ts",
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:setup": "psql $DATABASE_URL -f ./database/schema.sql"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "openai": "^4.58.1",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,4 +1,4 @@
-import { listProjects, query } from '../lib/database.ts';
+import { listProjects, query } from '../lib/database';
 
 function toCSV(rows: any[]): string {
   if (rows.length === 0) return '';

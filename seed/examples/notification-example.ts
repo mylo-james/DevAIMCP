@@ -7,7 +7,7 @@
  * to receive notifications when agents complete their work.
  */
 
-import { NotificationService } from '../lib/notification-service.ts';
+import { NotificationService } from '../lib/notification-service';
 
 async function notificationExample() {
   console.log('🚀 DevAI Notification Feature Example\n');
@@ -27,7 +27,7 @@ async function notificationExample() {
     );
     console.log('✅ Pushover configured:', pushoverConfig.notification_type);
   } catch (error) {
-    console.log('❌ Pushover configuration failed:', error.message);
+    console.log('❌ Pushover configuration failed:', (error as Error).message);
   }
 
   // Example 2: Configure IFTTT notifications
@@ -43,7 +43,7 @@ async function notificationExample() {
     );
     console.log('✅ IFTTT configured:', iftttConfig.notification_type);
   } catch (error) {
-    console.log('❌ IFTTT configuration failed:', error.message);
+    console.log('❌ IFTTT configuration failed:', (error as Error).message);
   }
 
   // Example 3: Configure webhook notifications
@@ -61,7 +61,7 @@ async function notificationExample() {
     );
     console.log('✅ Webhook configured:', webhookConfig.notification_type);
   } catch (error) {
-    console.log('❌ Webhook configuration failed:', error.message);
+    console.log('❌ Webhook configuration failed:', (error as Error).message);
   }
 
   // Example 4: Test notification configuration
@@ -70,7 +70,7 @@ async function notificationExample() {
     const testResult = await notificationService.testNotification(1, 'pushover');
     console.log('✅ Test notification sent:', testResult.provider);
   } catch (error) {
-    console.log('❌ Test notification failed:', error.message);
+    console.log('❌ Test notification failed:', (error as Error).message);
   }
 
   // Example 5: Send manual completion notification
@@ -89,11 +89,11 @@ async function notificationExample() {
       }
     );
     console.log('✅ Manual notification sent to', results.length, 'providers');
-    results.forEach(result => {
+    results.forEach((result: any) => {
       console.log(`   - ${result.provider}: ${result.success ? '✅' : '❌'} ${result.error || ''}`);
     });
   } catch (error) {
-    console.log('❌ Manual notification failed:', error.message);
+    console.log('❌ Manual notification failed:', (error as Error).message);
   }
 
   // Example 6: Get notification configurations
@@ -101,11 +101,11 @@ async function notificationExample() {
   try {
     const configs = await notificationService.getActorNotificationConfigs(1);
     console.log('✅ Found', configs.length, 'notification configurations:');
-    configs.forEach(config => {
+    configs.forEach((config: any) => {
       console.log(`   - ${config.notification_type}: ${config.is_active ? 'Active' : 'Inactive'}`);
     });
   } catch (error) {
-    console.log('❌ Failed to get configurations:', error.message);
+    console.log('❌ Failed to get configurations:', (error as Error).message);
   }
 
   console.log('\n🎉 Notification feature example completed!');

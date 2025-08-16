@@ -1,4 +1,4 @@
-import { query, generateEmbedding } from './database.ts';
+import { query, generateEmbedding } from './database';
 
 export interface KBResource {
   id: number;
@@ -54,7 +54,10 @@ export class ImportanceManager {
       JSON.stringify(input.metadata || {}),
       embedding,
     ];
-    const { rows } = await query<KBResource>(sql, values);
+    const { rows } = await query(sql, values);
+    if (!rows[0]) {
+      throw new Error('Failed to create KB resource');
+    }
     return rows[0];
   }
 
@@ -70,7 +73,10 @@ export class ImportanceManager {
         last_touched_at = NOW(),
         updated_at = NOW()
       RETURNING *`;
-    const { rows } = await query<ActorImportance>(sql, [actorId, resourceId]);
+    const { rows } = await query(sql, [actorId, resourceId]);
+    if (!rows[0]) {
+      throw new Error('Failed to create actor importance');
+    }
 
     // Log the activity
     await this.logActivity(actorId, 'importance_increment', resourceId);
@@ -82,7 +88,7 @@ export class ImportanceManager {
    * Get importance score for a specific actor-resource pair
    */
   static async getImportance(actorId: number, resourceId: number): Promise<ActorImportance | null> {
-    const { rows } = await query<ActorImportance>(
+    const { rows } = await query(
       'SELECT * FROM kb_actor_importance WHERE actor_id = $1 AND resource_id = $2',
       [actorId, resourceId]
     );
@@ -93,7 +99,7 @@ export class ImportanceManager {
    * Get all importance scores for an actor
    */
   static async getActorImportanceScores(actorId: number): Promise<ActorImportance[]> {
-    const { rows } = await query<ActorImportance>(
+    const { rows } = await query(
       'SELECT * FROM kb_actor_importance WHERE actor_id = $1 ORDER BY importance DESC, last_touched_at DESC',
       [actorId]
     );
@@ -113,7 +119,7 @@ export class ImportanceManager {
       FROM activity_log 
       WHERE created_at >= CURRENT_DATE
     `;
-    const { rows: activeActors } = await query<{ actor_id: number }>(activeActorsQuery);
+    const { rows: activeActors } = await query(activeActorsQuery);
 
     let totalDecayed = 0;
 
@@ -178,7 +184,7 @@ export class ImportanceManager {
       LIMIT $3
     `;
 
-    const { rows } = await query<any>(sql, queryParams);
+    const { rows } = await query(sql, queryParams);
 
     return rows.map(row => ({
       resource: {
@@ -219,7 +225,10 @@ export class ImportanceManager {
       storyId || null,
       metadata ? JSON.stringify(metadata) : null,
     ];
-    const { rows } = await query<ActivityLogEntry>(sql, values);
+    const { rows } = await query(sql, values);
+    if (!rows[0]) {
+      throw new Error('Failed to log activity');
+    }
     return rows[0];
   }
 
@@ -227,7 +236,7 @@ export class ImportanceManager {
    * Get activity log for an actor
    */
   static async getActorActivity(actorId: number, limit: number = 50): Promise<ActivityLogEntry[]> {
-    const { rows } = await query<ActivityLogEntry>(
+    const { rows } = await query(
       'SELECT * FROM activity_log WHERE actor_id = $1 ORDER BY created_at DESC LIMIT $2',
       [actorId, limit]
     );
@@ -238,7 +247,7 @@ export class ImportanceManager {
    * Get actors who were active on a specific date
    */
   static async getActiveActorsForDate(date: string): Promise<number[]> {
-    const { rows } = await query<{ actor_id: number }>(
+    const { rows } = await query(
       'SELECT DISTINCT actor_id FROM activity_log WHERE created_at::date = $1',
       [date]
     );

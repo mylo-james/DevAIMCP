@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
-import { Pool, PoolClient, QueryResult } from 'pg';
-import { getDatabaseUrl } from './config.ts';
+import { Pool, PoolClient } from 'pg';
+import { getDatabaseUrl } from './config';
 
 export type EmbeddingVector = number[];
 
@@ -34,7 +34,7 @@ export async function generateEmbedding(
 ): Promise<EmbeddingVector> {
   const c = getEmbeddingsClient(client);
   const { data } = await c.embeddings.create({ model: 'text-embedding-3-small', input: text });
-  return data[0].embedding;
+  return data[0]?.embedding || [];
 }
 
 export function getDbPool(): Pool {
@@ -61,8 +61,9 @@ export async function withTransaction<T>(fn: (client: PoolClient) => Promise<T>)
   }
 }
 
-export async function query<T = any>(text: string, params: any[] = []): Promise<QueryResult<T>> {
-  return await getDbPool().query<T>(text, params);
+export async function query(text: string, params: unknown[] = []): Promise<any> {
+  const result = await getDbPool().query(text, params);
+  return result;
 }
 
 // Repositories
@@ -92,17 +93,20 @@ export async function createProject(
     input.framework ?? null,
     input.metadata ?? null,
   ];
-  const { rows } = await query<Project>(sql, values);
+  const { rows } = await query(sql, values);
+  if (!rows[0]) {
+    throw new Error('Failed to create project');
+  }
   return rows[0];
 }
 
 export async function getProjectById(id: number): Promise<Project | null> {
-  const { rows } = await query<Project>('SELECT * FROM projects WHERE id = $1', [id]);
+  const { rows } = await query('SELECT * FROM projects WHERE id = $1', [id]);
   return rows[0] || null;
 }
 
 export async function listProjects(): Promise<Project[]> {
-  const { rows } = await query<Project>('SELECT * FROM projects ORDER BY id ASC');
+  const { rows } = await query('SELECT * FROM projects ORDER BY id ASC');
   return rows;
 }
 
@@ -136,7 +140,10 @@ export async function storeMemory(
     input.tags ?? null,
     input.embedding ?? null,
   ];
-  const { rows } = await query<Memory>(sql, values);
+  const { rows } = await query(sql, values);
+  if (!rows[0]) {
+    throw new Error('Failed to store memory');
+  }
   return rows[0];
 }
 
@@ -167,7 +174,7 @@ export async function semanticSearchMemories(params: {
 		ORDER BY m.embedding <=> $1 ASC
 		LIMIT $2
 	`;
-  const { rows } = await query<any>(sql, values);
+  const { rows } = await query(sql, values);
   return rows.map(r => ({
     memory: {
       id: r.id,
@@ -214,7 +221,10 @@ export async function createStory(
     input.priority ?? null,
     input.status ?? 'todo',
   ];
-  const { rows } = await query<Story>(sql, values);
+  const { rows } = await query(sql, values);
+  if (!rows[0]) {
+    throw new Error('Failed to create story');
+  }
   return rows[0];
 }
 
@@ -228,12 +238,12 @@ export async function updateStory(
   const values = fields.map(k => (patch as any)[k]);
   values.push(id);
   const sql = `UPDATE stories SET ${sets} WHERE id = $${fields.length + 1} RETURNING *`;
-  const { rows } = await query<Story>(sql, values);
+  const { rows } = await query(sql, values);
   return rows[0] || null;
 }
 
 export async function listStories(projectId: number): Promise<Story[]> {
-  const { rows } = await query<Story>(
+  const { rows } = await query(
     'SELECT * FROM stories WHERE project_id = $1 ORDER BY id ASC',
     [projectId]
   );
@@ -241,6 +251,6 @@ export async function listStories(projectId: number): Promise<Story[]> {
 }
 
 export async function getStoryById(id: number): Promise<Story | null> {
-  const { rows } = await query<Story>('SELECT * FROM stories WHERE id = $1', [id]);
+  const { rows } = await query('SELECT * FROM stories WHERE id = $1', [id]);
   return rows[0] || null;
 }

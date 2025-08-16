@@ -1,4 +1,4 @@
-import { query } from './database.ts';
+import { query } from './database';
 
 export interface Persona {
   id: number;
@@ -32,7 +32,7 @@ export class PersonaService {
    * Get all available personas
    */
   static async getPersonas(): Promise<Persona[]> {
-    const { rows } = await query<Persona>('SELECT * FROM personas ORDER BY role, name');
+    const { rows } = await query('SELECT * FROM personas ORDER BY role, name');
     return rows;
   }
 
@@ -40,7 +40,7 @@ export class PersonaService {
    * Get persona by ID
    */
   static async getPersonaById(id: number): Promise<Persona | null> {
-    const { rows } = await query<Persona>('SELECT * FROM personas WHERE id = $1', [id]);
+    const { rows } = await query('SELECT * FROM personas WHERE id = $1', [id]);
     return rows[0] || null;
   }
 
@@ -48,7 +48,7 @@ export class PersonaService {
    * Get persona by role
    */
   static async getPersonaByRole(role: string): Promise<Persona | null> {
-    const { rows } = await query<Persona>(
+    const { rows } = await query(
       'SELECT * FROM personas WHERE role = $1 ORDER BY id LIMIT 1',
       [role]
     );
@@ -74,7 +74,10 @@ export class PersonaService {
       JSON.stringify(input.procedures),
       JSON.stringify(input.checklists),
     ];
-    const { rows } = await query<Persona>(sql, values);
+    const { rows } = await query(sql, values);
+    if (!rows[0]) {
+      throw new Error('Failed to create persona');
+    }
     return rows[0];
   }
 

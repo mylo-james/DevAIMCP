@@ -1,4 +1,4 @@
-import { getProjectById } from './database.ts';
+import { getProjectById } from './database';
 
 export interface DevAISession {
   id: string;
@@ -32,8 +32,8 @@ export class OrchestratorService {
     // Create session
     const session: DevAISession = {
       id: sessionId,
-      projectId: params.projectId,
-      initialQuery: params.initialQuery,
+      ...(params.projectId && { projectId: params.projectId }),
+      ...(params.initialQuery && { initialQuery: params.initialQuery }),
       sessionContext: params.userContext || {},
       createdAt: new Date(),
     };

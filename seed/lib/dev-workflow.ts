@@ -37,7 +37,6 @@ export interface DevWorkflowState {
 const activeWorkflows = new Map<number, DevWorkflowState>();
 
 export class DevWorkflowEngine {
-  
   /**
    * Start the SM→Dev→QA workflow for a story
    */
@@ -46,7 +45,7 @@ export class DevWorkflowEngine {
     if (!story) {
       throw new Error(`Story ${storyId} not found`);
     }
-    
+
     const workflow: DevWorkflowState = {
       story_id: storyId,
       current_step: 'sm_draft',
@@ -64,11 +63,11 @@ export class DevWorkflowEngine {
       ],
       defects: [],
     };
-    
+
     activeWorkflows.set(storyId, workflow);
     return workflow;
   }
-  
+
   /**
    * SM completes story draft and hands off to Dev
    */
@@ -77,14 +76,14 @@ export class DevWorkflowEngine {
     if (!workflow) {
       throw new Error(`No active workflow for story ${storyId}`);
     }
-    
+
     // Mark SM step as completed
     const smStep = workflow.steps.find(s => s.id === 'sm_draft');
     if (smStep) {
       smStep.status = 'completed';
       smStep.updated_at = new Date();
     }
-    
+
     // Add Dev step
     workflow.steps.push({
       id: 'dev_implement',
@@ -94,13 +93,13 @@ export class DevWorkflowEngine {
       created_at: new Date(),
       updated_at: new Date(),
     });
-    
+
     workflow.current_step = 'dev_implement';
     activeWorkflows.set(storyId, workflow);
-    
+
     // Log activity
     await ImportanceManager.logActivity(smActorId, 'story_draft_completed', undefined, storyId);
-    
+
     // Mandatory post-job memory update
     await EnhancedMemoryManager.executePostJobHook({
       actorId: smActorId,
@@ -110,7 +109,7 @@ export class DevWorkflowEngine {
       jobResult: { story_id: storyId, status: 'completed' },
       confidence: 0.9,
     });
-    
+
     // Send notification for SM completion
     try {
       await NotificationService.getInstance().notifyAgentCompletion(
@@ -127,26 +126,29 @@ export class DevWorkflowEngine {
       // Log notification error but don't fail the workflow
       console.error('Failed to send SM completion notification:', error);
     }
-    
+
     return workflow;
   }
-  
+
   /**
    * Dev completes implementation and hands off to QA
    */
-  static async devCompletesImplementation(storyId: number, devActorId: number): Promise<DevWorkflowState> {
+  static async devCompletesImplementation(
+    storyId: number,
+    devActorId: number
+  ): Promise<DevWorkflowState> {
     const workflow = activeWorkflows.get(storyId);
     if (!workflow) {
       throw new Error(`No active workflow for story ${storyId}`);
     }
-    
+
     // Mark Dev step as completed
     const devStep = workflow.steps.find(s => s.id === 'dev_implement');
     if (devStep) {
       devStep.status = 'completed';
       devStep.updated_at = new Date();
     }
-    
+
     // Add QA step
     workflow.steps.push({
       id: 'qa_validate',
@@ -156,13 +158,18 @@ export class DevWorkflowEngine {
       created_at: new Date(),
       updated_at: new Date(),
     });
-    
+
     workflow.current_step = 'qa_validate';
     activeWorkflows.set(storyId, workflow);
-    
+
     // Log activity
-    await ImportanceManager.logActivity(devActorId, 'story_implementation_completed', undefined, storyId);
-    
+    await ImportanceManager.logActivity(
+      devActorId,
+      'story_implementation_completed',
+      undefined,
+      storyId
+    );
+
     // Mandatory post-job memory update
     await EnhancedMemoryManager.executePostJobHook({
       actorId: devActorId,
@@ -172,7 +179,7 @@ export class DevWorkflowEngine {
       jobResult: { story_id: storyId, status: 'completed' },
       confidence: 0.95,
     });
-    
+
     // Send notification for Dev completion
     try {
       await NotificationService.getInstance().notifyAgentCompletion(
@@ -189,14 +196,17 @@ export class DevWorkflowEngine {
       // Log notification error but don't fail the workflow
       console.error('Failed to send Dev completion notification:', error);
     }
-    
+
     return workflow;
   }
-  
+
   /**
    * QA approves the story - triggers auto-push
    */
-  static async qaApproves(storyId: number, qaActorId: number): Promise<{
+  static async qaApproves(
+    storyId: number,
+    qaActorId: number
+  ): Promise<{
     workflow: DevWorkflowState;
     pushResult: any;
   }> {
@@ -204,30 +214,30 @@ export class DevWorkflowEngine {
     if (!workflow) {
       throw new Error(`No active workflow for story ${storyId}`);
     }
-    
+
     // Mark QA step as completed
     const qaStep = workflow.steps.find(s => s.id === 'qa_validate');
     if (qaStep) {
       qaStep.status = 'completed';
       qaStep.updated_at = new Date();
     }
-    
+
     workflow.current_step = 'completed';
-    
+
     // Update story status
     await updateStory(storyId, { status: 'done' });
-    
+
     // Auto-push if enabled
     let pushResult = null;
     if (workflow.auto_push_enabled) {
       pushResult = await this.executePush(storyId);
     }
-    
+
     activeWorkflows.set(storyId, workflow);
-    
+
     // Log activity
     await ImportanceManager.logActivity(qaActorId, 'story_qa_approved', undefined, storyId);
-    
+
     // Mandatory post-job memory update
     await EnhancedMemoryManager.executePostJobHook({
       actorId: qaActorId,
@@ -237,7 +247,7 @@ export class DevWorkflowEngine {
       jobResult: { story_id: storyId, approved: true, push_result: pushResult },
       confidence: 0.9,
     });
-    
+
     // Send notification for QA approval
     try {
       await NotificationService.getInstance().notifyAgentCompletion(
@@ -255,17 +265,17 @@ export class DevWorkflowEngine {
       // Log notification error but don't fail the workflow
       console.error('Failed to send QA approval notification:', error);
     }
-    
+
     return { workflow, pushResult };
   }
-  
+
   /**
    * QA rejects the story - creates defect and sends back to SM for storification
    */
   static async qaRejects(
-    storyId: number, 
-    qaActorId: number, 
-    defectTitle: string, 
+    storyId: number,
+    qaActorId: number,
+    defectTitle: string,
     defectDescription: string,
     severity: 'low' | 'medium' | 'high' | 'critical' = 'medium'
   ): Promise<{
@@ -277,18 +287,24 @@ export class DevWorkflowEngine {
     if (!workflow) {
       throw new Error(`No active workflow for story ${storyId}`);
     }
-    
+
     // Mark QA step as rejected
     const qaStep = workflow.steps.find(s => s.id === 'qa_validate');
     if (qaStep) {
       qaStep.status = 'rejected';
       qaStep.updated_at = new Date();
     }
-    
+
     // Create defect
-    const defect = await this.createDefect(storyId, qaActorId, defectTitle, defectDescription, severity);
+    const defect = await this.createDefect(
+      storyId,
+      qaActorId,
+      defectTitle,
+      defectDescription,
+      severity
+    );
     workflow.defects.push(defect);
-    
+
     // SM storifies the defect (creates a new story for the fix)
     const newStory = await createStory({
       project_id: workflow.story_id, // This should be the project_id, but using story_id as placeholder
@@ -299,7 +315,7 @@ export class DevWorkflowEngine {
       priority: severity === 'critical' ? 'critical' : severity === 'high' ? 'high' : 'medium',
       status: 'todo',
     });
-    
+
     // Reset workflow to Dev step for the fix
     workflow.steps.push({
       id: 'dev_fix',
@@ -309,32 +325,32 @@ export class DevWorkflowEngine {
       created_at: new Date(),
       updated_at: new Date(),
     });
-    
+
     workflow.current_step = 'dev_fix';
     activeWorkflows.set(storyId, workflow);
-    
+
     // Log activity
     await ImportanceManager.logActivity(qaActorId, 'story_qa_rejected', undefined, storyId, {
       defect_id: defect.id,
       new_story_id: newStory.id,
     });
-    
+
     // Mandatory post-job memory update
     await EnhancedMemoryManager.executePostJobHook({
       actorId: qaActorId,
       actorRole: 'QA',
       storyId: storyId,
       jobType: 'validation',
-      jobResult: { 
-        story_id: storyId, 
-        approved: false, 
+      jobResult: {
+        story_id: storyId,
+        approved: false,
         defect: defect,
         new_story_id: newStory.id,
         challenges: defectDescription,
       },
       confidence: 0.85,
     });
-    
+
     // Send notification for QA rejection
     try {
       await NotificationService.getInstance().notifyAgentCompletion(
@@ -352,26 +368,29 @@ export class DevWorkflowEngine {
       // Log notification error but don't fail the workflow
       console.error('Failed to send QA rejection notification:', error);
     }
-    
+
     return { workflow, defect, newStoryId: newStory.id };
   }
-  
+
   /**
    * Dev completes defect fix
    */
-  static async devCompletesDefectFix(storyId: number, devActorId: number): Promise<DevWorkflowState> {
+  static async devCompletesDefectFix(
+    storyId: number,
+    devActorId: number
+  ): Promise<DevWorkflowState> {
     const workflow = activeWorkflows.get(storyId);
     if (!workflow) {
       throw new Error(`No active workflow for story ${storyId}`);
     }
-    
+
     // Mark Dev fix step as completed
     const devFixStep = workflow.steps.find(s => s.id === 'dev_fix');
     if (devFixStep) {
       devFixStep.status = 'completed';
       devFixStep.updated_at = new Date();
     }
-    
+
     // Add QA re-validation step
     workflow.steps.push({
       id: 'qa_revalidate',
@@ -381,13 +400,13 @@ export class DevWorkflowEngine {
       created_at: new Date(),
       updated_at: new Date(),
     });
-    
+
     workflow.current_step = 'qa_revalidate';
     activeWorkflows.set(storyId, workflow);
-    
+
     // Log activity
     await ImportanceManager.logActivity(devActorId, 'defect_fix_completed', undefined, storyId);
-    
+
     // Mandatory post-job memory update
     await EnhancedMemoryManager.executePostJobHook({
       actorId: devActorId,
@@ -397,7 +416,7 @@ export class DevWorkflowEngine {
       jobResult: { story_id: storyId, status: 'fix_completed' },
       confidence: 0.9,
     });
-    
+
     // Send notification for Dev defect fix completion
     try {
       await NotificationService.getInstance().notifyAgentCompletion(
@@ -414,17 +433,17 @@ export class DevWorkflowEngine {
       // Log notification error but don't fail the workflow
       console.error('Failed to send Dev defect fix notification:', error);
     }
-    
+
     return workflow;
   }
-  
+
   /**
    * Get workflow state for a story
    */
   static getWorkflowState(storyId: number): DevWorkflowState | undefined {
     return activeWorkflows.get(storyId);
   }
-  
+
   /**
    * Check if epic is complete and requires HITL
    */
@@ -439,7 +458,7 @@ export class DevWorkflowEngine {
     const completedStories = 5; // Placeholder - would query by epicId
     const totalStories = 5; // Placeholder - would query by epicId
     const epicComplete = completedStories === totalStories;
-    
+
     return {
       epicComplete,
       hitlRequired: epicComplete, // HITL required only at epic completion
@@ -447,7 +466,7 @@ export class DevWorkflowEngine {
       totalStories,
     };
   }
-  
+
   private static async createDefect(
     storyId: number,
     qaActorId: number,
@@ -462,7 +481,7 @@ export class DevWorkflowEngine {
     const { rows } = await query<Defect>(sql, values);
     return rows[0];
   }
-  
+
   private static async executePush(storyId: number): Promise<any> {
     // This would integrate with git workflow
     // For now, return a placeholder result

@@ -281,7 +281,9 @@ describe('Configuration Module', () => {
         }
       };
 
-      expect(() => testValidateConfig()).toThrow('DATABASE_URL is required when database is enabled');
+      expect(() => testValidateConfig()).toThrow(
+        'DATABASE_URL is required when database is enabled'
+      );
     });
 
     it('should throw when OPENAI_API_KEY is required but not provided', () => {
@@ -312,7 +314,9 @@ describe('Configuration Module', () => {
         }
       };
 
-      expect(() => testValidateConfig()).toThrow('OPENAI_API_KEY is required when OpenAI is enabled');
+      expect(() => testValidateConfig()).toThrow(
+        'OPENAI_API_KEY is required when OpenAI is enabled'
+      );
     });
 
     it('should throw multiple errors when multiple validations fail', () => {
@@ -346,7 +350,9 @@ describe('Configuration Module', () => {
 
       expect(() => testValidateConfig()).toThrow(/Configuration validation failed/);
       expect(() => testValidateConfig()).toThrow(/MCP_SERVER_PORT must be between 1 and 65535/);
-      expect(() => testValidateConfig()).toThrow(/DATABASE_URL is required when database is enabled/);
+      expect(() => testValidateConfig()).toThrow(
+        /DATABASE_URL is required when database is enabled/
+      );
     });
   });
 

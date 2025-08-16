@@ -93,14 +93,15 @@ describe('Tools Module', () => {
 
   describe('tools array', () => {
     it('should contain all tools from all categories', () => {
-      const expectedLength = 
+      const expectedLength =
         bmadTools.productOwner.length +
         bmadTools.scrumMaster.length +
         bmadTools.developer.length +
         bmadTools.architect.length +
         bmadTools.qa.length +
-        bmadTools.common.length;
-      
+        bmadTools.common.length +
+        3; // DevAI notification tools
+
       expect(tools).toHaveLength(expectedLength);
     });
 
@@ -275,43 +276,43 @@ describe('Tools Module', () => {
   });
 
   describe('Tool schemas', () => {
-             it('should have correct schema for bmad_po_create_epic', () => {
-           const tool = findToolByName('bmad_po_create_epic');
-           expect(tool).toBeDefined();
+    it('should have correct schema for bmad_po_create_epic', () => {
+      const tool = findToolByName('bmad_po_create_epic');
+      expect(tool).toBeDefined();
 
-           const validInput = {
-             projectId: 1,
-             context: 'Test context',
-             existingSystemInfo: 'Test system info',
-           };
+      const validInput = {
+        projectId: 1,
+        context: 'Test context',
+        existingSystemInfo: 'Test system info',
+      };
 
-           expect(() => tool?.inputSchema.parse(validInput)).not.toThrow();
-         });
+      expect(() => tool?.inputSchema.parse(validInput)).not.toThrow();
+    });
 
-             it('should have correct schema for bmad_dev_run_tests', () => {
-           const tool = findToolByName('bmad_dev_run_tests');
-           expect(tool).toBeDefined();
+    it('should have correct schema for bmad_dev_run_tests', () => {
+      const tool = findToolByName('bmad_dev_run_tests');
+      expect(tool).toBeDefined();
 
-           const validInput = {
-             projectId: 1,
-             testScope: 'unit',
-           };
+      const validInput = {
+        projectId: 1,
+        testScope: 'unit',
+      };
 
-           expect(() => tool?.inputSchema.parse(validInput)).not.toThrow();
-         });
+      expect(() => tool?.inputSchema.parse(validInput)).not.toThrow();
+    });
 
-             it('should have correct schema for bmad_architect_design', () => {
-           const tool = findToolByName('bmad_architect_design');
-           expect(tool).toBeDefined();
+    it('should have correct schema for bmad_architect_design', () => {
+      const tool = findToolByName('bmad_architect_design');
+      expect(tool).toBeDefined();
 
-           const validInput = {
-             projectId: 1,
-             requirements: 'Test requirements',
-             projectType: 'greenfield',
-           };
+      const validInput = {
+        projectId: 1,
+        requirements: 'Test requirements',
+        projectType: 'greenfield',
+      };
 
-           expect(() => tool?.inputSchema.parse(validInput)).not.toThrow();
-         });
+      expect(() => tool?.inputSchema.parse(validInput)).not.toThrow();
+    });
   });
 
   describe('Tool descriptions', () => {
@@ -319,15 +320,17 @@ describe('Tools Module', () => {
       tools.forEach(tool => {
         expect(tool.description).toBeTruthy();
         expect(tool.description.length).toBeGreaterThan(10);
-        expect(tool.description).toMatch(/BMAD|methodology/);
+        // Allow both BMAD and DevAI tools
+        expect(tool.description).toMatch(/BMAD|methodology|notification|DevAI/);
       });
     });
   });
 
   describe('Tool naming convention', () => {
-    it('should follow bmad naming convention', () => {
+    it('should follow naming convention', () => {
       tools.forEach(tool => {
-        expect(tool.name).toMatch(/^bmad_[a-z_]+$/);
+        // Allow both BMAD and DevAI naming conventions
+        expect(tool.name).toMatch(/^(bmad|devai)_[a-z_]+$/);
       });
     });
   });

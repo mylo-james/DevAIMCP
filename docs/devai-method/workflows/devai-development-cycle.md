@@ -19,6 +19,7 @@ The DevAI development cycle is a natural language, persona-driven workflow that 
 **Requirements** → **Story Draft** → **Dev Handoff**
 
 **Alex's Process:**
+
 1. Analyzes user requirements in natural language
 2. Breaks down complex features into implementable stories
 3. Creates clear acceptance criteria and estimates
@@ -32,6 +33,7 @@ The DevAI development cycle is a natural language, persona-driven workflow that 
 **Story** → **Technical Implementation** → **QA Handoff**
 
 **Jordan's Process:**
+
 1. Reviews story requirements and acceptance criteria
 2. Plans technical approach and identifies dependencies
 3. Implements features following TDD principles
@@ -46,12 +48,14 @@ The DevAI development cycle is a natural language, persona-driven workflow that 
 **Implementation** → **Validation** → **Approve/Reject Decision**
 
 **Sam's Process:**
+
 1. Reviews acceptance criteria and implementation
 2. Executes validation tests and quality checks
 3. Verifies all requirements are met
 4. Makes approval decision
 
 #### 4a. QA Approval Path
+
 **Approve** → **Auto-Push** → **Story Complete**
 
 - Sam approves the implementation
@@ -59,7 +63,8 @@ The DevAI development cycle is a natural language, persona-driven workflow that 
 - Story marked as complete
 - Workflow ends (unless epic completion triggers HITL)
 
-#### 4b. QA Rejection Path  
+#### 4b. QA Rejection Path
+
 **Reject** → **Create Defect** → **SM Storification** → **Dev Fix Loop**
 
 - Sam creates defect with detailed description
@@ -73,7 +78,9 @@ The DevAI development cycle is a natural language, persona-driven workflow that 
 ## Defect Loop Details
 
 ### Defect Creation
+
 When QA rejects a story:
+
 1. **Defect Record**: Title, description, severity level
 2. **Automatic Storification**: SM creates fix story with:
    - Title: "Fix: [Defect Title]"
@@ -82,6 +89,7 @@ When QA rejects a story:
    - Story Points: Estimated based on complexity
 
 ### Fix Implementation
+
 1. Jordan receives fix story
 2. Analyzes defect root cause
 3. Implements fix with additional tests
@@ -91,11 +99,13 @@ When QA rejects a story:
 ## HITL (Human-in-the-Loop) Gates
 
 ### Epic-Level HITL
+
 - **Trigger**: All stories in epic are complete
 - **Process**: Human approval required before epic closure
 - **Purpose**: Final validation of epic delivery
 
 ### No Story-Level HITL
+
 - Individual stories flow through SM→Dev→QA automatically
 - Human intervention only at epic boundaries
 - Escalation available for complex issues
@@ -121,21 +131,25 @@ When QA rejects a story:
 ## Automation Features
 
 ### Automatic Handoffs
+
 - Personas automatically hand off to next role
 - Context preserved across handoffs
 - No manual coordination required
 
 ### Auto-Push on Approval
+
 - QA approval triggers immediate git push
 - Branch management handled automatically
 - Deployment pipeline integration
 
 ### Memory Automation
+
 - Post-job memories written automatically
 - Critical learnings extracted and tagged
 - Knowledge base updated with insights
 
 ### Importance Tracking
+
 - Resource usage tracked per actor
 - Importance scores updated on confirmed hits
 - Nightly decay maintains relevance
@@ -143,20 +157,23 @@ When QA rejects a story:
 ## Quality Assurance
 
 ### Mandatory Checklists
+
 - Each persona follows role-specific checklists
 - Checklists enforced before handoffs
 - Quality gates prevent incomplete work
 
 ### Comprehensive Testing
+
 - Unit tests for all functionality
 - Integration tests for workflows
 - End-to-end validation of complete flows
 
 ### Audit Trails
+
 - All decisions logged and auditable
 - Access control decisions tracked
 - Performance and quality metrics captured
 
 ---
 
-*DevAI Development Cycle - Natural Language Workflow Automation*
+_DevAI Development Cycle - Natural Language Workflow Automation_

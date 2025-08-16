@@ -28,10 +28,14 @@ function bumpVersion(currentVersion, type) {
   const [major, minor, patch] = currentVersion.split('.').map(Number);
 
   switch (type) {
-    case 'major': return `${major + 1}.0.0`;
-    case 'minor': return `${major}.${minor + 1}.0`;
-    case 'patch': return `${major}.${minor}.${patch + 1}`;
-    default: return currentVersion;
+    case 'major':
+      return `${major + 1}.0.0`;
+    case 'minor':
+      return `${major}.${minor + 1}.0`;
+    case 'patch':
+      return `${major}.${minor}.${patch + 1}`;
+    default:
+      return currentVersion;
   }
 }
 
@@ -72,8 +76,9 @@ async function updateVersion() {
     console.log(`\n✓ Successfully bumped ${packId} with ${bumpType} version bump`);
     console.log('\nNext steps:');
     console.log(`1. Test the changes`);
-    console.log(`2. Commit: git add -A && git commit -m "chore: bump ${packId} version (${bumpType})"`);
-
+    console.log(
+      `2. Commit: git add -A && git commit -m "chore: bump ${packId} version (${bumpType})"`
+    );
   } catch (error) {
     console.error('Error updating version:', error.message);
     process.exit(1);

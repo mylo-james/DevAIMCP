@@ -8,8 +8,8 @@ export default defineConfig({
     passWithNoTests: false,
     server: {
       deps: {
-        inline: ['../lib/**/*.ts']
-      }
-    }
+        inline: ['../lib/**/*.ts'],
+      },
+    },
   },
 });

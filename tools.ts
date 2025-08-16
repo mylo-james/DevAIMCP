@@ -18,19 +18,19 @@ export interface MCPTool {
  * BMAD Agent types
  */
 export const BMAD_AGENTS = ['po', 'sm', 'dev', 'architect', 'qa'] as const;
-export type BMADAgent = typeof BMAD_AGENTS[number];
+export type BMADAgent = (typeof BMAD_AGENTS)[number];
 
 /**
  * Project types
  */
 export const PROJECT_TYPES = ['greenfield', 'brownfield'] as const;
-export type ProjectType = typeof PROJECT_TYPES[number];
+export type ProjectType = (typeof PROJECT_TYPES)[number];
 
 /**
  * Test scope options
  */
 export const TEST_SCOPES = ['unit', 'integration', 'all'] as const;
-export type TestScope = typeof TEST_SCOPES[number];
+export type TestScope = (typeof TEST_SCOPES)[number];
 
 /**
  * Common schemas
@@ -138,7 +138,8 @@ const developerTools: MCPTool[] = [
   },
   {
     name: 'bmad_dev_explain',
-    description: 'Explain recent development work for learning purposes using BMAD Developer methodology',
+    description:
+      'Explain recent development work for learning purposes using BMAD Developer methodology',
     inputSchema: z.object({
       projectId: commonSchemas.projectId,
       context: z.string().describe('What to explain (recent changes, decisions, etc.)'),
@@ -214,14 +215,6 @@ export const bmadTools = {
 /**
  * Flattened array of all tools for MCP server
  */
-export const tools: MCPTool[] = [
-  ...productOwnerTools,
-  ...scrumMasterTools,
-  ...developerTools,
-  ...architectTools,
-  ...qaTools,
-  ...commonTools,
-];
 
 /**
  * Get tools by agent type
@@ -265,7 +258,7 @@ export function validateToolInput(toolName: string, input: unknown): boolean {
   if (!tool) {
     return false;
   }
-  
+
   try {
     tool.inputSchema.parse(input);
     return true;
@@ -277,22 +270,17 @@ export function validateToolInput(toolName: string, input: unknown): boolean {
 // BMAD Product Owner Tools
 const bmadPoCreateEpic = {
   name: 'bmad_po_create_epic',
-  description:
-    'Create epic for brownfield projects using BMAD Product Owner methodology',
+  description: 'Create epic for brownfield projects using BMAD Product Owner methodology',
   inputSchema: z.object({
     projectId: z.number().describe('Project ID'),
     context: z.string().optional().describe('Project context or requirements'),
-    existingSystemInfo: z
-      .string()
-      .optional()
-      .describe('Information about existing system'),
+    existingSystemInfo: z.string().optional().describe('Information about existing system'),
   }),
 };
 
 const bmadPoCreateStory = {
   name: 'bmad_po_create_story',
-  description:
-    'Create user story from requirements using BMAD Product Owner methodology',
+  description: 'Create user story from requirements using BMAD Product Owner methodology',
   inputSchema: z.object({
     projectId: z.number().describe('Project ID'),
     requirements: z.string().describe('Story requirements or description'),
@@ -302,14 +290,11 @@ const bmadPoCreateStory = {
 
 const bmadPoShardDoc = {
   name: 'bmad_po_shard_doc',
-  description:
-    'Break large documents into manageable chunks using BMAD methodology',
+  description: 'Break large documents into manageable chunks using BMAD methodology',
   inputSchema: z.object({
     projectId: z.number().describe('Project ID'),
     documentPath: z.string().describe('Path to document to shard'),
-    destinationPath: z
-      .string()
-      .describe('Destination directory for sharded files'),
+    destinationPath: z.string().describe('Destination directory for sharded files'),
   }),
 };
 
@@ -329,17 +314,13 @@ const bmadSmDraft = {
   inputSchema: z.object({
     projectId: z.number().describe('Project ID'),
     epicId: z.number().optional().describe('Parent epic ID'),
-    previousStoryId: z
-      .number()
-      .optional()
-      .describe('Previous story ID for context'),
+    previousStoryId: z.number().optional().describe('Previous story ID for context'),
   }),
 };
 
 const bmadSmStoryChecklist = {
   name: 'bmad_sm_story_checklist',
-  description:
-    'Execute story draft checklist using BMAD Scrum Master methodology',
+  description: 'Execute story draft checklist using BMAD Scrum Master methodology',
   inputSchema: z.object({
     projectId: z.number().describe('Project ID'),
     storyId: z.number().describe('Story ID to check'),
@@ -361,10 +342,7 @@ const bmadDevRunTests = {
   description: 'Execute linting and tests using BMAD Developer standards',
   inputSchema: z.object({
     projectId: z.number().describe('Project ID'),
-    testScope: z
-      .string()
-      .optional()
-      .describe('Scope of tests to run (unit, integration, all)'),
+    testScope: z.string().optional().describe('Scope of tests to run (unit, integration, all)'),
   }),
 };
 
@@ -373,9 +351,7 @@ const bmadDevExplain = {
   description: 'Explain recent development work for learning purposes',
   inputSchema: z.object({
     projectId: z.number().describe('Project ID'),
-    context: z
-      .string()
-      .describe('What to explain (recent changes, decisions, etc.)'),
+    context: z.string().describe('What to explain (recent changes, decisions, etc.)'),
   }),
 };
 
@@ -393,8 +369,7 @@ const bmadArchitectDesign = {
 // BMAD QA Tools
 const bmadQaReviewStory = {
   name: 'bmad_qa_review_story',
-  description:
-    'Review and validate story implementation using BMAD QA methodology',
+  description: 'Review and validate story implementation using BMAD QA methodology',
   inputSchema: z.object({
     projectId: z.number().describe('Project ID'),
     storyId: z.number().describe('Story ID to review'),
@@ -419,9 +394,7 @@ const bmadExecuteChecklist = {
   description: 'Execute agent-specific checklist from BMAD methodology',
   inputSchema: z.object({
     projectId: z.number().describe('Project ID'),
-    agent: z
-      .enum(['po', 'sm', 'dev', 'architect', 'qa'])
-      .describe('Agent type'),
+    agent: z.enum(['po', 'sm', 'dev', 'architect', 'qa']).describe('Agent type'),
     checklistType: z.string().describe('Specific checklist to execute'),
   }),
 };
@@ -434,13 +407,18 @@ const devaiNotifyCompletion = {
     actorId: z.number().describe('Actor ID who completed the work'),
     actorRole: z.string().describe('Role of the actor (e.g., Scrum Master, Developer, QA)'),
     storyId: z.number().describe('Story ID that was worked on'),
-    jobType: z.string().describe('Type of job completed (e.g., story_draft, implementation, validation)'),
-    completionDetails: z.object({
-      challenges: z.string().optional().describe('Any challenges encountered during the work'),
-      nextSteps: z.string().optional().describe('Next steps or recommendations'),
-      url: z.string().optional().describe('URL to view the completed work'),
-      confidence: z.number().optional().describe('Confidence level in the completion (0-1)'),
-    }).optional().describe('Additional details about the completion'),
+    jobType: z
+      .string()
+      .describe('Type of job completed (e.g., story_draft, implementation, validation)'),
+    completionDetails: z
+      .object({
+        challenges: z.string().optional().describe('Any challenges encountered during the work'),
+        nextSteps: z.string().optional().describe('Next steps or recommendations'),
+        url: z.string().optional().describe('URL to view the completed work'),
+        confidence: z.number().optional().describe('Confidence level in the completion (0-1)'),
+      })
+      .optional()
+      .describe('Additional details about the completion'),
   }),
 };
 
@@ -449,7 +427,9 @@ const devaiConfigureNotification = {
   description: 'Configure notification settings for an actor',
   inputSchema: z.object({
     actorId: z.number().describe('Actor ID to configure notifications for'),
-    notificationType: z.enum(['pushover', 'ifttt', 'webhook', 'email']).describe('Type of notification service'),
+    notificationType: z
+      .enum(['pushover', 'ifttt', 'webhook', 'email'])
+      .describe('Type of notification service'),
     configData: z.record(z.any()).describe('Configuration data for the notification service'),
   }),
 };
@@ -463,34 +443,17 @@ const devaiTestNotification = {
   }),
 };
 
-export const tools = [
-  // Product Owner Tools
-  bmadPoCreateEpic,
-  bmadPoCreateStory,
-  bmadPoShardDoc,
-  bmadPoValidateStory,
-
-  // Scrum Master Tools
-  bmadSmDraft,
-  bmadSmStoryChecklist,
-
-  // Developer Tools
-  bmadDevDevelopStory,
-  bmadDevRunTests,
-  bmadDevExplain,
-
-  // Architect Tools
-  bmadArchitectDesign,
-
-  // QA Tools
-  bmadQaReviewStory,
-
-  // Common Tools
-  bmadCorrectCourse,
-  bmadExecuteChecklist,
-
-  // DevAI Notification Tools
+/**
+ * Flattened array of all tools for MCP server
+ */
+export const tools: MCPTool[] = [
+  ...productOwnerTools,
+  ...scrumMasterTools,
+  ...developerTools,
+  ...architectTools,
+  ...qaTools,
+  ...commonTools,
   devaiNotifyCompletion,
   devaiConfigureNotification,
   devaiTestNotification,
-] as const;
+];

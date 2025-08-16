@@ -50,7 +50,7 @@ describe('Resources Module', () => {
     });
 
     it('should have valid resource structure', () => {
-      resources.forEach((resource) => {
+      resources.forEach(resource => {
         expect(resource).toHaveProperty('uri');
         expect(resource).toHaveProperty('name');
         expect(resource).toHaveProperty('description');
@@ -65,7 +65,7 @@ describe('Resources Module', () => {
     });
 
     it('should have unique URIs', () => {
-      const uris = resources.map((r) => r.uri);
+      const uris = resources.map(r => r.uri);
       const uniqueUris = new Set(uris);
       expect(uris).toHaveLength(uniqueUris.size);
     });
@@ -83,11 +83,9 @@ describe('Resources Module', () => {
       mockJoin
         .mockReturnValueOnce('/test/agents/agent1.md')
         .mockReturnValueOnce('/test/agents/agent2.md');
-      mockReadFile
-        .mockResolvedValueOnce(agentContent1)
-        .mockResolvedValueOnce(agentContent2);
+      mockReadFile.mockResolvedValueOnce(agentContent1).mockResolvedValueOnce(agentContent2);
 
-      const agentsResource = resources.find((r) => r.uri === 'devai://agents');
+      const agentsResource = resources.find(r => r.uri === 'devai://agents');
       expect(agentsResource).toBeDefined();
 
       const result = await agentsResource!.handler();
@@ -114,7 +112,7 @@ describe('Resources Module', () => {
       mockJoin.mockReturnValue('/test/agents/file.md');
       mockReadFile.mockResolvedValue('content');
 
-      const agentsResource = resources.find((r) => r.uri === 'devai://agents');
+      const agentsResource = resources.find(r => r.uri === 'devai://agents');
       const result = await agentsResource!.handler();
 
       expect(result).toContain('## agent1.md');
@@ -136,11 +134,9 @@ describe('Resources Module', () => {
       mockJoin
         .mockReturnValueOnce('/test/tasks/task1.md')
         .mockReturnValueOnce('/test/tasks/task2.md');
-      mockReadFile
-        .mockResolvedValueOnce(taskContent1)
-        .mockResolvedValueOnce(taskContent2);
+      mockReadFile.mockResolvedValueOnce(taskContent1).mockResolvedValueOnce(taskContent2);
 
-      const tasksResource = resources.find((r) => r.uri === 'devai://tasks');
+      const tasksResource = resources.find(r => r.uri === 'devai://tasks');
       expect(tasksResource).toBeDefined();
 
       const result = await tasksResource!.handler();
@@ -171,7 +167,7 @@ describe('Resources Module', () => {
         .mockResolvedValueOnce(checklistContent1)
         .mockResolvedValueOnce(checklistContent2);
 
-      const checklistsResource = resources.find((r) => r.uri === 'devai://checklists');
+      const checklistsResource = resources.find(r => r.uri === 'devai://checklists');
       expect(checklistsResource).toBeDefined();
 
       const result = await checklistsResource!.handler();
@@ -189,12 +185,13 @@ describe('Resources Module', () => {
   describe('DevAI Technical Preferences resource', () => {
     it('should handle technical preferences file', async () => {
       const prefsPath = '/test/data/technical-preferences.md';
-      const prefsContent = '# Technical Preferences\n\n- Language: TypeScript\n- Framework: Node.js';
+      const prefsContent =
+        '# Technical Preferences\n\n- Language: TypeScript\n- Framework: Node.js';
 
       mockResolve.mockReturnValue(prefsPath);
       mockReadFile.mockResolvedValue(prefsContent);
 
-      const prefsResource = resources.find((r) => r.uri === 'devai://technical-preferences');
+      const prefsResource = resources.find(r => r.uri === 'devai://technical-preferences');
       expect(prefsResource).toBeDefined();
 
       const result = await prefsResource!.handler();
@@ -213,7 +210,7 @@ describe('Resources Module', () => {
       mockResolve.mockReturnValue(manifestPath);
       mockReadFile.mockResolvedValue(manifestContent);
 
-      const manifestResource = resources.find((r) => r.uri === 'devai://manifest');
+      const manifestResource = resources.find(r => r.uri === 'devai://manifest');
       expect(manifestResource).toBeDefined();
 
       const result = await manifestResource!.handler();
@@ -230,8 +227,8 @@ describe('Resources Module', () => {
       mockResolve.mockReturnValue(agentsDir);
       mockReaddir.mockRejectedValue(new Error('Directory not found'));
 
-      const agentsResource = resources.find((r) => r.uri === 'devai://agents');
-      
+      const agentsResource = resources.find(r => r.uri === 'devai://agents');
+
       await expect(agentsResource!.handler()).rejects.toThrow('Directory not found');
     });
 
@@ -244,23 +241,23 @@ describe('Resources Module', () => {
       mockJoin.mockReturnValue('/test/agents/agent1.md');
       mockReadFile.mockRejectedValue(new Error('File not found'));
 
-      const agentsResource = resources.find((r) => r.uri === 'devai://agents');
-      
+      const agentsResource = resources.find(r => r.uri === 'devai://agents');
+
       await expect(agentsResource!.handler()).rejects.toThrow('File not found');
     });
   });
 
   describe('resource metadata', () => {
     it('should have correct MIME types', () => {
-      const markdownResources = resources.filter((r) => r.mimeType === 'text/markdown');
-      const jsonResources = resources.filter((r) => r.mimeType === 'application/json');
+      const markdownResources = resources.filter(r => r.mimeType === 'text/markdown');
+      const jsonResources = resources.filter(r => r.mimeType === 'application/json');
 
       expect(markdownResources.length).toBeGreaterThan(0);
       expect(jsonResources.length).toBeGreaterThan(0);
     });
 
     it('should have descriptive names', () => {
-      resources.forEach((resource) => {
+      resources.forEach(resource => {
         expect(resource.name.length).toBeGreaterThan(0);
         expect(resource.description.length).toBeGreaterThan(0);
       });

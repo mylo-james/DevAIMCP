@@ -2,10 +2,7 @@
 import 'dotenv/config';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { tools as bmadTools } from './tools.js';
 
@@ -20,10 +17,10 @@ function dbg(...args: unknown[]) {
   }
 }
 
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', err => {
   dbg('uncaughtException', err?.stack || String(err));
 });
-process.on('unhandledRejection', (reason) => {
+process.on('unhandledRejection', reason => {
   dbg(
     'unhandledRejection',
     typeof reason === 'object' && reason !== null
@@ -37,7 +34,6 @@ let manageProject: any;
 let manageMemory: any;
 let exportData: any;
 let validatePolicy: any;
-let switchAgent: any;
 let manageStory: any;
 let executeWorkflow: any;
 let executeGitWorkflow: any;
@@ -73,19 +69,23 @@ async function ensureSeedLoaded(): Promise<void> {
     ({ executeWorkflow } = await importFrom(tools + 'workflow-executor' + ext));
     ({ executeGitWorkflow } = await importFrom(tools + 'git-workflow' + ext));
     ({ runTests } = await importFrom(tools + 'test-runner' + ext));
-    ({ executeBmadTool: bmadExecutor } = await importFrom(
-      tools + 'bmad-executor' + ext
-    ));
+    ({ executeBmadTool: bmadExecutor } = await importFrom(tools + 'bmad-executor' + ext));
     vendorBmad = await importFrom(tools + 'vendor-bmad' + ext);
     ({ OrchestratorService: orchestratorService } = await importFrom(lib + 'orchestrator' + ext));
     ({ PersonaService: personaService } = await importFrom(lib + 'personas' + ext));
     ({ ImportanceManager: importanceManager } = await importFrom(lib + 'importance-manager' + ext));
-    ({ AuthorizationService: authorizationService } = await importFrom(lib + 'authorization' + ext));
+    ({ AuthorizationService: authorizationService } = await importFrom(
+      lib + 'authorization' + ext
+    ));
     ({ DevWorkflowEngine: devWorkflowEngine } = await importFrom(lib + 'dev-workflow' + ext));
-    ({ EnhancedMemoryManager: enhancedMemoryManager } = await importFrom(lib + 'memory-manager-enhanced' + ext));
+    ({ EnhancedMemoryManager: enhancedMemoryManager } = await importFrom(
+      lib + 'memory-manager-enhanced' + ext
+    ));
     ({ RetrievalService: retrievalService } = await importFrom(lib + 'retrieval-service' + ext));
     ({ HITLService: hitlService } = await importFrom(lib + 'hitl-service' + ext));
-    ({ NotificationService: notificationService } = await importFrom(lib + 'notification-service' + ext));
+    ({ NotificationService: notificationService } = await importFrom(
+      lib + 'notification-service' + ext
+    ));
   } else {
     dbg('ensureSeedLoaded: loading seed in JS (dist) mode');
     const base = './seed/dist/';
@@ -100,19 +100,23 @@ async function ensureSeedLoaded(): Promise<void> {
     ({ executeWorkflow } = await importFrom(tools + 'workflow-executor' + ext));
     ({ executeGitWorkflow } = await importFrom(tools + 'git-workflow' + ext));
     ({ runTests } = await importFrom(tools + 'test-runner' + ext));
-    ({ executeBmadTool: bmadExecutor } = await importFrom(
-      tools + 'bmad-executor' + ext
-    ));
+    ({ executeBmadTool: bmadExecutor } = await importFrom(tools + 'bmad-executor' + ext));
     vendorBmad = await importFrom(tools + 'vendor-bmad' + ext);
     ({ OrchestratorService: orchestratorService } = await importFrom(lib + 'orchestrator' + ext));
     ({ PersonaService: personaService } = await importFrom(lib + 'personas' + ext));
     ({ ImportanceManager: importanceManager } = await importFrom(lib + 'importance-manager' + ext));
-    ({ AuthorizationService: authorizationService } = await importFrom(lib + 'authorization' + ext));
+    ({ AuthorizationService: authorizationService } = await importFrom(
+      lib + 'authorization' + ext
+    ));
     ({ DevWorkflowEngine: devWorkflowEngine } = await importFrom(lib + 'dev-workflow' + ext));
-    ({ EnhancedMemoryManager: enhancedMemoryManager } = await importFrom(lib + 'memory-manager-enhanced' + ext));
+    ({ EnhancedMemoryManager: enhancedMemoryManager } = await importFrom(
+      lib + 'memory-manager-enhanced' + ext
+    ));
     ({ RetrievalService: retrievalService } = await importFrom(lib + 'retrieval-service' + ext));
     ({ HITLService: hitlService } = await importFrom(lib + 'hitl-service' + ext));
-    ({ NotificationService: notificationService } = await importFrom(lib + 'notification-service' + ext));
+    ({ NotificationService: notificationService } = await importFrom(
+      lib + 'notification-service' + ext
+    ));
   }
   seedLoaded = true;
   dbg('ensureSeedLoaded: seed modules loaded');
@@ -318,10 +322,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             uri: { type: 'string', description: 'Resource URI' },
             type: { type: 'string', description: 'Resource type' },
             content: { type: 'string', description: 'Resource content' },
-            accessTags: { 
-              type: 'array', 
+            accessTags: {
+              type: 'array',
               items: { type: 'string' },
-              description: 'Access control tags' 
+              description: 'Access control tags',
             },
             metadata: { type: 'object', description: 'Additional metadata' },
           },
@@ -337,10 +341,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: 'object',
           properties: {
             actorId: { type: 'number', description: 'Actor ID' },
-            scopes: { 
-              type: 'array', 
+            scopes: {
+              type: 'array',
               items: { type: 'string' },
-              description: 'Access scopes for the key' 
+              description: 'Access scopes for the key',
             },
             expiresInDays: { type: 'number', description: 'Key expiration in days' },
           },
@@ -378,10 +382,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             actorId: { type: 'number', description: 'Filter by actor ID' },
             resourceId: { type: 'number', description: 'Filter by resource ID' },
-            decision: { 
-              type: 'string', 
+            decision: {
+              type: 'string',
               enum: ['allow', 'deny'],
-              description: 'Filter by decision type' 
+              description: 'Filter by decision type',
             },
             limit: { type: 'number', description: 'Maximum results to return' },
           },
@@ -447,10 +451,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             qaActorId: { type: 'number', description: 'QA Actor ID' },
             defectTitle: { type: 'string', description: 'Defect title' },
             defectDescription: { type: 'string', description: 'Defect description' },
-            severity: { 
-              type: 'string', 
+            severity: {
+              type: 'string',
               enum: ['low', 'medium', 'high', 'critical'],
-              description: 'Defect severity' 
+              description: 'Defect severity',
             },
           },
           required: ['storyId', 'qaActorId', 'defectTitle', 'defectDescription'],
@@ -479,16 +483,16 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             storyId: { type: 'number', description: 'Story ID reference' },
             jobType: { type: 'string', description: 'Type of job completed' },
             summary: { type: 'string', description: 'Concise summary of actions' },
-            criticalLearnings: { 
-              type: 'array', 
+            criticalLearnings: {
+              type: 'array',
               items: { type: 'string' },
-              description: 'Critical learnings from the job' 
+              description: 'Critical learnings from the job',
             },
             confidence: { type: 'number', description: 'Confidence level (0-1)' },
-            additionalTags: { 
-              type: 'array', 
+            additionalTags: {
+              type: 'array',
               items: { type: 'string' },
-              description: 'Additional tags for categorization' 
+              description: 'Additional tags for categorization',
             },
           },
           required: ['actorId', 'jobType', 'summary', 'confidence'],
@@ -537,13 +541,16 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             actorId: { type: 'number', description: 'Actor ID for importance and ACL' },
             query: { type: 'string', description: 'Search query' },
             projectId: { type: 'number', description: 'Optional project ID filter' },
-            resourceTypes: { 
-              type: 'array', 
+            resourceTypes: {
+              type: 'array',
               items: { type: 'string' },
-              description: 'Optional resource type filters' 
+              description: 'Optional resource type filters',
             },
             limit: { type: 'number', description: 'Maximum results to return' },
-            includeGlobalRecency: { type: 'boolean', description: 'Include global recency in scoring' },
+            includeGlobalRecency: {
+              type: 'boolean',
+              description: 'Include global recency in scoring',
+            },
           },
           required: ['actorId', 'query'],
         },
@@ -557,10 +564,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             actorId: { type: 'number', description: 'Actor ID' },
             query: { type: 'string', description: 'Search query' },
             projectId: { type: 'number', description: 'Optional project ID filter' },
-            confirmedResourceIds: { 
-              type: 'array', 
+            confirmedResourceIds: {
+              type: 'array',
               items: { type: 'number' },
-              description: 'Resource IDs that were confirmed as helpful' 
+              description: 'Resource IDs that were confirmed as helpful',
             },
             limit: { type: 'number', description: 'Maximum results to return' },
           },
@@ -576,10 +583,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             actorId: { type: 'number', description: 'Actor ID' },
             query: { type: 'string', description: 'Search query' },
             projectId: { type: 'number', description: 'Optional project ID filter' },
-            rankingStrategy: { 
-              type: 'string', 
+            rankingStrategy: {
+              type: 'string',
               enum: ['vector_only', 'importance_only', 'combined', 'recency_boosted'],
-              description: 'Ranking strategy to use' 
+              description: 'Ranking strategy to use',
             },
             limit: { type: 'number', description: 'Maximum results to return' },
           },
@@ -618,21 +625,29 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             epicId: { type: 'number', description: 'Epic ID' },
             requesterActorId: { type: 'number', description: 'Actor requesting HITL' },
-            requestType: { 
-              type: 'string', 
+            requestType: {
+              type: 'string',
               enum: ['epic_completion', 'escalation'],
-              description: 'Type of HITL request' 
+              description: 'Type of HITL request',
             },
             title: { type: 'string', description: 'Request title' },
             description: { type: 'string', description: 'Request description' },
             context: { type: 'object', description: 'Additional context' },
-            priority: { 
-              type: 'string', 
+            priority: {
+              type: 'string',
               enum: ['low', 'medium', 'high', 'urgent'],
-              description: 'Request priority' 
+              description: 'Request priority',
             },
           },
-          required: ['epicId', 'requesterActorId', 'requestType', 'title', 'description', 'context', 'priority'],
+          required: [
+            'epicId',
+            'requesterActorId',
+            'requestType',
+            'title',
+            'description',
+            'context',
+            'priority',
+          ],
         },
       },
       {
@@ -642,10 +657,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: 'object',
           properties: {
             hitlRequestId: { type: 'number', description: 'HITL request ID' },
-            decision: { 
-              type: 'string', 
+            decision: {
+              type: 'string',
               enum: ['approved', 'rejected'],
-              description: 'Human decision' 
+              description: 'Human decision',
             },
             humanReviewer: { type: 'string', description: 'Name/ID of human reviewer' },
             reason: { type: 'string', description: 'Reason for decision' },
@@ -671,15 +686,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: 'object',
           properties: {
-            requestType: { 
-              type: 'string', 
+            requestType: {
+              type: 'string',
               enum: ['epic_completion', 'escalation'],
-              description: 'Filter by request type' 
+              description: 'Filter by request type',
             },
-            priority: { 
-              type: 'string', 
+            priority: {
+              type: 'string',
               enum: ['low', 'medium', 'high', 'urgent'],
-              description: 'Filter by priority' 
+              description: 'Filter by priority',
             },
             limit: { type: 'number', description: 'Maximum results to return' },
           },
@@ -704,13 +719,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             projectId: { type: 'number', description: 'Project ID' },
             memoryType: {
               type: 'string',
-              enum: [
-                'decision',
-                'pattern',
-                'learning',
-                'preference',
-                'insight',
-              ],
+              enum: ['decision', 'pattern', 'learning', 'preference', 'insight'],
               description: 'Type of memory',
             },
             content: { type: 'string', description: 'Memory content' },
@@ -866,14 +875,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {
             action: {
               type: 'string',
-              enum: [
-                'export',
-                'summary',
-                'project',
-                'memories',
-                'documents',
-                'tools',
-              ],
+              enum: ['export', 'summary', 'project', 'memories', 'documents', 'tools'],
               description: 'Type of export to perform',
             },
             format: {
@@ -898,8 +900,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       // Vendored BMAD utility tools (optional helpers)
       {
         name: 'devai_vendor_web_builder',
-        description:
-          'Build a DevAI/BMAD web bundle from an agent or team id (vendored tool)',
+        description: 'Build a DevAI/BMAD web bundle from an agent or team id (vendored tool)',
         inputSchema: {
           type: 'object',
           properties: {
@@ -931,8 +932,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'devai_vendor_flatten',
-        description:
-          'Flatten inputs using vendored flattener into an output path',
+        description: 'Flatten inputs using vendored flattener into an output path',
         inputSchema: {
           type: 'object',
           properties: {
@@ -947,8 +947,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'devai_vendor_version_bump',
-        description:
-          'Run vendored version bump helper (semantic-release advisory)',
+        description: 'Run vendored version bump helper (semantic-release advisory)',
         inputSchema: {
           type: 'object',
           properties: {
@@ -983,16 +982,28 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: 'object',
           properties: {
             actorId: { type: 'number', description: 'Actor ID who completed the work' },
-            actorRole: { type: 'string', description: 'Role of the actor (e.g., Scrum Master, Developer, QA)' },
+            actorRole: {
+              type: 'string',
+              description: 'Role of the actor (e.g., Scrum Master, Developer, QA)',
+            },
             storyId: { type: 'number', description: 'Story ID that was worked on' },
-            jobType: { type: 'string', description: 'Type of job completed (e.g., story_draft, implementation, validation)' },
+            jobType: {
+              type: 'string',
+              description: 'Type of job completed (e.g., story_draft, implementation, validation)',
+            },
             completionDetails: {
               type: 'object',
               properties: {
-                challenges: { type: 'string', description: 'Any challenges encountered during the work' },
+                challenges: {
+                  type: 'string',
+                  description: 'Any challenges encountered during the work',
+                },
                 nextSteps: { type: 'string', description: 'Next steps or recommendations' },
                 url: { type: 'string', description: 'URL to view the completed work' },
-                confidence: { type: 'number', description: 'Confidence level in the completion (0-1)' },
+                confidence: {
+                  type: 'number',
+                  description: 'Confidence level in the completion (0-1)',
+                },
               },
               description: 'Additional details about the completion',
             },
@@ -1007,12 +1018,15 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           type: 'object',
           properties: {
             actorId: { type: 'number', description: 'Actor ID to configure notifications for' },
-            notificationType: { 
-              type: 'string', 
+            notificationType: {
+              type: 'string',
               enum: ['pushover', 'ifttt', 'webhook', 'email'],
-              description: 'Type of notification service' 
+              description: 'Type of notification service',
             },
-            configData: { type: 'object', description: 'Configuration data for the notification service' },
+            configData: {
+              type: 'object',
+              description: 'Configuration data for the notification service',
+            },
           },
           required: ['actorId', 'notificationType', 'configData'],
         },
@@ -1031,7 +1045,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
 
       // BMAD Agent Tools - Convert Zod schemas to JSON schemas
-      ...bmadTools.map((tool) => ({
+      ...bmadTools.map(tool => ({
         name: tool.name,
         description: tool.description,
         inputSchema: zodToJsonSchema(tool.inputSchema),
@@ -1113,11 +1127,14 @@ function zodToJsonSchema(schema: z.ZodType<unknown>): Record<string, unknown> {
 // TOOL HANDLERS
 // ============================================================================
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+server.setRequestHandler(CallToolRequestSchema, async request => {
   dbg('CallToolRequest received');
   await ensureSeedLoaded();
   const name = (request.params as Record<string, unknown>).name as string;
-  const args = ((request.params as Record<string, unknown>).arguments || {}) as Record<string, unknown>;
+  const args = ((request.params as Record<string, unknown>).arguments || {}) as Record<
+    string,
+    unknown
+  >;
   try {
     dbg(
       'CallTool name=',
@@ -1164,7 +1181,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await personaService.activatePersona(args.sessionId, args.personaId)),
+              text: JSON.stringify(
+                await personaService.activatePersona(args.sessionId, args.personaId)
+              ),
             },
           ],
         };
@@ -1174,7 +1193,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await personaService.processInCharacter(args.sessionId, args.userInput)),
+              text: JSON.stringify(
+                await personaService.processInCharacter(args.sessionId, args.userInput)
+              ),
             },
           ],
         };
@@ -1184,7 +1205,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await personaService.handoffToPersona(args.fromSessionId, args.toPersonaRole, args.handoffContext)),
+              text: JSON.stringify(
+                await personaService.handoffToPersona(
+                  args.fromSessionId,
+                  args.toPersonaRole,
+                  args.handoffContext
+                )
+              ),
             },
           ],
         };
@@ -1205,7 +1232,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await importanceManager.incrementImportance(args.actorId, args.resourceId)),
+              text: JSON.stringify(
+                await importanceManager.incrementImportance(args.actorId, args.resourceId)
+              ),
             },
           ],
         };
@@ -1217,12 +1246,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await importanceManager.getRankedResources({
-                actorId: args.actorId,
-                queryEmbedding,
-                projectId: args.projectId,
-                limit: args.limit,
-              })),
+              text: JSON.stringify(
+                await importanceManager.getRankedResources({
+                  actorId: args.actorId,
+                  queryEmbedding,
+                  projectId: args.projectId,
+                  limit: args.limit,
+                })
+              ),
             },
           ],
         };
@@ -1243,14 +1274,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await importanceManager.createKBResource({
-                project_id: args.projectId,
-                uri: args.uri,
-                type: args.type,
-                content: args.content,
-                access_tags: args.accessTags || [],
-                metadata: args.metadata,
-              })),
+              text: JSON.stringify(
+                await importanceManager.createKBResource({
+                  project_id: args.projectId,
+                  uri: args.uri,
+                  type: args.type,
+                  content: args.content,
+                  access_tags: args.accessTags || [],
+                  metadata: args.metadata,
+                })
+              ),
             },
           ],
         };
@@ -1261,11 +1294,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await authorizationService.generateActorKey(
-                args.actorId, 
-                args.scopes, 
-                args.expiresInDays
-              )),
+              text: JSON.stringify(
+                await authorizationService.generateActorKey(
+                  args.actorId,
+                  args.scopes,
+                  args.expiresInDays
+                )
+              ),
             },
           ],
         };
@@ -1285,7 +1320,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await authorizationService.checkResourceAccess(args.actorId, args.resourceId)),
+              text: JSON.stringify(
+                await authorizationService.checkResourceAccess(args.actorId, args.resourceId)
+              ),
             },
           ],
         };
@@ -1306,7 +1343,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await devWorkflowEngine.startWorkflow(args.storyId, args.epicId)),
+              text: JSON.stringify(
+                await devWorkflowEngine.startWorkflow(args.storyId, args.epicId)
+              ),
             },
           ],
         };
@@ -1316,7 +1355,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await devWorkflowEngine.smCompletesDraft(args.storyId, args.smActorId)),
+              text: JSON.stringify(
+                await devWorkflowEngine.smCompletesDraft(args.storyId, args.smActorId)
+              ),
             },
           ],
         };
@@ -1326,7 +1367,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await devWorkflowEngine.devCompletesImplementation(args.storyId, args.devActorId)),
+              text: JSON.stringify(
+                await devWorkflowEngine.devCompletesImplementation(args.storyId, args.devActorId)
+              ),
             },
           ],
         };
@@ -1336,7 +1379,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await devWorkflowEngine.qaApproves(args.storyId, args.qaActorId)),
+              text: JSON.stringify(
+                await devWorkflowEngine.qaApproves(args.storyId, args.qaActorId)
+              ),
             },
           ],
         };
@@ -1346,13 +1391,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await devWorkflowEngine.qaRejects(
-                args.storyId, 
-                args.qaActorId, 
-                args.defectTitle, 
-                args.defectDescription, 
-                args.severity
-              )),
+              text: JSON.stringify(
+                await devWorkflowEngine.qaRejects(
+                  args.storyId,
+                  args.qaActorId,
+                  args.defectTitle,
+                  args.defectDescription,
+                  args.severity
+                )
+              ),
             },
           ],
         };
@@ -1468,15 +1515,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await hitlService.createHITLRequest({
-                epic_id: args.epicId,
-                requester_actor_id: args.requesterActorId,
-                request_type: args.requestType,
-                title: args.title,
-                description: args.description,
-                context: args.context,
-                priority: args.priority,
-              })),
+              text: JSON.stringify(
+                await hitlService.createHITLRequest({
+                  epic_id: args.epicId,
+                  requester_actor_id: args.requesterActorId,
+                  request_type: args.requestType,
+                  title: args.title,
+                  description: args.description,
+                  context: args.context,
+                  priority: args.priority,
+                })
+              ),
             },
           ],
         };
@@ -1486,12 +1535,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await hitlService.processHumanDecision(
-                args.hitlRequestId,
-                args.decision,
-                args.humanReviewer,
-                args.reason
-              )),
+              text: JSON.stringify(
+                await hitlService.processHumanDecision(
+                  args.hitlRequestId,
+                  args.decision,
+                  args.humanReviewer,
+                  args.reason
+                )
+              ),
             },
           ],
         };
@@ -1501,7 +1552,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await hitlService.escalateRequest(args.hitlRequestId, args.reason)),
+              text: JSON.stringify(
+                await hitlService.escalateRequest(args.hitlRequestId, args.reason)
+              ),
             },
           ],
         };
@@ -1532,13 +1585,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await notificationService.getInstance().notifyAgentCompletion(
-                args.actorId,
-                args.actorRole,
-                args.storyId,
-                args.jobType,
-                args.completionDetails
-              )),
+              text: JSON.stringify(
+                await notificationService
+                  .getInstance()
+                  .notifyAgentCompletion(
+                    args.actorId,
+                    args.actorRole,
+                    args.storyId,
+                    args.jobType,
+                    args.completionDetails
+                  )
+              ),
             },
           ],
         };
@@ -1548,11 +1605,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await notificationService.getInstance().configureNotification(
-                args.actorId,
-                args.notificationType,
-                args.configData
-              )),
+              text: JSON.stringify(
+                await notificationService
+                  .getInstance()
+                  .configureNotification(args.actorId, args.notificationType, args.configData)
+              ),
             },
           ],
         };
@@ -1562,10 +1619,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(await notificationService.getInstance().testNotification(
-                args.actorId,
-                args.notificationType
-              )),
+              text: JSON.stringify(
+                await notificationService
+                  .getInstance()
+                  .testNotification(args.actorId, args.notificationType)
+              ),
             },
           ],
         };
@@ -1582,11 +1640,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return await validatePolicy(args.action, args.context, args.agent);
 
       case 'devai_workflow_execute':
-        return await executeWorkflow(
-          args.workflowType,
-          args.projectId,
-          args.steps
-        );
+        return await executeWorkflow(args.workflowType, args.projectId, args.steps);
 
       case 'devai_story_manage':
         return await manageStory({ action: args.action, ...args });
@@ -1681,7 +1735,7 @@ async function main() {
 }
 
 if (process.env.NODE_ENV !== 'test') {
-  main().catch((error) => {
+  main().catch(error => {
     console.error('Failed to start server:', error);
     process.exit(1);
   });

@@ -24,27 +24,28 @@ async function updateVersion() {
   try {
     // Update in config.yaml
     const configPath = path.join(__dirname, '..', 'expansion-packs', packId, 'config.yaml');
-    
+
     if (!fs.existsSync(configPath)) {
       console.error(`Error: Expansion pack '${packId}' not found`);
       process.exit(1);
     }
-    
+
     const configContent = fs.readFileSync(configPath, 'utf8');
     const config = yaml.load(configContent);
     const oldVersion = config.version || 'unknown';
-    
+
     config.version = newVersion;
-    
+
     const updatedYaml = yaml.dump(config, { indent: 2 });
     fs.writeFileSync(configPath, updatedYaml);
-    
+
     console.log(`✓ Updated ${packId}/config.yaml: ${oldVersion} → ${newVersion}`);
     console.log(`\n✓ Successfully updated ${packId} to version ${newVersion}`);
     console.log('\nNext steps:');
     console.log('1. Test the changes');
-    console.log('2. Commit: git add -A && git commit -m "chore: bump ' + packId + ' to v' + newVersion + '"');
-    
+    console.log(
+      '2. Commit: git add -A && git commit -m "chore: bump ' + packId + ' to v' + newVersion + '"'
+    );
   } catch (error) {
     console.error('Error updating version:', error.message);
     process.exit(1);

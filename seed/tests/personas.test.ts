@@ -37,8 +37,11 @@ describe('PersonaService', () => {
   describe('In-Character Behavior', () => {
     it('should generate personality-driven responses', () => {
       const alexPersona = DEFAULT_PERSONAS.find(p => p.name === 'Alex')!;
-      const response = (PersonaService as any).generateInCharacterResponse(alexPersona, 'I need help with a story');
-      
+      const response = (PersonaService as any).generateInCharacterResponse(
+        alexPersona,
+        'I need help with a story'
+      );
+
       expect(response).toContain('Alex');
       expect(response).toContain('systematic approach');
       expect(response).toContain('organize this work');
@@ -46,22 +49,31 @@ describe('PersonaService', () => {
 
     it('should select relevant procedures based on input', () => {
       const alexPersona = DEFAULT_PERSONAS.find(p => p.name === 'Alex')!;
-      const procedures = (PersonaService as any).selectRelevantProcedures(alexPersona, 'I need to create a story');
-      
+      const procedures = (PersonaService as any).selectRelevantProcedures(
+        alexPersona,
+        'I need to create a story'
+      );
+
       expect(procedures).toContain('story-draft-checklist');
     });
 
     it('should select relevant checklists based on input', () => {
       const alexPersona = DEFAULT_PERSONAS.find(p => p.name === 'Alex')!;
-      const checklists = (PersonaService as any).selectRelevantChecklists(alexPersona, 'I need to review changes');
-      
+      const checklists = (PersonaService as any).selectRelevantChecklists(
+        alexPersona,
+        'I need to review changes'
+      );
+
       expect(checklists).toContain('change-checklist');
     });
   });
 
   describe('Role-Specific Responses', () => {
     it('should generate role-specific responses for Scrum Master', () => {
-      const response = (PersonaService as any).getRoleSpecificResponse('Scrum Master', 'test input');
+      const response = (PersonaService as any).getRoleSpecificResponse(
+        'Scrum Master',
+        'test input'
+      );
       expect(response).toContain('organize this work');
       expect(response).toContain('stories');
     });
@@ -85,7 +97,10 @@ describe('PersonaService', () => {
     });
 
     it('should generate role-specific responses for Product Owner', () => {
-      const response = (PersonaService as any).getRoleSpecificResponse('Product Owner', 'test input');
+      const response = (PersonaService as any).getRoleSpecificResponse(
+        'Product Owner',
+        'test input'
+      );
       expect(response).toContain('business value');
       expect(response).toContain('requirements');
     });
@@ -95,13 +110,13 @@ describe('PersonaService', () => {
     it('should generate proper handoff messages', () => {
       const alexPersona = DEFAULT_PERSONAS.find(p => p.name === 'Alex')!;
       const jordanPersona = DEFAULT_PERSONAS.find(p => p.name === 'Jordan')!;
-      
+
       const message = (PersonaService as any).generateHandoffMessage(
-        alexPersona, 
-        jordanPersona, 
+        alexPersona,
+        jordanPersona,
         'Story is ready for implementation'
       );
-      
+
       expect(message).toContain('Alex');
       expect(message).toContain('Scrum Master');
       expect(message).toContain('Jordan');
@@ -116,12 +131,14 @@ describe('PersonaService', () => {
       const collaborativePersona = { ...DEFAULT_PERSONAS[0], style: 'collaborative' };
       const methodicalPersona = { ...DEFAULT_PERSONAS[0], style: 'methodical' };
       const innovativePersona = { ...DEFAULT_PERSONAS[0], style: 'innovative' };
-      
+
       const analyticalPrefix = (PersonaService as any).getPersonalityPrefix(analyticalPersona);
-      const collaborativePrefix = (PersonaService as any).getPersonalityPrefix(collaborativePersona);
+      const collaborativePrefix = (PersonaService as any).getPersonalityPrefix(
+        collaborativePersona
+      );
       const methodicalPrefix = (PersonaService as any).getPersonalityPrefix(methodicalPersona);
       const innovativePrefix = (PersonaService as any).getPersonalityPrefix(innovativePersona);
-      
+
       expect(analyticalPrefix).toContain('diving deep into details');
       expect(collaborativePrefix).toContain('work together');
       expect(methodicalPrefix).toContain('systematic approach');

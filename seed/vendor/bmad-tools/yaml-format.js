@@ -29,7 +29,7 @@ async function formatYamlContent(content, filename) {
       .replace(/^(\s*)(\w+)\s+:/gm, '$1$2:')
       // Fix inconsistent list indentation
       .replace(/^(\s*)-\s{3,}/gm, '$1- ');
-    
+
     // Skip auto-fixing for .roomodes files - they have special nested structure
     if (!filename.includes('.roomodes')) {
       fixedContent = fixedContent
@@ -41,8 +41,13 @@ async function formatYamlContent(content, filename) {
           }
           // If the content contains special YAML characters or looks complex, quote it
           // BUT skip if it looks like a proper YAML key-value pair (like "key: value")
-          if ((content.includes(':') || content.includes('-') || content.includes('{') || content.includes('}')) && 
-              !content.match(/^\w+:\s/)) {
+          if (
+            (content.includes(':') ||
+              content.includes('-') ||
+              content.includes('{') ||
+              content.includes('}')) &&
+            !content.match(/^\w+:\s/)
+          ) {
             // Remove any existing quotes first, escape internal quotes, then add proper quotes
             const cleanContent = content.replace(/^["']|["']$/g, '').replace(/"/g, '\\"');
             return `${indent}- "${cleanContent}"`;
@@ -50,19 +55,19 @@ async function formatYamlContent(content, filename) {
           return match;
         });
     }
-    
+
     // Debug: show what we're trying to parse
     if (fixedContent !== content) {
       console.log(chalk.blue(`🔧 Applied YAML fixes to ${filename}`));
     }
-    
+
     // Parse and re-dump YAML to format it
     const parsed = yaml.load(fixedContent);
     const formatted = yaml.dump(parsed, {
       indent: 2,
       lineWidth: -1, // Disable line wrapping
       noRefs: true,
-      sortKeys: false // Preserve key order
+      sortKeys: false, // Preserve key order
     });
     return formatted;
   } catch (error) {
@@ -90,27 +95,27 @@ async function processMarkdownFile(filePath) {
   const yamlBlockRegex = /```ya?ml\n([\s\S]*?)\n```/g;
   let match;
   const replacements = [];
-  
+
   while ((match = yamlBlockRegex.exec(newContent)) !== null) {
     const [fullMatch, yamlContent] = match;
     const formatted = await formatYamlContent(yamlContent, filePath);
     if (formatted !== null) {
       // Remove trailing newline that js-yaml adds
       const trimmedFormatted = formatted.replace(/\n$/, '');
-      
+
       if (trimmedFormatted !== yamlContent) {
         modified = true;
         console.log(chalk.green(`✓ Formatted YAML in ${filePath}`));
       }
-      
+
       replacements.push({
         start: match.index,
         end: match.index + fullMatch.length,
-        replacement: `\`\`\`yaml\n${trimmedFormatted}\n\`\`\``
+        replacement: `\`\`\`yaml\n${trimmedFormatted}\n\`\`\``,
       });
     }
   }
-  
+
   // Apply replacements in reverse order to maintain indices
   for (let i = replacements.length - 1; i >= 0; i--) {
     const { start, end, replacement } = replacements[i];
@@ -128,11 +133,11 @@ async function processYamlFile(filePath) {
   await initializeModules();
   const content = fs.readFileSync(filePath, 'utf8');
   const formatted = await formatYamlContent(content, filePath);
-  
+
   if (formatted === null) {
     return false; // Syntax error
   }
-  
+
   if (formatted !== content) {
     fs.writeFileSync(filePath, formatted);
     return true;
@@ -157,7 +162,7 @@ async function main() {
   await initializeModules();
   const args = process.argv.slice(2);
   const glob = require('glob');
-  
+
   if (args.length === 0) {
     console.error('Usage: node yaml-format.js <file1> [file2] ...');
     process.exit(1);
@@ -192,15 +197,21 @@ async function main() {
 
     const ext = path.extname(filePath).toLowerCase();
     const basename = path.basename(filePath).toLowerCase();
-    
+
     try {
       let changed = false;
       if (ext === '.md') {
         changed = await processMarkdownFile(filePath);
-      } else if (ext === '.yaml' || ext === '.yml' || basename.includes('roomodes') || basename.includes('.yaml') || basename.includes('.yml')) {
+      } else if (
+        ext === '.yaml' ||
+        ext === '.yml' ||
+        basename.includes('roomodes') ||
+        basename.includes('.yaml') ||
+        basename.includes('.yml')
+      ) {
         // Handle YAML files and special cases like .roomodes
         changed = await processYamlFile(filePath);
-        
+
         // Also run linting
         const lintPassed = await lintYamlFile(filePath);
         if (!lintPassed) hasErrors = true;
@@ -208,7 +219,7 @@ async function main() {
         // Skip silently for unsupported files
         continue;
       }
-      
+
       if (changed) {
         hasChanges = true;
         filesProcessed.push(filePath);
@@ -220,7 +231,9 @@ async function main() {
   }
 
   if (hasChanges) {
-    console.log(chalk.green(`\n✨ YAML formatting completed! Modified ${filesProcessed.length} files:`));
+    console.log(
+      chalk.green(`\n✨ YAML formatting completed! Modified ${filesProcessed.length} files:`)
+    );
     filesProcessed.forEach(file => console.log(chalk.blue(`  📝 ${file}`)));
   }
 

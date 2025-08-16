@@ -4,7 +4,7 @@ import { join } from 'path';
 
 describe('DevAI Documentation Migration', () => {
   const docsPath = '/workspace/docs/devai-method';
-  
+
   describe('Directory Structure', () => {
     it('should have devai-method directory', () => {
       expect(existsSync(docsPath)).toBe(true);
@@ -34,7 +34,7 @@ describe('DevAI Documentation Migration', () => {
     it('should have persona documentation instead of agent docs', () => {
       const alexPath = join(docsPath, 'agents', 'alex-scrum-master.md');
       const jordanPath = join(docsPath, 'agents', 'jordan-developer.md');
-      
+
       if (existsSync(alexPath)) {
         const alexContent = readFileSync(alexPath, 'utf-8');
         expect(alexContent).toContain('Alex');
@@ -42,7 +42,7 @@ describe('DevAI Documentation Migration', () => {
         expect(alexContent).toContain('natural language');
         expect(alexContent).not.toContain('@');
       }
-      
+
       if (existsSync(jordanPath)) {
         const jordanContent = readFileSync(jordanPath, 'utf-8');
         expect(jordanContent).toContain('Jordan');

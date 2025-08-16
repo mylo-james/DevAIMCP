@@ -29,24 +29,24 @@ export interface NotificationResult {
 
 export class NotificationService {
   private static instance: NotificationService;
-  
+
   static getInstance(): NotificationService {
     if (!NotificationService.instance) {
       NotificationService.instance = new NotificationService();
     }
     return NotificationService.instance;
   }
-  
+
   /**
    * Send a notification to an actor's configured notification channels
    */
   async sendNotification(request: NotificationRequest): Promise<NotificationResult[]> {
     const configs = await this.getActorNotificationConfigs(request.actor_id);
     const results: NotificationResult[] = [];
-    
+
     for (const config of configs) {
       if (!config.is_active) continue;
-      
+
       try {
         const result = await this.sendToProvider(config, request);
         results.push(result);
@@ -59,13 +59,13 @@ export class NotificationService {
         });
       }
     }
-    
+
     // Log the notification attempt
     await this.logNotificationAttempt(request, results);
-    
+
     return results;
   }
-  
+
   /**
    * Send notification when an agent completes their work
    */
@@ -79,7 +79,7 @@ export class NotificationService {
     const story = await this.getStoryDetails(storyId);
     const title = `${actorRole} Work Complete`;
     const message = this.buildCompletionMessage(actorRole, story, jobType, completionDetails);
-    
+
     return this.sendNotification({
       actor_id: actorId,
       title,
@@ -94,7 +94,7 @@ export class NotificationService {
       },
     });
   }
-  
+
   /**
    * Configure notification settings for an actor
    */
@@ -110,12 +110,12 @@ export class NotificationService {
       DO UPDATE SET config_data = $3, updated_at = NOW()
       RETURNING *
     `;
-    
+
     const values = [actorId, notificationType, JSON.stringify(configData)];
     const { rows } = await query<NotificationConfig>(sql, values);
     return rows[0];
   }
-  
+
   /**
    * Get notification configs for an actor
    */
@@ -124,30 +124,31 @@ export class NotificationService {
     const { rows } = await query<NotificationConfig>(sql, [actorId]);
     return rows;
   }
-  
+
   /**
    * Test notification configuration
    */
   async testNotification(actorId: number, notificationType: string): Promise<NotificationResult> {
     const configs = await this.getActorNotificationConfigs(actorId);
     const config = configs.find(c => c.notification_type === notificationType);
-    
+
     if (!config) {
       throw new Error(`No ${notificationType} configuration found for actor ${actorId}`);
     }
-    
+
     const testRequest: NotificationRequest = {
       actor_id: actorId,
       title: 'DevAI Notification Test',
-      message: 'This is a test notification from DevAI. If you receive this, your notification setup is working correctly!',
+      message:
+        'This is a test notification from DevAI. If you receive this, your notification setup is working correctly!',
       priority: 'normal',
       metadata: { test: true },
     };
-    
+
     const results = await this.sendToProvider(config, testRequest);
     return results;
   }
-  
+
   private async sendToProvider(
     config: NotificationConfig,
     request: NotificationRequest
@@ -165,17 +166,17 @@ export class NotificationService {
         throw new Error(`Unsupported notification type: ${config.notification_type}`);
     }
   }
-  
+
   private async sendPushoverNotification(
     config: NotificationConfig,
     request: NotificationRequest
   ): Promise<NotificationResult> {
     const { user_key, app_token } = config.config_data;
-    
+
     if (!user_key || !app_token) {
       throw new Error('Pushover configuration missing user_key or app_token');
     }
-    
+
     const response = await fetch('https://api.pushover.net/1/messages.json', {
       method: 'POST',
       headers: {
@@ -191,13 +192,13 @@ export class NotificationService {
         url_title: 'View Details',
       }),
     });
-    
+
     const result = await response.json();
-    
+
     if (!response.ok) {
       throw new Error(`Pushover API error: ${result.errors?.join(', ') || 'Unknown error'}`);
     }
-    
+
     return {
       success: true,
       provider: 'pushover',
@@ -205,50 +206,53 @@ export class NotificationService {
       sent_at: new Date().toISOString(),
     };
   }
-  
+
   private async sendIFTTTNotification(
     config: NotificationConfig,
     request: NotificationRequest
   ): Promise<NotificationResult> {
     const { webhook_key, event_name } = config.config_data;
-    
+
     if (!webhook_key || !event_name) {
       throw new Error('IFTTT configuration missing webhook_key or event_name');
     }
-    
-    const response = await fetch(`https://maker.ifttt.com/trigger/${event_name}/with/key/${webhook_key}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        value1: request.title,
-        value2: request.message,
-        value3: request.url || '',
-      }),
-    });
-    
+
+    const response = await fetch(
+      `https://maker.ifttt.com/trigger/${event_name}/with/key/${webhook_key}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          value1: request.title,
+          value2: request.message,
+          value3: request.url || '',
+        }),
+      }
+    );
+
     if (!response.ok) {
       throw new Error(`IFTTT webhook error: ${response.status} ${response.statusText}`);
     }
-    
+
     return {
       success: true,
       provider: 'ifttt',
       sent_at: new Date().toISOString(),
     };
   }
-  
+
   private async sendWebhookNotification(
     config: NotificationConfig,
     request: NotificationRequest
   ): Promise<NotificationResult> {
     const { webhook_url, headers = {} } = config.config_data;
-    
+
     if (!webhook_url) {
       throw new Error('Webhook configuration missing webhook_url');
     }
-    
+
     const response = await fetch(webhook_url, {
       method: 'POST',
       headers: {
@@ -264,56 +268,61 @@ export class NotificationService {
         timestamp: new Date().toISOString(),
       }),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Webhook error: ${response.status} ${response.statusText}`);
     }
-    
+
     return {
       success: true,
       provider: 'webhook',
       sent_at: new Date().toISOString(),
     };
   }
-  
+
   private async sendEmailNotification(
     config: NotificationConfig,
-    request: NotificationRequest
+    _request: NotificationRequest
   ): Promise<NotificationResult> {
     // This would integrate with an email service like SendGrid, AWS SES, etc.
     // For now, we'll simulate the email sending
     const { email_address } = config.config_data;
-    
+
     if (!email_address) {
       throw new Error('Email configuration missing email_address');
     }
-    
+
     // Simulate email sending delay
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     return {
       success: true,
       provider: 'email',
       sent_at: new Date().toISOString(),
     };
   }
-  
+
   private mapPriorityToPushover(priority?: string): number {
     switch (priority) {
-      case 'low': return -1;
-      case 'normal': return 0;
-      case 'high': return 1;
-      case 'emergency': return 2;
-      default: return 0;
+      case 'low':
+        return -1;
+      case 'normal':
+        return 0;
+      case 'high':
+        return 1;
+      case 'emergency':
+        return 2;
+      default:
+        return 0;
     }
   }
-  
+
   private async getStoryDetails(storyId: number): Promise<any> {
     const sql = 'SELECT * FROM stories WHERE id = $1';
     const { rows } = await query(sql, [storyId]);
     return rows[0] || { title: 'Unknown Story', id: storyId };
   }
-  
+
   private buildCompletionMessage(
     actorRole: string,
     story: any,
@@ -321,20 +330,20 @@ export class NotificationService {
     completionDetails?: Record<string, any>
   ): string {
     const storyTitle = story?.title || `Story #${story?.id}`;
-    
+
     let message = `${actorRole} has completed their work on "${storyTitle}".`;
-    
+
     if (completionDetails?.challenges) {
       message += `\n\nChallenges encountered: ${completionDetails.challenges}`;
     }
-    
+
     if (completionDetails?.next_steps) {
       message += `\n\nNext steps: ${completionDetails.next_steps}`;
     }
-    
+
     return message;
   }
-  
+
   private async logNotificationAttempt(
     request: NotificationRequest,
     results: NotificationResult[]
@@ -343,14 +352,9 @@ export class NotificationService {
       INSERT INTO notification_logs (actor_id, title, message, results, created_at)
       VALUES ($1, $2, $3, $4, NOW())
     `;
-    
-    const values = [
-      request.actor_id,
-      request.title,
-      request.message,
-      JSON.stringify(results),
-    ];
-    
+
+    const values = [request.actor_id, request.title, request.message, JSON.stringify(results)];
+
     await query(sql, values);
   }
 }

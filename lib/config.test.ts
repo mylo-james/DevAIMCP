@@ -18,20 +18,20 @@ describe('Lib Config Module', () => {
   describe('getDatabaseUrl', () => {
     it('should return DATABASE_URL when provided', async () => {
       process.env.DATABASE_URL = 'postgresql://user:pass@host:5432/db';
-      
+
       // Import the function dynamically to test with current env
       const { getDatabaseUrl } = await import('./config.js');
       const result = getDatabaseUrl();
-      
+
       expect(result).toBe('postgresql://user:pass@host:5432/db');
     });
 
     it('should return DATABASE_URL when provided with whitespace', async () => {
       process.env.DATABASE_URL = '  postgresql://user:pass@host:5432/db  ';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
       const result = getDatabaseUrl();
-      
+
       expect(result).toBe('  postgresql://user:pass@host:5432/db  ');
     });
 
@@ -42,10 +42,10 @@ describe('Lib Config Module', () => {
       process.env.DB_NAME = 'custom-db';
       process.env.DB_USER = 'custom-user';
       process.env.DB_PASSWORD = 'custom-pass';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
       const result = getDatabaseUrl();
-      
+
       expect(result).toBe('postgresql://custom-user:custom-pass@custom-host:5433/custom-db');
     });
 
@@ -56,10 +56,10 @@ describe('Lib Config Module', () => {
       process.env.DB_NAME = 'test-db';
       process.env.DB_USER = 'test-user';
       process.env.DB_PASSWORD = 'test-pass';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
       const result = getDatabaseUrl();
-      
+
       expect(result).toBe('postgresql://test-user:test-pass@localhost:5432/test-db');
     });
 
@@ -69,10 +69,10 @@ describe('Lib Config Module', () => {
       process.env.POSTGRES_DB = 'postgres-db';
       process.env.DB_USER = 'test-user';
       process.env.DB_PASSWORD = 'test-pass';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
       const result = getDatabaseUrl();
-      
+
       expect(result).toBe('postgresql://test-user:test-pass@localhost:5432/postgres-db');
     });
 
@@ -82,10 +82,10 @@ describe('Lib Config Module', () => {
       process.env.DB_NAME = 'test-db';
       process.env.POSTGRES_USER = 'postgres-user';
       process.env.DB_PASSWORD = 'test-pass';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
       const result = getDatabaseUrl();
-      
+
       expect(result).toBe('postgresql://postgres-user:test-pass@localhost:5432/test-db');
     });
 
@@ -95,26 +95,26 @@ describe('Lib Config Module', () => {
       process.env.DB_NAME = 'test-db';
       process.env.DB_USER = 'test-user';
       process.env.POSTGRES_PASSWORD = 'postgres-pass';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
       const result = getDatabaseUrl();
-      
+
       expect(result).toBe('postgresql://test-user:postgres-pass@localhost:5432/test-db');
     });
 
     it('should throw error when DATABASE_URL is empty', async () => {
       process.env.DATABASE_URL = '';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
-      
+
       expect(() => getDatabaseUrl()).toThrow('Database configuration missing');
     });
 
     it('should throw error when DATABASE_URL is only whitespace', async () => {
       process.env.DATABASE_URL = '   ';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
-      
+
       expect(() => getDatabaseUrl()).toThrow('Database configuration missing');
     });
 
@@ -124,10 +124,12 @@ describe('Lib Config Module', () => {
       delete process.env.POSTGRES_DB;
       process.env.DB_USER = 'test-user';
       process.env.DB_PASSWORD = 'test-pass';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
-      
-      expect(() => getDatabaseUrl()).toThrow('Database configuration missing. Provide DATABASE_URL or DB_NAME');
+
+      expect(() => getDatabaseUrl()).toThrow(
+        'Database configuration missing. Provide DATABASE_URL or DB_NAME'
+      );
     });
 
     it('should throw error when DB_USER is missing', async () => {
@@ -136,10 +138,12 @@ describe('Lib Config Module', () => {
       delete process.env.POSTGRES_USER;
       process.env.DB_NAME = 'test-db';
       process.env.DB_PASSWORD = 'test-pass';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
-      
-      expect(() => getDatabaseUrl()).toThrow('Database configuration missing. Provide DATABASE_URL or DB_USER');
+
+      expect(() => getDatabaseUrl()).toThrow(
+        'Database configuration missing. Provide DATABASE_URL or DB_USER'
+      );
     });
 
     it('should throw error when DB_PASSWORD is missing', async () => {
@@ -148,10 +152,12 @@ describe('Lib Config Module', () => {
       delete process.env.POSTGRES_PASSWORD;
       process.env.DB_NAME = 'test-db';
       process.env.DB_USER = 'test-user';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
-      
-      expect(() => getDatabaseUrl()).toThrow('Database configuration missing. Provide DATABASE_URL or DB_PASSWORD');
+
+      expect(() => getDatabaseUrl()).toThrow(
+        'Database configuration missing. Provide DATABASE_URL or DB_PASSWORD'
+      );
     });
 
     it('should throw error with multiple missing variables', async () => {
@@ -162,10 +168,12 @@ describe('Lib Config Module', () => {
       delete process.env.POSTGRES_DB;
       delete process.env.POSTGRES_USER;
       delete process.env.POSTGRES_PASSWORD;
-      
+
       const { getDatabaseUrl } = await import('./config.js');
-      
-      expect(() => getDatabaseUrl()).toThrow('Database configuration missing. Provide DATABASE_URL or DB_NAME, DB_USER, DB_PASSWORD');
+
+      expect(() => getDatabaseUrl()).toThrow(
+        'Database configuration missing. Provide DATABASE_URL or DB_NAME, DB_USER, DB_PASSWORD'
+      );
     });
 
     it('should handle special characters in password', async () => {
@@ -175,10 +183,10 @@ describe('Lib Config Module', () => {
       process.env.DB_NAME = 'test-db';
       process.env.DB_USER = 'test-user';
       process.env.DB_PASSWORD = 'pass@word!123';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
       const result = getDatabaseUrl();
-      
+
       expect(result).toBe('postgresql://test-user:pass@word!123@localhost:5432/test-db');
     });
 
@@ -189,10 +197,10 @@ describe('Lib Config Module', () => {
       process.env.DB_NAME = 'test-db';
       process.env.DB_USER = 'user@domain';
       process.env.DB_PASSWORD = 'test-pass';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
       const result = getDatabaseUrl();
-      
+
       expect(result).toBe('postgresql://user@domain:test-pass@localhost:5432/test-db');
     });
 
@@ -203,10 +211,10 @@ describe('Lib Config Module', () => {
       process.env.DB_NAME = 'test-db';
       process.env.DB_USER = 'test-user';
       process.env.DB_PASSWORD = 'test-pass';
-      
+
       const { getDatabaseUrl } = await import('./config.js');
       const result = getDatabaseUrl();
-      
+
       expect(result).toBe('postgresql://test-user:test-pass@db.example.com:5433/test-db');
     });
   });

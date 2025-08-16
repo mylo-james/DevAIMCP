@@ -3,11 +3,7 @@ import { manageMemory } from './memory-manager.ts';
 import { manageStory } from './story-manager.ts';
 
 // Main BMAD tool executor
-export async function executeBmadTool(
-  agent: string,
-  command: string,
-  args: any
-) {
+export async function executeBmadTool(agent: string, command: string, args: any) {
   try {
     console.log(`[BMAD] Executing ${agent} ${command}`, args);
 
@@ -67,9 +63,7 @@ export async function executeBmadTool(
         return await executeChecklist(agent, args);
 
       default:
-        throw new Error(
-          `BMAD command '${command}' not supported for agent '${agent}'`
-        );
+        throw new Error(`BMAD command '${command}' not supported for agent '${agent}'`);
     }
   } catch (error: any) {
     console.error('[BMAD] Error executing tool:', error);
@@ -110,7 +104,7 @@ function parseBmadAgent(content: string): any {
 
   // Simple YAML parser for BMAD agent structure
   const yamlContent = yamlMatch[1];
-  const lines = yamlContent.split('\n').filter((line) => line.trim());
+  const lines = yamlContent.split('\n').filter(line => line.trim());
 
   const agent: any = {
     commands: [],

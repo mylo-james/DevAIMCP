@@ -21,9 +21,9 @@ program
   .option('-e, --expansions-only', 'Build only expansion pack bundles')
   .option('--no-expansions', 'Skip building expansion packs')
   .option('--no-clean', 'Skip cleaning output directories')
-  .action(async (options) => {
+  .action(async options => {
     const builder = new WebBuilder({
-      rootDir: process.cwd()
+      rootDir: process.cwd(),
     });
 
     try {
@@ -64,9 +64,9 @@ program
   .description('Build web bundles for all expansion packs')
   .option('--expansion <name>', 'Build specific expansion pack only')
   .option('--no-clean', 'Skip cleaning output directories')
-  .action(async (options) => {
+  .action(async options => {
     const builder = new WebBuilder({
-      rootDir: process.cwd()
+      rootDir: process.cwd(),
     });
 
     try {
@@ -116,19 +116,19 @@ program
       // Validate by attempting to build all agents and teams
       const agents = await builder.resolver.listAgents();
       const teams = await builder.resolver.listTeams();
-      
+
       console.log('Validating agents...');
       for (const agent of agents) {
         await builder.resolver.resolveAgentDependencies(agent);
         console.log(`  ✓ ${agent}`);
       }
-      
+
       console.log('\nValidating teams...');
       for (const team of teams) {
         await builder.resolver.resolveTeamDependencies(team);
         console.log(`  ✓ ${team}`);
       }
-      
+
       console.log('\nAll configurations are valid!');
     } catch (error) {
       console.error('Validation failed:', error.message);
@@ -142,12 +142,12 @@ program
   .option('-p, --project <path>', 'Path to V3 project (defaults to current directory)')
   .option('--dry-run', 'Show what would be changed without making changes')
   .option('--no-backup', 'Skip creating backup (not recommended)')
-  .action(async (options) => {
+  .action(async options => {
     const upgrader = new V3ToV4Upgrader();
     await upgrader.upgrade({
       projectPath: options.project,
       dryRun: options.dryRun,
-      backup: options.backup
+      backup: options.backup,
     });
   });
 

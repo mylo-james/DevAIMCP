@@ -17,7 +17,7 @@ DevAI Method is a natural language, orchestrator-first framework that combines A
 ### When to Use DevAI
 
 - **New Projects (Greenfield)**: Complete end-to-end development
-- **Existing Projects (Brownfield)**: Feature additions and enhancements  
+- **Existing Projects (Brownfield)**: Feature additions and enhancements
 - **Team Collaboration**: Multiple personas working together
 - **Quality Assurance**: Automated testing and validation workflows
 - **Knowledge Management**: Learning and decision tracking
@@ -35,6 +35,7 @@ DevAI uses named personas instead of generic agents:
 - **Morgan** (Product Owner): Requirements and business value
 
 Each persona has:
+
 - Unique name and biography
 - Role-specific specialties and preferences
 - Distinct communication style
@@ -43,6 +44,7 @@ Each persona has:
 ### Orchestrator
 
 The Orchestrator coordinates all interactions:
+
 - Greets users in DevAI mode
 - Routes queries to appropriate personas
 - Manages handoffs between personas
@@ -52,18 +54,20 @@ The Orchestrator coordinates all interactions:
 ### Importance Scoring
 
 Knowledge resources are ranked by:
+
 1. Vector similarity to query
 2. Per-actor importance scores
 3. Global recency
 
 Importance is updated by:
+
 - +1 on confirmed resource hits
 - -1 nightly decay for active actors (floor at 0)
 
 ### Development Workflow
 
 1. **SM** drafts story → hands off to **Dev**
-2. **Dev** implements → hands off to **QA**  
+2. **Dev** implements → hands off to **QA**
 3. **QA** validates:
    - **Approve**: Auto-push code, complete story
    - **Reject**: Create defect → SM storifies → Dev fixes → QA re-validates
@@ -71,6 +75,7 @@ Importance is updated by:
 ### Memory System
 
 After every job, actors must store:
+
 - Story ID reference
 - Concise summary of actions
 - Critical learnings (tagged 'critical')
@@ -99,6 +104,7 @@ The Orchestrator interprets intent and routes to the appropriate persona automat
 ## Integration
 
 DevAI integrates with development environments through:
+
 - MCP (Model Context Protocol) server
 - IDE extensions and plugins
 - Git workflow automation
@@ -117,4 +123,4 @@ DevAI integrates with development environments through:
 
 ---
 
-*DevAI Method - Natural Language Development Intelligence*
+_DevAI Method - Natural Language Development Intelligence_

@@ -1,12 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import {
-  createProject,
-  createStory,
-  storeMemory,
-  query,
-} from './lib/database.js';
+import { createProject, createStory, storeMemory, query } from './lib/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,10 +9,7 @@ const __dirname = path.dirname(__filename);
 const BMAD_ROOT = path.resolve(__dirname, '..', 'BMAD-METHOD');
 
 async function ensureProject(name: string, description?: string) {
-  const existing = await query<any>(
-    'SELECT * FROM projects WHERE name = $1 LIMIT 1',
-    [name]
-  );
+  const existing = await query<any>('SELECT * FROM projects WHERE name = $1 LIMIT 1', [name]);
   if (existing.rows[0]) return existing.rows[0];
   return await createProject({
     name,
@@ -53,7 +45,7 @@ function toTags(relPath: string): string[] {
   return relPath
     .split(path.sep)
     .filter(Boolean)
-    .map((s) => s.replace(/\s+/g, '-').toLowerCase());
+    .map(s => s.replace(/\s+/g, '-').toLowerCase());
 }
 
 async function seedBmadKnowledge(projectId: number) {
@@ -279,10 +271,7 @@ async function main() {
   console.log('🎉 Seeding complete');
 }
 
-main().catch((e) => {
+main().catch(e => {
   console.error('Seeding failed', e);
   process.exit(1);
 });
-
-
-

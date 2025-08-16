@@ -2,7 +2,7 @@
 
 /**
  * DevAI Notification Feature Example
- * 
+ *
  * This example demonstrates how to configure and use the notification feature
  * to receive notifications when agents complete their work.
  */
@@ -55,7 +55,7 @@ async function notificationExample() {
       {
         webhook_url: 'https://your-domain.com/webhook',
         headers: {
-          'Authorization': 'Bearer your_token_here',
+          Authorization: 'Bearer your_token_here',
         },
       }
     );

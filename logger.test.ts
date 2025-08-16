@@ -3,13 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import {
-  LogLevel,
-  type Logger,
-  type LogMeta,
-  createChildLogger,
-  DevAILogger,
-} from './logger.js';
+import { LogLevel, type Logger, type LogMeta, createChildLogger, DevAILogger } from './logger.js';
 
 describe('Logger Module', () => {
   const originalEnv = process.env;
@@ -21,7 +15,7 @@ describe('Logger Module', () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(console, 'warn').mockImplementation(() => {});
-    
+
     // Create a logger instance for testing
     logger = new DevAILogger();
   });
@@ -85,8 +79,8 @@ describe('Logger Module', () => {
   });
 
   describe('log formatting', () => {
-            it('should include timestamp in log messages', () => {
-          logger.info('Test message');
+    it('should include timestamp in log messages', () => {
+      logger.info('Test message');
 
       expect(console.log).toHaveBeenCalledWith(
         expect.stringMatching(/\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z\]/)
@@ -98,22 +92,14 @@ describe('Logger Module', () => {
       logger.warn('Test warning');
       logger.info('Test info');
 
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining('[ERROR]')
-      );
-      expect(console.warn).toHaveBeenCalledWith(
-        expect.stringContaining('[WARN]')
-      );
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('[INFO]')
-      );
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('[ERROR]'));
+      expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('[WARN]'));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('[INFO]'));
     });
 
     it('should include DevAI MCP prefix', () => {
       logger.info('Test message');
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('[DevAI MCP]')
-      );
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('[DevAI MCP]'));
     });
   });
 
@@ -121,7 +107,7 @@ describe('Logger Module', () => {
     it('should include meta data in log messages', () => {
       const meta: LogMeta = { userId: 123, action: 'test' };
       logger.info('Test message', meta);
-      
+
       expect(console.log).toHaveBeenCalledWith(
         expect.stringContaining('{"userId":123,"action":"test"}')
       );
@@ -129,22 +115,18 @@ describe('Logger Module', () => {
 
     it('should handle empty meta data', () => {
       logger.info('Test message');
-      expect(console.log).toHaveBeenCalledWith(
-        expect.not.stringContaining('{}')
-      );
+      expect(console.log).toHaveBeenCalledWith(expect.not.stringContaining('{}'));
     });
 
     it('should handle undefined meta data', () => {
       logger.info('Test message', undefined);
-      expect(console.log).toHaveBeenCalledWith(
-        expect.not.stringContaining('undefined')
-      );
+      expect(console.log).toHaveBeenCalledWith(expect.not.stringContaining('undefined'));
     });
 
-             it('should handle circular references in meta data', () => {
-           const circular: Record<string, unknown> = { name: 'test' };
+    it('should handle circular references in meta data', () => {
+      const circular: Record<string, unknown> = { name: 'test' };
       circular.self = circular;
-      
+
       logger.info('Test message', circular);
       expect(console.log).toHaveBeenCalledWith(
         expect.stringContaining('[Circular or non-serializable object]')
@@ -156,54 +138,40 @@ describe('Logger Module', () => {
     it('should log error with stack trace', () => {
       const error = new Error('Test error');
       logger.errorWithStack('Error occurred', error);
-      
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining('Error occurred')
-      );
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining('"name":"Error"')
-      );
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining('"message":"Test error"')
-      );
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining('"stack"')
-      );
+
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Error occurred'));
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('"name":"Error"'));
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('"message":"Test error"'));
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('"stack"'));
     });
 
     it('should include additional meta data', () => {
       const error = new Error('Test error');
       const meta = { userId: 123 };
       logger.errorWithStack('Error occurred', error, meta);
-      
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining('"userId":123')
-      );
+
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('"userId":123'));
     });
   });
 
   describe('performance logging', () => {
     it('should log performance metrics', () => {
       logger.performance('test-operation', 150);
-      
+
       expect(console.log).toHaveBeenCalledWith(
         expect.stringContaining('Performance: test-operation completed in 150ms')
       );
       expect(console.log).toHaveBeenCalledWith(
         expect.stringContaining('"operation":"test-operation"')
       );
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('"duration":"150ms"')
-      );
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"duration":"150ms"'));
     });
 
     it('should include additional meta data', () => {
       const meta = { userId: 123 };
       logger.performance('test-operation', 150, meta);
-      
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('"userId":123')
-      );
+
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"userId":123'));
     });
   });
 
@@ -222,30 +190,22 @@ describe('Logger Module', () => {
   describe('MCP logging', () => {
     it('should log MCP operations', () => {
       logger.mcp('tool_call', 'test_tool');
-      
+
       expect(console.log).toHaveBeenCalledWith(
         expect.stringContaining('MCP: tool_call (test_tool)')
       );
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('"operation":"tool_call"')
-      );
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('"tool":"test_tool"')
-      );
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('"type":"mcp"')
-      );
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"operation":"tool_call"'));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"tool":"test_tool"'));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"type":"mcp"'));
     });
 
     it('should log MCP operations without tool', () => {
       logger.mcp('connection_established');
-      
+
       expect(console.log).toHaveBeenCalledWith(
         expect.stringContaining('MCP: connection_established')
       );
-      expect(console.log).not.toHaveBeenCalledWith(
-        expect.stringContaining(' (')
-      );
+      expect(console.log).not.toHaveBeenCalledWith(expect.stringContaining(' ('));
     });
   });
 
@@ -253,7 +213,7 @@ describe('Logger Module', () => {
     it('should create a child logger with context', () => {
       const context = { userId: 123, sessionId: 'abc' };
       const childLogger = createChildLogger(context);
-      
+
       expect(childLogger).toBeDefined();
       expect(typeof childLogger.error).toBe('function');
       expect(typeof childLogger.warn).toBe('function');
@@ -264,47 +224,35 @@ describe('Logger Module', () => {
     it('should include context in all log messages', () => {
       const context = { userId: 123 };
       const childLogger = createChildLogger(context);
-      
+
       childLogger.info('Test message');
-      
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('"userId":123')
-      );
+
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"userId":123'));
     });
 
     it('should merge context with additional meta data', () => {
       const context = { userId: 123 };
       const childLogger = createChildLogger(context);
       const meta = { action: 'test' };
-      
+
       childLogger.info('Test message', meta);
-      
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('"userId":123')
-      );
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('"action":"test"')
-      );
+
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"userId":123'));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"action":"test"'));
     });
 
     it('should handle all log levels', () => {
       const context = { userId: 123 };
       const childLogger = createChildLogger(context);
-      
+
       childLogger.error('Error message');
       childLogger.warn('Warning message');
       childLogger.info('Info message');
       childLogger.debug('Debug message');
-      
-      expect(console.error).toHaveBeenCalledWith(
-        expect.stringContaining('"userId":123')
-      );
-      expect(console.warn).toHaveBeenCalledWith(
-        expect.stringContaining('"userId":123')
-      );
-      expect(console.log).toHaveBeenCalledWith(
-        expect.stringContaining('"userId":123')
-      );
+
+      expect(console.error).toHaveBeenCalledWith(expect.stringContaining('"userId":123'));
+      expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('"userId":123'));
+      expect(console.log).toHaveBeenCalledWith(expect.stringContaining('"userId":123'));
     });
   });
 

@@ -9,20 +9,24 @@ Our CI/CD pipeline ensures code quality, security, and reliability through autom
 ## 📋 CI/CD Pipeline Components
 
 ### 1. Code Quality Checks
+
 - **ESLint**: TypeScript/JavaScript linting with strict rules
 - **Prettier**: Code formatting consistency
 - **TypeScript**: Type checking and compilation verification
 
 ### 2. Security Scanning
+
 - **npm audit**: Dependency vulnerability scanning
 - **Automatic security fixes**: When possible, vulnerabilities are automatically fixed
 
 ### 3. Testing
+
 - **Unit Tests**: Jest-based testing with coverage reporting
 - **Integration Tests**: Database and service integration testing
 - **Coverage Threshold**: 70% minimum coverage required
 
 ### 4. Build Verification
+
 - **TypeScript Compilation**: Ensures code compiles correctly
 - **Docker Build**: Container image building and testing
 - **Bundle Analysis**: Performance and size monitoring
@@ -30,6 +34,7 @@ Our CI/CD pipeline ensures code quality, security, and reliability through autom
 ## 🛠️ Local Development Setup
 
 ### Prerequisites
+
 - Node.js 18+
 - npm or yarn
 - Docker (for container testing)
@@ -38,11 +43,13 @@ Our CI/CD pipeline ensures code quality, security, and reliability through autom
 ### Installation
 
 1. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
 2. **Setup Git hooks** (optional but recommended):
+
    ```bash
    npx husky install
    ```
@@ -56,6 +63,7 @@ Our CI/CD pipeline ensures code quality, security, and reliability through autom
 ### Available Scripts
 
 #### Code Quality
+
 ```bash
 npm run lint          # Run ESLint
 npm run lint:fix      # Fix ESLint issues automatically
@@ -65,6 +73,7 @@ npm run type-check    # Run TypeScript type checking
 ```
 
 #### Testing
+
 ```bash
 npm run test          # Run tests in watch mode
 npm run test:ci       # Run tests for CI (no watch)
@@ -72,12 +81,14 @@ npm run test:coverage # Run tests with coverage report
 ```
 
 #### Security
+
 ```bash
 npm run security:audit  # Run security audit
 npm run security:fix    # Fix security issues automatically
 ```
 
 #### CI/CD
+
 ```bash
 npm run ci:check       # Run all CI checks locally
 npm run ci:build       # Build application and Docker image
@@ -86,6 +97,7 @@ npm run ci:build       # Build application and Docker image
 ## 🔄 GitHub Actions Workflow
 
 ### Triggers
+
 - Push to `main` or `develop` branches
 - Pull requests to `main` or `develop` branches
 - Scheduled dependency checks (weekly)
@@ -121,6 +133,7 @@ npm run ci:build       # Build application and Docker image
 ## 📊 Quality Gates
 
 ### Code Coverage
+
 - **Minimum**: 70% overall coverage
 - **Branches**: 70%
 - **Functions**: 70%
@@ -128,18 +141,22 @@ npm run ci:build       # Build application and Docker image
 - **Statements**: 70%
 
 ### Code Quality
+
 - **ESLint**: Zero warnings or errors
 - **TypeScript**: No type errors
 - **Prettier**: All files properly formatted
 
 ### Security
+
 - **npm audit**: No moderate or higher vulnerabilities
 - **Dependencies**: All dependencies up to date
 
 ## 🚨 Failure Handling
 
 ### CI Failures
+
 When CI fails, the pipeline will:
+
 1. Stop execution and report the failure
 2. Provide detailed logs for debugging
 3. Block merging until issues are resolved
@@ -148,21 +165,25 @@ When CI fails, the pipeline will:
 ### Common Issues & Solutions
 
 #### ESLint Errors
+
 ```bash
 npm run lint:fix  # Auto-fix most issues
 ```
 
 #### TypeScript Errors
+
 ```bash
 npm run type-check  # Check for type issues
 ```
 
 #### Test Failures
+
 ```bash
 npm run test  # Run tests locally to debug
 ```
 
 #### Security Vulnerabilities
+
 ```bash
 npm run security:fix  # Auto-fix when possible
 npm audit fix         # Manual fix
@@ -171,6 +192,7 @@ npm audit fix         # Manual fix
 ## 📝 Commit Standards
 
 ### Conventional Commits
+
 We use conventional commit messages:
 
 ```
@@ -182,6 +204,7 @@ We use conventional commit messages:
 ```
 
 #### Types
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -195,6 +218,7 @@ We use conventional commit messages:
 - `revert`: Revert previous commit
 
 #### Examples
+
 ```
 feat(auth): add user authentication
 fix(api): resolve database connection issue
@@ -204,24 +228,28 @@ docs(readme): update installation instructions
 ## 🔧 Configuration Files
 
 ### ESLint (`.eslintrc.json`)
+
 - TypeScript support
 - Jest testing rules
 - Node.js environment
 - Prettier integration
 
 ### Prettier (`.prettierrc`)
+
 - Consistent code formatting
 - 100 character line width
 - Single quotes
 - Trailing commas
 
 ### Jest (`jest.config.js`)
+
 - TypeScript support
 - Coverage reporting
 - Test environment setup
 - Coverage thresholds
 
 ### GitHub Actions (`.github/workflows/ci.yml`)
+
 - Multi-job pipeline
 - Parallel execution
 - Service containers
@@ -230,17 +258,20 @@ docs(readme): update installation instructions
 ## 🚀 Deployment Readiness
 
 ### Docker
+
 - Multi-stage builds for optimization
 - Security best practices
 - Health checks
 - Non-root user
 
 ### Environment Variables
+
 - Development: `.env`
 - Testing: `.env.test`
 - Production: Environment-specific
 
 ### Database
+
 - Migration scripts
 - Seed data
 - Backup/restore procedures
@@ -248,12 +279,14 @@ docs(readme): update installation instructions
 ## 📈 Monitoring & Metrics
 
 ### Code Quality Metrics
+
 - ESLint rule compliance
 - TypeScript strict mode compliance
 - Test coverage trends
 - Security vulnerability trends
 
 ### Performance Metrics
+
 - Build time optimization
 - Bundle size monitoring
 - Docker image size tracking
@@ -261,11 +294,13 @@ docs(readme): update installation instructions
 ## 🔄 Continuous Improvement
 
 ### Regular Reviews
+
 - Weekly dependency updates
 - Monthly security audits
 - Quarterly performance reviews
 
 ### Feedback Loop
+
 - CI failure analysis
 - Performance regression detection
 - Security vulnerability tracking
@@ -291,6 +326,7 @@ When contributing to this project:
 ## 📞 Support
 
 For CI/CD related issues:
+
 1. Check the GitHub Actions logs
 2. Review this documentation
 3. Run checks locally to reproduce issues

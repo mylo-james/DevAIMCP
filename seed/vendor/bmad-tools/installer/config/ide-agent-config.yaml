@@ -8,32 +8,32 @@ roo-permissions:
   # Core agents
   analyst:
     fileRegex: "\\.(md|txt)$"
-    description: "Documentation and text files"
+    description: 'Documentation and text files'
   pm:
     fileRegex: "\\.(md|txt)$"
-    description: "Product documentation"
+    description: 'Product documentation'
   architect:
     fileRegex: "\\.(md|txt|yml|yaml|json)$"
-    description: "Architecture docs and configs"
+    description: 'Architecture docs and configs'
   qa:
     fileRegex: "\\.(test|spec)\\.(js|ts|jsx|tsx)$|\\.md$"
-    description: "Test files and documentation"
+    description: 'Test files and documentation'
   ux-expert:
     fileRegex: "\\.(md|css|scss|html|jsx|tsx)$"
-    description: "Design-related files"
+    description: 'Design-related files'
   po:
     fileRegex: "\\.(md|txt)$"
-    description: "Story and requirement docs"
+    description: 'Story and requirement docs'
   sm:
     fileRegex: "\\.(md|txt)$"
-    description: "Process and planning docs"
+    description: 'Process and planning docs'
   # Expansion pack agents
   game-designer:
     fileRegex: "\\.(md|txt|json|yaml|yml)$"
-    description: "Game design documents and configs"
+    description: 'Game design documents and configs'
   game-sm:
     fileRegex: "\\.(md|txt)$"
-    description: "Game project management docs"
+    description: 'Game project management docs'
 
 # Cline agent ordering
 # Lower numbers appear first in the list

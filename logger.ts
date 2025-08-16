@@ -12,9 +12,9 @@ export enum LogLevel {
   DEBUG = 3,
 }
 
-     export interface LogMeta {
-       [key: string]: unknown;
-     }
+export interface LogMeta {
+  [key: string]: unknown;
+}
 
 export interface Logger {
   error(message: string, meta?: LogMeta): void;
@@ -44,7 +44,7 @@ function getLogLevel(level: string): LogLevel {
 /**
  * Safe JSON stringify that handles circular references
  */
-     function safeStringify(obj: unknown): string {
+function safeStringify(obj: unknown): string {
   try {
     return JSON.stringify(obj);
   } catch (error) {
@@ -81,7 +81,7 @@ export class DevAILogger implements Logger {
     }
 
     const formattedMessage = formatMessage(levelName, message, meta);
-    
+
     switch (level) {
       case LogLevel.ERROR:
         console.error(formattedMessage);
@@ -178,13 +178,9 @@ export const logger = new DevAILogger();
  */
 export function createChildLogger(context: LogMeta): Logger {
   return {
-    error: (message: string, meta?: LogMeta) => 
-      logger.error(message, { ...context, ...meta }),
-    warn: (message: string, meta?: LogMeta) => 
-      logger.warn(message, { ...context, ...meta }),
-    info: (message: string, meta?: LogMeta) => 
-      logger.info(message, { ...context, ...meta }),
-    debug: (message: string, meta?: LogMeta) => 
-      logger.debug(message, { ...context, ...meta }),
+    error: (message: string, meta?: LogMeta) => logger.error(message, { ...context, ...meta }),
+    warn: (message: string, meta?: LogMeta) => logger.warn(message, { ...context, ...meta }),
+    info: (message: string, meta?: LogMeta) => logger.info(message, { ...context, ...meta }),
+    debug: (message: string, meta?: LogMeta) => logger.debug(message, { ...context, ...meta }),
   };
 }

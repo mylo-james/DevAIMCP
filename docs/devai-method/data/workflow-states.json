@@ -95,11 +95,7 @@
       "persona": "jordan",
       "description": "Developer is fixing the defect",
       "next_states": ["defect_ready_for_qa"],
-      "required_actions": [
-        "Investigate defect",
-        "Implement fix",
-        "Add regression tests"
-      ]
+      "required_actions": ["Investigate defect", "Implement fix", "Add regression tests"]
     },
     "defect_ready_for_qa": {
       "state": "Defect Ready for QA",
@@ -139,11 +135,7 @@
       "persona": "alex",
       "description": "Story is complete and accepted",
       "next_states": [],
-      "required_actions": [
-        "Update story status",
-        "Document lessons learned",
-        "Update team metrics"
-      ]
+      "required_actions": ["Update story status", "Document lessons learned", "Update team metrics"]
     }
   },
   "epic_workflow": {
@@ -181,11 +173,7 @@
       "state": "HITL Approved",
       "description": "Epic approved by human reviewer",
       "next_states": ["completed"],
-      "required_actions": [
-        "Update epic status",
-        "Document approval",
-        "Coordinate epic closure"
-      ]
+      "required_actions": ["Update epic status", "Document approval", "Coordinate epic closure"]
     },
     "hitl_rejected": {
       "state": "HITL Rejected",

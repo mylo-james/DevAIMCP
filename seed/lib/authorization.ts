@@ -32,34 +32,37 @@ export interface AuditLogEntry {
 }
 
 export class AuthorizationService {
-  
   /**
    * Generate a new actor key
    */
-  static async generateActorKey(actorId: number, scopes: string[] = [], expiresInDays?: number): Promise<{
+  static async generateActorKey(
+    actorId: number,
+    scopes: string[] = [],
+    expiresInDays?: number
+  ): Promise<{
     key: string;
     keyRecord: ActorKey;
   }> {
     // Generate a secure random key
     const key = randomBytes(32).toString('hex');
     const keyHash = createHash('sha256').update(key).digest('hex');
-    
-    const expiresAt = expiresInDays 
+
+    const expiresAt = expiresInDays
       ? new Date(Date.now() + expiresInDays * 24 * 60 * 60 * 1000).toISOString()
       : null;
-    
+
     const sql = `INSERT INTO actor_keys (actor_id, key_hash, scopes, expires_at)
       VALUES ($1, $2, $3, $4)
       RETURNING *`;
     const values = [actorId, keyHash, scopes, expiresAt];
     const { rows } = await query<ActorKey>(sql, values);
-    
+
     return {
       key, // Return the plain key only once for the user to store
       keyRecord: rows[0],
     };
   }
-  
+
   /**
    * Validate an actor key and return actor info
    */
@@ -70,7 +73,7 @@ export class AuthorizationService {
     reason: string;
   }> {
     const keyHash = createHash('sha256').update(key).digest('hex');
-    
+
     const sql = `
       SELECT ak.*, p.name as actor_name, p.role as actor_role
       FROM actor_keys ak
@@ -78,16 +81,16 @@ export class AuthorizationService {
       WHERE ak.key_hash = $1 AND ak.active = true
     `;
     const { rows } = await query<any>(sql, [keyHash]);
-    
+
     if (rows.length === 0) {
       return {
         valid: false,
         reason: 'Invalid or inactive key',
       };
     }
-    
+
     const keyRecord = rows[0];
-    
+
     // Check expiration
     if (keyRecord.expires_at && new Date(keyRecord.expires_at) < new Date()) {
       return {
@@ -95,7 +98,7 @@ export class AuthorizationService {
         reason: 'Key has expired',
       };
     }
-    
+
     return {
       valid: true,
       actorId: keyRecord.actor_id,
@@ -103,7 +106,7 @@ export class AuthorizationService {
       reason: 'Valid key',
     };
   }
-  
+
   /**
    * Check if an actor has access to a resource
    */
@@ -111,7 +114,7 @@ export class AuthorizationService {
     // Get the resource and its access tags
     const resourceQuery = 'SELECT * FROM kb_resources WHERE id = $1';
     const { rows: resourceRows } = await query<any>(resourceQuery, [resourceId]);
-    
+
     if (resourceRows.length === 0) {
       return {
         allowed: false,
@@ -120,10 +123,10 @@ export class AuthorizationService {
         scopes_checked: [],
       };
     }
-    
+
     const resource = resourceRows[0];
     const resourceTags = resource.access_tags || [];
-    
+
     // Get actor's scopes from all their active keys
     const actorScopesQuery = `
       SELECT DISTINCT unnest(scopes) as scope
@@ -133,11 +136,11 @@ export class AuthorizationService {
     `;
     const { rows: scopeRows } = await query<{ scope: string }>(actorScopesQuery, [actorId]);
     const actorScopes = scopeRows.map(row => row.scope);
-    
+
     // Check if actor has any required scopes
     let accessAllowed = false;
     let reason = 'No matching scopes';
-    
+
     if (resourceTags.length === 0) {
       // No access restrictions - allow access
       accessAllowed = true;
@@ -152,10 +155,10 @@ export class AuthorizationService {
         reason = `Actor lacks required scopes: ${resourceTags.join(', ')}`;
       }
     }
-    
+
     // Log the access decision
     await this.auditResourceAccess(actorId, resourceId, accessAllowed ? 'allow' : 'deny', reason);
-    
+
     return {
       allowed: accessAllowed,
       reason,
@@ -164,7 +167,7 @@ export class AuthorizationService {
       scopes_checked: resourceTags,
     };
   }
-  
+
   /**
    * Get filtered resources based on actor authorization
    */
@@ -178,7 +181,7 @@ export class AuthorizationService {
     `;
     const { rows: scopeRows } = await query<{ scope: string }>(actorScopesQuery, [actorId]);
     const actorScopes = scopeRows.map(row => row.scope);
-    
+
     // Build query to get authorized resources
     let baseQuery = `
       SELECT r.* FROM kb_resources r
@@ -187,20 +190,20 @@ export class AuthorizationService {
         OR r.access_tags && $1::text[]           -- Resources with matching tags
       )
     `;
-    
+
     const queryParams: any[] = [actorScopes];
-    
+
     if (projectId) {
       baseQuery += ' AND r.project_id = $2';
       queryParams.push(projectId);
     }
-    
+
     baseQuery += ' ORDER BY r.updated_at DESC';
-    
+
     const { rows } = await query<any>(baseQuery, queryParams);
     return rows;
   }
-  
+
   /**
    * Audit resource access decisions
    */
@@ -223,45 +226,47 @@ export class AuthorizationService {
     ];
     await query(sql, values);
   }
-  
+
   /**
    * Get audit log entries
    */
-  static async getAuditLog(filters: {
-    actorId?: number;
-    resourceId?: number;
-    decision?: 'allow' | 'deny';
-    limit?: number;
-  } = {}): Promise<AuditLogEntry[]> {
+  static async getAuditLog(
+    filters: {
+      actorId?: number;
+      resourceId?: number;
+      decision?: 'allow' | 'deny';
+      limit?: number;
+    } = {}
+  ): Promise<AuditLogEntry[]> {
     let sql = 'SELECT * FROM audit_log WHERE 1=1';
     const params: any[] = [];
-    
+
     if (filters.actorId) {
       sql += ` AND actor_id = $${params.length + 1}`;
       params.push(filters.actorId);
     }
-    
+
     if (filters.resourceId) {
       sql += ` AND resource_id = $${params.length + 1}`;
       params.push(filters.resourceId);
     }
-    
+
     if (filters.decision) {
       sql += ` AND decision = $${params.length + 1}`;
       params.push(filters.decision);
     }
-    
+
     sql += ' ORDER BY created_at DESC';
-    
+
     if (filters.limit) {
       sql += ` LIMIT $${params.length + 1}`;
       params.push(filters.limit);
     }
-    
+
     const { rows } = await query<AuditLogEntry>(sql, params);
     return rows;
   }
-  
+
   /**
    * Revoke an actor key
    */
@@ -272,7 +277,7 @@ export class AuthorizationService {
     );
     return (result.rowCount || 0) > 0;
   }
-  
+
   /**
    * List actor keys for an actor
    */

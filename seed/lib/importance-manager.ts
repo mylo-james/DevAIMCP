@@ -34,13 +34,14 @@ export interface ActivityLogEntry {
 }
 
 export class ImportanceManager {
-  
   /**
    * Create a new knowledge base resource
    */
-  static async createKBResource(input: Omit<KBResource, 'id' | 'created_at' | 'updated_at'>): Promise<KBResource> {
+  static async createKBResource(
+    input: Omit<KBResource, 'id' | 'created_at' | 'updated_at'>
+  ): Promise<KBResource> {
     const embedding = input.content ? await generateEmbedding(input.content) : null;
-    
+
     const sql = `INSERT INTO kb_resources (project_id, uri, type, content, access_tags, metadata, embedding)
       VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING *`;
@@ -56,7 +57,7 @@ export class ImportanceManager {
     const { rows } = await query<KBResource>(sql, values);
     return rows[0];
   }
-  
+
   /**
    * Increment importance for an actor-resource pair on confirmed hit
    */
@@ -70,13 +71,13 @@ export class ImportanceManager {
         updated_at = NOW()
       RETURNING *`;
     const { rows } = await query<ActorImportance>(sql, [actorId, resourceId]);
-    
+
     // Log the activity
     await this.logActivity(actorId, 'importance_increment', resourceId);
-    
+
     return rows[0];
   }
-  
+
   /**
    * Get importance score for a specific actor-resource pair
    */
@@ -87,7 +88,7 @@ export class ImportanceManager {
     );
     return rows[0] || null;
   }
-  
+
   /**
    * Get all importance scores for an actor
    */
@@ -98,7 +99,7 @@ export class ImportanceManager {
     );
     return rows;
   }
-  
+
   /**
    * Run nightly decay for all actors who were active today
    */
@@ -113,9 +114,9 @@ export class ImportanceManager {
       WHERE created_at >= CURRENT_DATE
     `;
     const { rows: activeActors } = await query<{ actor_id: number }>(activeActorsQuery);
-    
+
     let totalDecayed = 0;
-    
+
     for (const { actor_id } of activeActors) {
       // Decay all importance scores for this actor by 1 (floor at 0)
       const decayResult = await query(
@@ -125,19 +126,19 @@ export class ImportanceManager {
          WHERE actor_id = $1 AND importance > 0`,
         [actor_id]
       );
-      
+
       totalDecayed += decayResult.rowCount || 0;
-      
+
       // Log the decay activity
       await this.logActivity(actor_id, 'nightly_decay');
     }
-    
+
     return {
       actorsProcessed: activeActors.length,
       importanceDecayed: totalDecayed,
     };
   }
-  
+
   /**
    * Get resources ranked by vector similarity and actor importance
    */
@@ -146,22 +147,24 @@ export class ImportanceManager {
     queryEmbedding: number[];
     projectId?: number;
     limit?: number;
-  }): Promise<Array<{
-    resource: KBResource;
-    vectorScore: number;
-    actorImportance: number;
-    combinedScore: number;
-  }>> {
+  }): Promise<
+    Array<{
+      resource: KBResource;
+      vectorScore: number;
+      actorImportance: number;
+      combinedScore: number;
+    }>
+  > {
     const limit = params.limit || 10;
-    
+
     let projectFilter = '';
     const queryParams: any[] = [params.queryEmbedding, params.actorId, limit];
-    
+
     if (params.projectId) {
       projectFilter = 'AND r.project_id = $4';
       queryParams.push(params.projectId);
     }
-    
+
     const sql = `
       SELECT 
         r.*,
@@ -174,9 +177,9 @@ export class ImportanceManager {
       ORDER BY combined_score DESC, r.updated_at DESC
       LIMIT $3
     `;
-    
+
     const { rows } = await query<any>(sql, queryParams);
-    
+
     return rows.map(row => ({
       resource: {
         id: row.id,
@@ -195,15 +198,15 @@ export class ImportanceManager {
       combinedScore: Number(row.combined_score),
     }));
   }
-  
+
   /**
    * Log actor activity
    */
   static async logActivity(
-    actorId: number, 
-    action: string, 
-    resourceId?: number, 
-    storyId?: number, 
+    actorId: number,
+    action: string,
+    resourceId?: number,
+    storyId?: number,
     metadata?: Record<string, any>
   ): Promise<ActivityLogEntry> {
     const sql = `INSERT INTO activity_log (actor_id, action, resource_id, story_id, metadata)
@@ -219,7 +222,7 @@ export class ImportanceManager {
     const { rows } = await query<ActivityLogEntry>(sql, values);
     return rows[0];
   }
-  
+
   /**
    * Get activity log for an actor
    */
@@ -230,7 +233,7 @@ export class ImportanceManager {
     );
     return rows;
   }
-  
+
   /**
    * Get actors who were active on a specific date
    */
@@ -241,7 +244,7 @@ export class ImportanceManager {
     );
     return rows.map(row => row.actor_id);
   }
-  
+
   /**
    * Schedule nightly decay job (this would typically be called by a cron job)
    */

@@ -23,15 +23,44 @@ export interface MemoryHook {
 }
 
 export class EnhancedMemoryManager {
-  
   private static registeredHooks: MemoryHook[] = [
-    { id: 'sm_draft_complete', actor_role: 'Scrum Master', job_type: 'story_draft', enabled: true, mandatory: true },
-    { id: 'dev_implement_complete', actor_role: 'Developer', job_type: 'implementation', enabled: true, mandatory: true },
-    { id: 'qa_validate_complete', actor_role: 'QA', job_type: 'validation', enabled: true, mandatory: true },
-    { id: 'defect_fix_complete', actor_role: 'Developer', job_type: 'defect_fix', enabled: true, mandatory: true },
-    { id: 'qa_revalidate_complete', actor_role: 'QA', job_type: 'revalidation', enabled: true, mandatory: true },
+    {
+      id: 'sm_draft_complete',
+      actor_role: 'Scrum Master',
+      job_type: 'story_draft',
+      enabled: true,
+      mandatory: true,
+    },
+    {
+      id: 'dev_implement_complete',
+      actor_role: 'Developer',
+      job_type: 'implementation',
+      enabled: true,
+      mandatory: true,
+    },
+    {
+      id: 'qa_validate_complete',
+      actor_role: 'QA',
+      job_type: 'validation',
+      enabled: true,
+      mandatory: true,
+    },
+    {
+      id: 'defect_fix_complete',
+      actor_role: 'Developer',
+      job_type: 'defect_fix',
+      enabled: true,
+      mandatory: true,
+    },
+    {
+      id: 'qa_revalidate_complete',
+      actor_role: 'QA',
+      job_type: 'revalidation',
+      enabled: true,
+      mandatory: true,
+    },
   ];
-  
+
   /**
    * Store mandatory post-job memory
    */
@@ -51,11 +80,11 @@ export class EnhancedMemoryManager {
     if (params.additionalTags) {
       tags.push(...params.additionalTags);
     }
-    
+
     // Generate embedding for the memory content
     const memoryContent = `Job: ${params.jobType}\nSummary: ${params.summary}\nCritical Learnings: ${params.criticalLearnings?.join('; ') || 'None'}`;
     const embedding = await generateEmbedding(memoryContent);
-    
+
     const sql = `INSERT INTO post_job_memories (actor_id, story_id, job_type, summary, critical_learnings, confidence, tags, embedding)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *`;
@@ -72,26 +101,24 @@ export class EnhancedMemoryManager {
     const { rows } = await query<PostJobMemory>(sql, values);
     return rows[0];
   }
-  
+
   /**
    * Check if memory update is mandatory for a job type
    */
   static isMandatoryMemoryUpdate(actorRole: string, jobType: string): boolean {
-    const hook = this.registeredHooks.find(h => 
-      h.actor_role === actorRole && h.job_type === jobType
+    const hook = this.registeredHooks.find(
+      h => h.actor_role === actorRole && h.job_type === jobType
     );
     return hook?.mandatory || false;
   }
-  
+
   /**
    * Get memory hook for actor and job type
    */
   static getMemoryHook(actorRole: string, jobType: string): MemoryHook | undefined {
-    return this.registeredHooks.find(h => 
-      h.actor_role === actorRole && h.job_type === jobType
-    );
+    return this.registeredHooks.find(h => h.actor_role === actorRole && h.job_type === jobType);
   }
-  
+
   /**
    * Execute post-job memory hook
    */
@@ -107,13 +134,13 @@ export class EnhancedMemoryManager {
     if (!hook || !hook.enabled) {
       return null;
     }
-    
+
     // Generate summary based on job type and result
     const summary = this.generateJobSummary(params.jobType, params.jobResult);
-    
+
     // Extract critical learnings
     const criticalLearnings = this.extractCriticalLearnings(params.jobType, params.jobResult);
-    
+
     // Store the memory
     const memory = await this.storePostJobMemory({
       actorId: params.actorId,
@@ -124,10 +151,10 @@ export class EnhancedMemoryManager {
       confidence: params.confidence,
       additionalTags: [params.actorRole.toLowerCase().replace(' ', '_')],
     });
-    
+
     return memory;
   }
-  
+
   /**
    * Search post-job memories
    */
@@ -140,42 +167,42 @@ export class EnhancedMemoryManager {
     limit?: number;
   }): Promise<Array<{ memory: PostJobMemory; score: number }>> {
     const queryEmbedding = await generateEmbedding(params.query);
-    
+
     let sql = `
       SELECT m.*, 1 - (m.embedding <=> $1) AS score
       FROM post_job_memories m
       WHERE m.embedding IS NOT NULL
     `;
     const queryParams: any[] = [queryEmbedding];
-    
+
     if (params.actorId) {
       sql += ` AND m.actor_id = $${queryParams.length + 1}`;
       queryParams.push(params.actorId);
     }
-    
+
     if (params.storyId) {
       sql += ` AND m.story_id = $${queryParams.length + 1}`;
       queryParams.push(params.storyId);
     }
-    
+
     if (params.jobType) {
       sql += ` AND m.job_type = $${queryParams.length + 1}`;
       queryParams.push(params.jobType);
     }
-    
+
     if (params.criticalOnly) {
       sql += ` AND 'critical' = ANY(m.tags)`;
     }
-    
+
     sql += ` ORDER BY m.embedding <=> $1 ASC`;
-    
+
     if (params.limit) {
       sql += ` LIMIT $${queryParams.length + 1}`;
       queryParams.push(params.limit);
     }
-    
+
     const { rows } = await query<any>(sql, queryParams);
-    
+
     return rows.map(row => ({
       memory: {
         id: row.id,
@@ -193,7 +220,7 @@ export class EnhancedMemoryManager {
       score: Number(row.score),
     }));
   }
-  
+
   /**
    * Get all post-job memories for a story
    */
@@ -204,10 +231,10 @@ export class EnhancedMemoryManager {
     );
     return rows.map(row => ({
       ...row,
-      critical_learnings: JSON.parse(row.critical_learnings as any || '[]'),
+      critical_learnings: JSON.parse((row.critical_learnings as any) || '[]'),
     }));
   }
-  
+
   /**
    * Get critical memories across all actors
    */
@@ -221,10 +248,10 @@ export class EnhancedMemoryManager {
     );
     return rows.map(row => ({
       ...row,
-      critical_learnings: JSON.parse(row.critical_learnings as any || '[]'),
+      critical_learnings: JSON.parse((row.critical_learnings as any) || '[]'),
     }));
   }
-  
+
   private static generateJobSummary(jobType: string, jobResult: any): string {
     switch (jobType) {
       case 'story_draft':
@@ -241,27 +268,27 @@ export class EnhancedMemoryManager {
         return `Completed ${jobType} job.`;
     }
   }
-  
+
   private static extractCriticalLearnings(jobType: string, jobResult: any): string[] {
     const learnings: string[] = [];
-    
+
     // Extract learnings based on job type and result
     if (jobResult?.learnings) {
       learnings.push(...jobResult.learnings);
     }
-    
+
     if (jobResult?.challenges) {
       learnings.push(`Challenges faced: ${jobResult.challenges}`);
     }
-    
+
     if (jobResult?.solutions) {
       learnings.push(`Solutions applied: ${jobResult.solutions}`);
     }
-    
+
     if (jobResult?.best_practices) {
       learnings.push(`Best practices: ${jobResult.best_practices}`);
     }
-    
+
     return learnings;
   }
 }

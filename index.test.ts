@@ -13,7 +13,7 @@ describe('Index Module', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     console.error = mockConsoleError;
-    
+
     // Reset environment
     delete process.env.NODE_ENV;
     delete process.env.DEVAI_SEED_BUILD;
@@ -26,7 +26,7 @@ describe('Index Module', () => {
   describe('Environment handling', () => {
     it('should handle test environment correctly', () => {
       process.env.NODE_ENV = 'test';
-      
+
       // In test environment, the module should not start the server
       expect(process.env.NODE_ENV).toBe('test');
     });
@@ -63,10 +63,10 @@ describe('Index Module', () => {
     it('should handle uncaught exceptions', () => {
       const error = new Error('Test error');
       error.stack = 'Error: Test error\n    at test.js:1:1';
-      
+
       // Simulate the error handling logic from index.ts
       console.error('[DevAI MCP]', 'uncaughtException', error.stack || String(error));
-      
+
       expect(mockConsoleError).toHaveBeenCalledWith(
         '[DevAI MCP]',
         'uncaughtException',
@@ -77,10 +77,10 @@ describe('Index Module', () => {
     it('should handle uncaught exceptions without stack', () => {
       const error = new Error('Test error');
       delete error.stack;
-      
+
       // Simulate the error handling logic from index.ts
       console.error('[DevAI MCP]', 'uncaughtException', error.stack || String(error));
-      
+
       expect(mockConsoleError).toHaveBeenCalledWith(
         '[DevAI MCP]',
         'uncaughtException',
@@ -91,14 +91,15 @@ describe('Index Module', () => {
     it('should handle unhandled rejections with Error object', () => {
       const error = new Error('Test rejection');
       error.stack = 'Error: Test rejection\n    at test.js:1:1';
-      
+
       // Simulate the error handling logic from index.ts
-      const reason = typeof error === 'object' && error !== null
-        ? (error as { stack?: string }).stack || String(error)
-        : String(error);
-      
+      const reason =
+        typeof error === 'object' && error !== null
+          ? (error as { stack?: string }).stack || String(error)
+          : String(error);
+
       console.error('[DevAI MCP]', 'unhandledRejection', reason);
-      
+
       expect(mockConsoleError).toHaveBeenCalledWith(
         '[DevAI MCP]',
         'unhandledRejection',
@@ -108,14 +109,15 @@ describe('Index Module', () => {
 
     it('should handle unhandled rejections with string', () => {
       const reason = 'Test rejection string';
-      
+
       // Simulate the error handling logic from index.ts
-      const processedReason = typeof reason === 'object' && reason !== null
-        ? (reason as { stack?: string }).stack || String(reason)
-        : String(reason);
-      
+      const processedReason =
+        typeof reason === 'object' && reason !== null
+          ? (reason as { stack?: string }).stack || String(reason)
+          : String(reason);
+
       console.error('[DevAI MCP]', 'unhandledRejection', processedReason);
-      
+
       expect(mockConsoleError).toHaveBeenCalledWith(
         '[DevAI MCP]',
         'unhandledRejection',
@@ -125,14 +127,15 @@ describe('Index Module', () => {
 
     it('should handle unhandled rejections with object without stack', () => {
       const reason = { message: 'Test rejection object' };
-      
+
       // Simulate the error handling logic from index.ts
-      const processedReason = typeof reason === 'object' && reason !== null
-        ? (reason as { stack?: string }).stack || String(reason)
-        : String(reason);
-      
+      const processedReason =
+        typeof reason === 'object' && reason !== null
+          ? (reason as { stack?: string }).stack || String(reason)
+          : String(reason);
+
       console.error('[DevAI MCP]', 'unhandledRejection', processedReason);
-      
+
       expect(mockConsoleError).toHaveBeenCalledWith(
         '[DevAI MCP]',
         'unhandledRejection',
@@ -149,33 +152,27 @@ describe('Index Module', () => {
       } catch (_) {
         console.error('[DevAI MCP] <log error>');
       }
-      
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        '[DevAI MCP]',
-        'Test debug message'
-      );
+
+      expect(mockConsoleError).toHaveBeenCalledWith('[DevAI MCP]', 'Test debug message');
     });
 
     it('should handle debug logging with complex objects', () => {
       const complexObj = { name: 'test', value: 123 };
-      
+
       // Simulate the dbg function from index.ts
       try {
         console.error('[DevAI MCP]', complexObj);
       } catch (_) {
         console.error('[DevAI MCP] <log error>');
       }
-      
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        '[DevAI MCP]',
-        complexObj
-      );
+
+      expect(mockConsoleError).toHaveBeenCalledWith('[DevAI MCP]', complexObj);
     });
 
     it('should handle debug logging errors gracefully', () => {
       // Test that the error handling logic works correctly
       let errorCaught = false;
-      
+
       // Simulate the dbg function's error handling logic
       try {
         // Simulate a console.error that might throw
@@ -184,7 +181,7 @@ describe('Index Module', () => {
         errorCaught = true;
         console.error('[DevAI MCP] <log error>');
       }
-      
+
       expect(errorCaught).toBe(true);
       expect(mockConsoleError).toHaveBeenCalledWith('[DevAI MCP] <log error>');
     });
@@ -193,7 +190,7 @@ describe('Index Module', () => {
   describe('JSON serialization', () => {
     it('should handle JSON serialization safely', () => {
       const testObj = { name: 'test', value: 123 };
-      
+
       // Simulate the JSON serialization logic from index.ts
       const serialized = (() => {
         try {
@@ -202,14 +199,14 @@ describe('Index Module', () => {
           return '<unserializable>';
         }
       })();
-      
+
       expect(serialized).toBe('{"name":"test","value":123}');
     });
 
     it('should handle circular references in JSON serialization', () => {
       const circular: any = { name: 'test' };
       circular.self = circular;
-      
+
       // Simulate the JSON serialization logic from index.ts
       const serialized = (() => {
         try {
@@ -218,7 +215,7 @@ describe('Index Module', () => {
           return '<unserializable>';
         }
       })();
-      
+
       expect(serialized).toBe('<unserializable>');
     });
   });
@@ -229,7 +226,7 @@ describe('Index Module', () => {
         name: 'devai-mcp-server',
         version: '1.0.0',
       };
-      
+
       expect(serverConfig.name).toBe('devai-mcp-server');
       expect(serverConfig.version).toBe('1.0.0');
     });
@@ -240,7 +237,7 @@ describe('Index Module', () => {
           tools: {},
         },
       };
-      
+
       expect(capabilities.capabilities).toHaveProperty('tools');
     });
   });
@@ -253,12 +250,12 @@ describe('Index Module', () => {
         inputSchema: {
           type: 'object',
           properties: {
-            test: { type: 'string' }
+            test: { type: 'string' },
           },
-          required: ['test']
-        }
+          required: ['test'],
+        },
       };
-      
+
       expect(testTool).toHaveProperty('name');
       expect(testTool).toHaveProperty('description');
       expect(testTool).toHaveProperty('inputSchema');
@@ -272,11 +269,11 @@ describe('Index Module', () => {
         type: 'object',
         properties: {
           projectId: { type: 'number' },
-          name: { type: 'string' }
+          name: { type: 'string' },
         },
-        required: ['projectId']
+        required: ['projectId'],
       };
-      
+
       expect(validSchema).toHaveProperty('type');
       expect(validSchema).toHaveProperty('properties');
       expect(validSchema).toHaveProperty('required');
@@ -288,31 +285,31 @@ describe('Index Module', () => {
   describe('Error message formatting', () => {
     it('should format error messages correctly', () => {
       const error = new Error('Test error');
-      
+
       // Simulate the error message formatting logic from index.ts
       const msg = (error as { message?: string })?.message || String(error);
       const stack = (error as { stack?: string })?.stack || msg;
-      
+
       expect(msg).toBe('Test error');
       expect(stack).toContain('Test error');
     });
 
     it('should handle errors without message property', () => {
       const error = 'String error';
-      
+
       // Simulate the error message formatting logic from index.ts
       const msg = (error as { message?: string })?.message || String(error);
-      
+
       expect(msg).toBe('String error');
     });
 
     it('should handle unknown tool errors', () => {
       const error = new Error('Unknown tool: unknown_tool');
-      
+
       // Simulate the error message formatting logic from index.ts
       const msg = (error as { message?: string })?.message || String(error);
       const stack = (error as { stack?: string })?.stack || msg;
-      
+
       expect(msg).toBe('Unknown tool: unknown_tool');
       expect(stack).toContain('Unknown tool: unknown_tool');
     });

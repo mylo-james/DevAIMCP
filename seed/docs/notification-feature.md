@@ -16,7 +16,7 @@ The DevAI notification feature allows agents to automatically send notifications
 ### Components
 
 1. **NotificationService**: Core service managing notification sending and configuration
-2. **Database Tables**: 
+2. **Database Tables**:
    - `notification_configs`: Actor notification settings
    - `notification_logs`: Audit trail of all notification attempts
 3. **MCP Tools**: Three new tools for notification management
@@ -24,12 +24,12 @@ The DevAI notification feature allows agents to automatically send notifications
 
 ### Notification Providers
 
-| Provider | Use Case | Setup Complexity | Features |
-|----------|----------|------------------|----------|
-| **Pushover** | Mobile notifications | Easy | Rich formatting, priority levels, URLs |
-| **IFTTT** | Custom integrations | Medium | Connect to any service, custom actions |
-| **Webhook** | Custom systems | Medium | Full control, custom payloads |
-| **Email** | Traditional notifications | Easy | Universal compatibility |
+| Provider     | Use Case                  | Setup Complexity | Features                               |
+| ------------ | ------------------------- | ---------------- | -------------------------------------- |
+| **Pushover** | Mobile notifications      | Easy             | Rich formatting, priority levels, URLs |
+| **IFTTT**    | Custom integrations       | Medium           | Connect to any service, custom actions |
+| **Webhook**  | Custom systems            | Medium           | Full control, custom payloads          |
+| **Email**    | Traditional notifications | Easy             | Universal compatibility                |
 
 ## 🚀 Quick Start
 
@@ -44,8 +44,8 @@ await devai_configure_notification({
   notificationType: 'pushover',
   configData: {
     user_key: 'your_pushover_user_key',
-    app_token: 'your_pushover_app_token'
-  }
+    app_token: 'your_pushover_app_token',
+  },
 });
 
 // Configure IFTTT notifications
@@ -54,8 +54,8 @@ await devai_configure_notification({
   notificationType: 'ifttt',
   configData: {
     webhook_key: 'your_ifttt_webhook_key',
-    event_name: 'devai_notification'
-  }
+    event_name: 'devai_notification',
+  },
 });
 ```
 
@@ -65,7 +65,7 @@ await devai_configure_notification({
 // Test Pushover configuration
 await devai_test_notification({
   actorId: 1,
-  notificationType: 'pushover'
+  notificationType: 'pushover',
 });
 ```
 
@@ -93,8 +93,8 @@ await devai_configure_notification({
   notificationType: 'pushover',
   configData: {
     user_key: 'uQiRzpo4DXghDmr9QzzfQu27cmVRsG',
-    app_token: 'azGDORePK8gMaC0QOYAMyEEuzJnyUi'
-  }
+    app_token: 'azGDORePK8gMaC0QOYAMyEEuzJnyUi',
+  },
 });
 ```
 
@@ -113,8 +113,8 @@ await devai_configure_notification({
   notificationType: 'ifttt',
   configData: {
     webhook_key: 'your_webhook_key_here',
-    event_name: 'devai_notification'
-  }
+    event_name: 'devai_notification',
+  },
 });
 ```
 
@@ -130,9 +130,9 @@ await devai_configure_notification({
   configData: {
     webhook_url: 'https://your-domain.com/webhook',
     headers: {
-      'Authorization': 'Bearer your_token_here'
-    }
-  }
+      Authorization: 'Bearer your_token_here',
+    },
+  },
 });
 ```
 
@@ -143,8 +143,8 @@ await devai_configure_notification({
   actorId: 1,
   notificationType: 'email',
   configData: {
-    email_address: 'your-email@example.com'
-  }
+    email_address: 'your-email@example.com',
+  },
 });
 ```
 
@@ -164,12 +164,13 @@ await devai_notify_completion({
     challenges: 'Had to refactor the authentication module',
     nextSteps: 'Ready for QA validation',
     url: 'https://github.com/your-repo/pull/456',
-    confidence: 0.95
-  }
+    confidence: 0.95,
+  },
 });
 ```
 
 **Parameters:**
+
 - `actorId` (number): Actor ID who completed the work
 - `actorRole` (string): Role of the actor (e.g., "Scrum Master", "Developer", "QA")
 - `storyId` (number): Story ID that was worked on
@@ -186,12 +187,13 @@ await devai_configure_notification({
   notificationType: 'pushover',
   configData: {
     user_key: 'your_user_key',
-    app_token: 'your_app_token'
-  }
+    app_token: 'your_app_token',
+  },
 });
 ```
 
 **Parameters:**
+
 - `actorId` (number): Actor ID to configure notifications for
 - `notificationType` (string): Type of notification service ("pushover", "ifttt", "webhook", "email")
 - `configData` (object): Configuration data for the notification service
@@ -203,11 +205,12 @@ Test notification configuration for an actor.
 ```javascript
 await devai_test_notification({
   actorId: 1,
-  notificationType: 'pushover'
+  notificationType: 'pushover',
 });
 ```
 
 **Parameters:**
+
 - `actorId` (number): Actor ID to test notifications for
 - `notificationType` (string): Type of notification to test
 
@@ -227,6 +230,7 @@ The notification feature is automatically integrated into the DevAI workflow sys
 ### Notification Content
 
 Each notification includes:
+
 - **Title**: Role and action (e.g., "Developer Work Complete")
 - **Message**: Story details and completion status
 - **Challenges**: Any issues encountered during the work
@@ -239,7 +243,7 @@ Each notification includes:
 All notification attempts are logged in the `notification_logs` table for audit purposes:
 
 ```sql
-SELECT 
+SELECT
   actor_id,
   title,
   message,
@@ -261,19 +265,25 @@ You can configure multiple notification providers for the same actor:
 await devai_configure_notification({
   actorId: 1,
   notificationType: 'pushover',
-  configData: { /* pushover config */ }
+  configData: {
+    /* pushover config */
+  },
 });
 
 await devai_configure_notification({
   actorId: 1,
   notificationType: 'ifttt',
-  configData: { /* ifttt config */ }
+  configData: {
+    /* ifttt config */
+  },
 });
 
 await devai_configure_notification({
   actorId: 1,
   notificationType: 'webhook',
-  configData: { /* webhook config */ }
+  configData: {
+    /* webhook config */
+  },
 });
 ```
 
@@ -329,12 +339,15 @@ Enable debug logging to troubleshoot notification issues:
 
 ```javascript
 // Check notification logs
-const logs = await query(`
+const logs = await query(
+  `
   SELECT * FROM notification_logs 
   WHERE actor_id = $1 
   ORDER BY created_at DESC 
   LIMIT 5
-`, [actorId]);
+`,
+  [actorId]
+);
 
 console.log('Recent notification logs:', logs);
 ```

@@ -52,7 +52,7 @@ export const resources: MCPResource[] = [
       const templatesDir = path.resolve(process.cwd(), 'templates');
       const { readdir } = await import('fs/promises');
       const files = await readdir(templatesDir);
-      const templateFiles = files.filter((f) => f.endsWith('.yaml'));
+      const templateFiles = files.filter(f => f.endsWith('.yaml'));
 
       let content = '# DevAI Templates\n\n';
       for (const file of templateFiles) {
@@ -74,7 +74,7 @@ export const resources: MCPResource[] = [
       const workflowsDir = path.resolve(process.cwd(), 'workflows');
       const { readdir } = await import('fs/promises');
       const files = await readdir(workflowsDir);
-      const workflowFiles = files.filter((f) => f.endsWith('.yaml'));
+      const workflowFiles = files.filter(f => f.endsWith('.yaml'));
 
       let content = '# DevAI Workflows\n\n';
       for (const file of workflowFiles) {
@@ -96,7 +96,7 @@ export const resources: MCPResource[] = [
       const agentsDir = path.resolve(process.cwd(), 'agents');
       const { readdir } = await import('fs/promises');
       const files = await readdir(agentsDir);
-      const agentFiles = files.filter((f) => f.endsWith('.md'));
+      const agentFiles = files.filter(f => f.endsWith('.md'));
 
       let content = '# DevAI Agents\n\n';
       for (const file of agentFiles) {
@@ -118,7 +118,7 @@ export const resources: MCPResource[] = [
       const tasksDir = path.resolve(process.cwd(), 'tasks');
       const { readdir } = await import('fs/promises');
       const files = await readdir(tasksDir);
-      const taskFiles = files.filter((f) => f.endsWith('.md'));
+      const taskFiles = files.filter(f => f.endsWith('.md'));
 
       let content = '# DevAI Tasks\n\n';
       for (const file of taskFiles) {
@@ -140,7 +140,7 @@ export const resources: MCPResource[] = [
       const checklistsDir = path.resolve(process.cwd(), 'checklists');
       const { readdir } = await import('fs/promises');
       const files = await readdir(checklistsDir);
-      const checklistFiles = files.filter((f) => f.endsWith('.md'));
+      const checklistFiles = files.filter(f => f.endsWith('.md'));
 
       let content = '# DevAI Checklists\n\n';
       for (const file of checklistFiles) {
@@ -159,11 +159,7 @@ export const resources: MCPResource[] = [
     description: 'Technical preferences and standards for DevAI projects',
     mimeType: 'text/markdown',
     handler: async () => {
-      const prefsPath = path.resolve(
-        process.cwd(),
-        'data',
-        'technical-preferences.md'
-      );
+      const prefsPath = path.resolve(process.cwd(), 'data', 'technical-preferences.md');
       return await readFile(prefsPath, 'utf8');
     },
   },
@@ -174,11 +170,7 @@ export const resources: MCPResource[] = [
     description: 'Manifest of available DevAI tools',
     mimeType: 'application/json',
     handler: async () => {
-      const manifestPath = path.resolve(
-        process.cwd(),
-        'tools',
-        'manifest.json'
-      );
+      const manifestPath = path.resolve(process.cwd(), 'tools', 'manifest.json');
       return await readFile(manifestPath, 'utf8');
     },
   },

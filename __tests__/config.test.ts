@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 // Sample test for configuration
 describe('Configuration', () => {
-  let originalEnv: NodeJS.ProcessEnv;
+  let originalEnv: Record<string, string | undefined>;
 
   beforeEach(() => {
     originalEnv = { ...process.env };
@@ -15,14 +15,14 @@ describe('Configuration', () => {
   it('should load environment variables correctly', () => {
     process.env.NODE_ENV = 'test';
     process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test_db';
-    
+
     expect(process.env.NODE_ENV).toBe('test');
     expect(process.env.DATABASE_URL).toContain('postgresql://');
   });
 
   it('should have required environment variables', () => {
     const requiredVars = ['NODE_ENV'];
-    
+
     requiredVars.forEach(varName => {
       expect(process.env[varName]).toBeDefined();
     });
@@ -50,11 +50,11 @@ describe('Utility Functions', () => {
 describe('Async Operations', () => {
   it('should handle async operations correctly', async () => {
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-    
+
     const start = Date.now();
     await delay(100);
     const end = Date.now();
-    
+
     expect(end - start).toBeGreaterThanOrEqual(100);
   });
 
@@ -63,7 +63,7 @@ describe('Async Operations', () => {
       await new Promise(resolve => setTimeout(resolve, 10));
       return 'success';
     };
-    
+
     const result = await asyncFunction();
     expect(result).toBe('success');
   });

@@ -11,12 +11,12 @@ vi.mock('../lib/database.ts', () => ({
 
 describe('NotificationService', () => {
   let notificationService: NotificationService;
-  
+
   beforeEach(() => {
     notificationService = NotificationService.getInstance();
     vi.clearAllMocks();
   });
-  
+
   afterEach(() => {
     vi.resetAllMocks();
   });
@@ -53,8 +53,10 @@ describe('NotificationService', () => {
       ];
 
       // Mock getActorNotificationConfigs
-      vi.spyOn(notificationService as any, 'getActorNotificationConfigs').mockResolvedValue(mockConfigs);
-      
+      vi.spyOn(notificationService as any, 'getActorNotificationConfigs').mockResolvedValue(
+        mockConfigs
+      );
+
       // Mock sendToProvider to return different providers for each call
       const sendToProviderSpy = vi.spyOn(notificationService as any, 'sendToProvider');
       sendToProviderSpy
@@ -103,7 +105,9 @@ describe('NotificationService', () => {
         },
       ];
 
-      vi.spyOn(notificationService as any, 'getActorNotificationConfigs').mockResolvedValue(mockConfigs);
+      vi.spyOn(notificationService as any, 'getActorNotificationConfigs').mockResolvedValue(
+        mockConfigs
+      );
       vi.spyOn(notificationService as any, 'logNotificationAttempt').mockResolvedValue(undefined);
 
       const request = {
@@ -130,8 +134,12 @@ describe('NotificationService', () => {
         },
       ];
 
-      vi.spyOn(notificationService as any, 'getActorNotificationConfigs').mockResolvedValue(mockConfigs);
-      vi.spyOn(notificationService as any, 'sendToProvider').mockRejectedValue(new Error('Provider error'));
+      vi.spyOn(notificationService as any, 'getActorNotificationConfigs').mockResolvedValue(
+        mockConfigs
+      );
+      vi.spyOn(notificationService as any, 'sendToProvider').mockRejectedValue(
+        new Error('Provider error')
+      );
       vi.spyOn(notificationService as any, 'logNotificationAttempt').mockResolvedValue(undefined);
 
       const request = {
@@ -191,11 +199,10 @@ describe('NotificationService', () => {
       const { query } = await import('../lib/database.ts');
       (query as any).mockResolvedValue({ rows: [mockConfig] });
 
-      const result = await notificationService.configureNotification(
-        1,
-        'pushover',
-        { user_key: 'test_user', app_token: 'test_token' }
-      );
+      const result = await notificationService.configureNotification(1, 'pushover', {
+        user_key: 'test_user',
+        app_token: 'test_token',
+      });
 
       expect(result).toEqual(mockConfig);
       expect(query).toHaveBeenCalledWith(
@@ -217,7 +224,9 @@ describe('NotificationService', () => {
         updated_at: '2024-01-01T00:00:00Z',
       };
 
-      vi.spyOn(notificationService as any, 'getActorNotificationConfigs').mockResolvedValue([mockConfig]);
+      vi.spyOn(notificationService as any, 'getActorNotificationConfigs').mockResolvedValue([
+        mockConfig,
+      ]);
       vi.spyOn(notificationService as any, 'sendToProvider').mockResolvedValue({
         success: true,
         provider: 'pushover',
@@ -303,9 +312,9 @@ describe('NotificationService', () => {
         message: 'Test Message',
       };
 
-      await expect((notificationService as any).sendPushoverNotification(config, request)).rejects.toThrow(
-        'Pushover API error: Invalid token'
-      );
+      await expect(
+        (notificationService as any).sendPushoverNotification(config, request)
+      ).rejects.toThrow('Pushover API error: Invalid token');
     });
 
     it('should validate required config data', async () => {
@@ -325,9 +334,9 @@ describe('NotificationService', () => {
         message: 'Test Message',
       };
 
-      await expect((notificationService as any).sendPushoverNotification(config, request)).rejects.toThrow(
-        'Pushover configuration missing user_key or app_token'
-      );
+      await expect(
+        (notificationService as any).sendPushoverNotification(config, request)
+      ).rejects.toThrow('Pushover configuration missing user_key or app_token');
     });
   });
 

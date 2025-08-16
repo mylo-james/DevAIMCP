@@ -13,6 +13,7 @@ describe('Imports wiring', () => {
 			() => import('../tools/workflow-executor.ts'),
 			() => import('../tools/git-workflow.ts'),
 			() => import('../tools/test-runner.ts'),
+			() => import('../lib/database.ts'),
 		];
 		for (const fn of imports) {
 			const mod = await fn();

@@ -1,0 +1,17 @@
+---
+version: v1
+kind: tool
+id: file_writer
+namespace: sandbox
+type: file
+config:
+  root: ./policy_sandbox
+---
+version: v1
+kind: tool
+id: echo_shell
+namespace: sandbox
+type: shell
+config:
+  allow:
+    - echo

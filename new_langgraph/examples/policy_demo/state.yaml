@@ -1,0 +1,14 @@
+---
+version: v1
+kind: state
+id: tool_state
+namespace: sandbox
+fields:
+  - name: message
+    type: string
+  - name: write_result
+    type: object
+  - name: shell_output
+    type: object
+persist: []
+artifacts: []

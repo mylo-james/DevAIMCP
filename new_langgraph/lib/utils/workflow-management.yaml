@@ -1,0 +1,91 @@
+type: utility
+id: new_langgraph/lib/utils/workflow-management
+title: Workflow Management
+version: 1
+source_path: new_langgraph/lib/utils/workflow-management.yaml
+summary: Enables BMad orchestrator to manage and execute team workflows.
+metadata:
+  powered_by: BMAD Core
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/utils/workflow-management.md
+sections:
+- id: workflow-management
+  title: Workflow Management
+  level: 1
+  content: Enables BMad orchestrator to manage and execute team workflows.
+  sections:
+  - id: dynamic-workflow-loading
+    title: Dynamic Workflow Loading
+    level: 2
+    content: |-
+      Read available workflows from current team configuration's `workflows` field. Each team bundle defines its own supported workflows.
+
+      **Key Commands**:
+
+      - `/workflows` - List workflows in current bundle or workflows folder
+      - `/agent-list` - Show agents in current bundle
+  - id: workflow-commands
+    title: Workflow Commands
+    level: 2
+    sections:
+    - id: workflows
+      title: /workflows
+      level: 3
+      content: Lists available workflows with titles and descriptions.
+    - id: workflow-start-workflow-id
+      title: /workflow-start {workflow-id}
+      level: 3
+      content: Starts workflow and transitions to first agent.
+    - id: workflow-status
+      title: /workflow-status
+      level: 3
+      content: Shows current progress, completed artifacts, and next steps.
+    - id: workflow-resume
+      title: /workflow-resume
+      level: 3
+      content: Resumes workflow from last position. User can provide completed artifacts.
+    - id: workflow-next
+      title: /workflow-next
+      level: 3
+      content: Shows next recommended agent and action.
+  - id: execution-flow
+    title: Execution Flow
+    level: 2
+    content: |-
+      1. **Starting**: Load definition → Identify first stage → Transition to agent → Guide artifact creation
+
+      2. **Stage Transitions**: Mark complete → Check conditions → Load next agent → Pass artifacts
+
+      3. **Artifact Tracking**: Track status, creator, timestamps in workflow_state
+
+      4. **Interruption Handling**: Analyze provided artifacts → Determine position → Suggest next step
+  - id: context-passing
+    title: Context Passing
+    level: 2
+    content: |-
+      When transitioning, pass:
+
+      - Previous artifacts
+      - Current workflow stage
+      - Expected outputs
+      - Decisions/constraints
+  - id: multi-path-workflows
+    title: Multi-Path Workflows
+    level: 2
+    content: Handle conditional paths by asking clarifying questions when needed.
+  - id: best-practices
+    title: Best Practices
+    level: 2
+    content: |-
+      1. Show progress
+      2. Explain transitions
+      3. Preserve context
+      4. Allow flexibility
+      5. Track state
+  - id: agent-integration
+    title: Agent Integration
+    level: 2
+    content: 'Agents should be workflow-aware: know active workflow, their role, access
+      artifacts, understand expected outputs.'

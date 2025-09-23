@@ -1,0 +1,19 @@
+---
+version: v1
+kind: workflow
+id: writing_flow
+namespace: writing
+state_ref: state:draft_state
+entry: outline
+nodes:
+  outline:
+    task_ref: task:make_outline
+  decision:
+    router_ref: router:has_outline
+  draft:
+    task_ref: task:write_draft
+edges:
+  - from: outline
+    to: decision
+  - from: decision
+    to: draft

@@ -1,0 +1,11 @@
+---
+version: v1
+kind: workflow
+id: qa_flow
+namespace: llm
+state_ref: state:session
+entry: answer
+nodes:
+  answer:
+    task_ref: task:answer_question
+edges: []

@@ -1,0 +1,181 @@
+type: task
+id: new_langgraph/lib/tasks/brownfield-create-story
+title: Create Brownfield Story Task
+version: 1
+source_path: new_langgraph/lib/tasks/brownfield-create-story.yaml
+summary: Create a single user story for very small brownfield enhancements that can
+  be completed in one focused development session. This task is for minimal additions
+  or bug fixes that require existing system integration awareness.
+metadata:
+  powered_by: BMAD Core
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/tasks/brownfield-create-story.md
+sections:
+- id: create-brownfield-story-task
+  title: Create Brownfield Story Task
+  level: 1
+  sections:
+  - id: purpose
+    title: Purpose
+    level: 2
+    content: Create a single user story for very small brownfield enhancements that
+      can be completed in one focused development session. This task is for minimal
+      additions or bug fixes that require existing system integration awareness.
+  - id: when-to-use-this-task
+    title: When to Use This Task
+    level: 2
+    content: |-
+      **Use this task when:**
+
+      - The enhancement can be completed in a single story
+      - No new architecture or significant design is required
+      - The change follows existing patterns exactly
+      - Integration is straightforward with minimal risk
+      - Change is isolated with clear boundaries
+
+      **Use brownfield-create-epic when:**
+
+      - The enhancement requires 2-3 coordinated stories
+      - Some design work is needed
+      - Multiple integration points are involved
+
+      **Use the full brownfield PRD/Architecture process when:**
+
+      - The enhancement requires multiple coordinated stories
+      - Architectural planning is needed
+      - Significant integration work is required
+  - id: instructions
+    title: Instructions
+    level: 2
+    sections:
+    - id: 1-quick-project-assessment
+      title: 1. Quick Project Assessment
+      level: 3
+      content: |-
+        Gather minimal but essential context about the existing project:
+
+        **Current System Context:**
+
+        - [ ] Relevant existing functionality identified
+        - [ ] Technology stack for this area noted
+        - [ ] Integration point(s) clearly understood
+        - [ ] Existing patterns for similar work identified
+
+        **Change Scope:**
+
+        - [ ] Specific change clearly defined
+        - [ ] Impact boundaries identified
+        - [ ] Success criteria established
+    - id: 2-story-creation
+      title: 2. Story Creation
+      level: 3
+      content: 'Create a single focused story following this structure:'
+      sections:
+      - id: story-title
+        title: Story Title
+        level: 4
+        content: '{{Specific Enhancement}} - Brownfield Addition'
+      - id: user-story
+        title: User Story
+        level: 4
+        content: |-
+          As a {{user type}},
+          I want {{specific action/capability}},
+          So that {{clear benefit/value}}.
+      - id: story-context
+        title: Story Context
+        level: 4
+        content: |-
+          **Existing System Integration:**
+
+          - Integrates with: {{existing component/system}}
+          - Technology: {{relevant tech stack}}
+          - Follows pattern: {{existing pattern to follow}}
+          - Touch points: {{specific integration points}}
+      - id: acceptance-criteria
+        title: Acceptance Criteria
+        level: 4
+        content: |-
+          **Functional Requirements:**
+
+          1. {{Primary functional requirement}}
+          2. {{Secondary functional requirement (if any)}}
+          3. {{Integration requirement}}
+
+          **Integration Requirements:** 4. Existing {{relevant functionality}} continues to work unchanged 5. New functionality follows existing {{pattern}} pattern 6. Integration with {{system/component}} maintains current behavior
+
+          **Quality Requirements:** 7. Change is covered by appropriate tests 8. Documentation is updated if needed 9. No regression in existing functionality verified
+      - id: technical-notes
+        title: Technical Notes
+        level: 4
+        content: |-
+          - **Integration Approach:** {{how it connects to existing system}}
+          - **Existing Pattern Reference:** {{link or description of pattern to follow}}
+          - **Key Constraints:** {{any important limitations or requirements}}
+      - id: definition-of-done
+        title: Definition of Done
+        level: 4
+        content: |-
+          - [ ] Functional requirements met
+          - [ ] Integration requirements verified
+          - [ ] Existing functionality regression tested
+          - [ ] Code follows existing patterns and standards
+          - [ ] Tests pass (existing and new)
+          - [ ] Documentation updated if applicable
+    - id: 3-risk-and-compatibility-check
+      title: 3. Risk and Compatibility Check
+      level: 3
+      content: |-
+        **Minimal Risk Assessment:**
+
+        - **Primary Risk:** {{main risk to existing system}}
+        - **Mitigation:** {{simple mitigation approach}}
+        - **Rollback:** {{how to undo if needed}}
+
+        **Compatibility Verification:**
+
+        - [ ] No breaking changes to existing APIs
+        - [ ] Database changes (if any) are additive only
+        - [ ] UI changes follow existing design patterns
+        - [ ] Performance impact is negligible
+    - id: 4-validation-checklist
+      title: 4. Validation Checklist
+      level: 3
+      content: |-
+        Before finalizing the story, confirm:
+
+        **Scope Validation:**
+
+        - [ ] Story can be completed in one development session
+        - [ ] Integration approach is straightforward
+        - [ ] Follows existing patterns exactly
+        - [ ] No design or architecture work required
+
+        **Clarity Check:**
+
+        - [ ] Story requirements are unambiguous
+        - [ ] Integration points are clearly specified
+        - [ ] Success criteria are testable
+        - [ ] Rollback approach is simple
+  - id: success-criteria
+    title: Success Criteria
+    level: 2
+    content: |-
+      The story creation is successful when:
+
+      1. Enhancement is clearly defined and appropriately scoped for single session
+      2. Integration approach is straightforward and low-risk
+      3. Existing system patterns are identified and will be followed
+      4. Rollback plan is simple and feasible
+      5. Acceptance criteria include existing functionality verification
+  - id: important-notes
+    title: Important Notes
+    level: 2
+    content: |-
+      - This task is for VERY SMALL brownfield changes only
+      - If complexity grows during analysis, escalate to brownfield-create-epic
+      - Always prioritize existing system integrity
+      - When in doubt about integration complexity, use brownfield-create-epic instead
+      - Stories should take no more than 4 hours of focused development work

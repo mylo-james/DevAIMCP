@@ -1,0 +1,317 @@
+type: task
+id: new_langgraph/lib/tasks/trace-requirements
+title: trace-requirements
+version: 1
+source_path: new_langgraph/lib/tasks/trace-requirements.yaml
+summary: Map story requirements to test cases using Given-When-Then patterns for comprehensive
+  traceability.
+metadata:
+  powered_by: BMAD Core
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/tasks/trace-requirements.md
+sections:
+- id: trace-requirements
+  title: trace-requirements
+  level: 1
+  content: Map story requirements to test cases using Given-When-Then patterns for
+    comprehensive traceability.
+  sections:
+  - id: purpose
+    title: Purpose
+    level: 2
+    content: |-
+      Create a requirements traceability matrix that ensures every acceptance criterion has corresponding test coverage. This task helps identify gaps in testing and ensures all requirements are validated.
+
+      **IMPORTANT**: Given-When-Then is used here for documenting the mapping between requirements and tests, NOT for writing the actual test code. Tests should follow your project's testing standards (no BDD syntax in test code).
+  - id: prerequisites
+    title: Prerequisites
+    level: 2
+    content: |-
+      - Story file with clear acceptance criteria
+      - Access to test files or test specifications
+      - Understanding of the implementation
+  - id: traceability-process
+    title: Traceability Process
+    level: 2
+    sections:
+    - id: 1-extract-requirements
+      title: 1. Extract Requirements
+      level: 3
+      content: |-
+        Identify all testable requirements from:
+
+        - Acceptance Criteria (primary source)
+        - User story statement
+        - Tasks/subtasks with specific behaviors
+        - Non-functional requirements mentioned
+        - Edge cases documented
+    - id: 2-map-to-test-cases
+      title: 2. Map to Test Cases
+      level: 3
+      content: |-
+        For each requirement, document which tests validate it. Use Given-When-Then to describe what the test validates (not how it's written):
+
+        ```yaml
+        requirement: 'AC1: User can login with valid credentials'
+        test_mappings:
+          - test_file: 'auth/login.test.ts'
+            test_case: 'should successfully login with valid email and password'
+            # Given-When-Then describes WHAT the test validates, not HOW it's coded
+            given: 'A registered user with valid credentials'
+            when: 'They submit the login form'
+            then: 'They are redirected to dashboard and session is created'
+            coverage: full
+
+          - test_file: 'e2e/auth-flow.test.ts'
+            test_case: 'complete login flow'
+            given: 'User on login page'
+            when: 'Entering valid credentials and submitting'
+            then: 'Dashboard loads with user data'
+            coverage: integration
+        ```
+    - id: 3-coverage-analysis
+      title: 3. Coverage Analysis
+      level: 3
+      content: |-
+        Evaluate coverage for each requirement:
+
+        **Coverage Levels:**
+
+        - `full`: Requirement completely tested
+        - `partial`: Some aspects tested, gaps exist
+        - `none`: No test coverage found
+        - `integration`: Covered in integration/e2e tests only
+        - `unit`: Covered in unit tests only
+    - id: 4-gap-identification
+      title: 4. Gap Identification
+      level: 3
+      content: |-
+        Document any gaps found:
+
+        ```yaml
+        coverage_gaps:
+          - requirement: 'AC3: Password reset email sent within 60 seconds'
+            gap: 'No test for email delivery timing'
+            severity: medium
+            suggested_test:
+              type: integration
+              description: 'Test email service SLA compliance'
+
+          - requirement: 'AC5: Support 1000 concurrent users'
+            gap: 'No load testing implemented'
+            severity: high
+            suggested_test:
+              type: performance
+              description: 'Load test with 1000 concurrent connections'
+        ```
+  - id: outputs
+    title: Outputs
+    level: 2
+    sections:
+    - id: output-1-gate-yaml-block
+      title: 'Output 1: Gate YAML Block'
+      level: 3
+      content: |-
+        **Generate for pasting into gate file under `trace`:**
+
+        ```yaml
+        trace:
+          totals:
+            requirements: X
+            full: Y
+            partial: Z
+            none: W
+          planning_ref: 'qa.qaLocation/assessments/{epic}.{story}-test-design-{YYYYMMDD}.yaml'
+          uncovered:
+            - ac: 'AC3'
+              reason: 'No test found for password reset timing'
+          notes: 'See qa.qaLocation/assessments/{epic}.{story}-trace-{YYYYMMDD}.yaml'
+        ```
+    - id: output-2-traceability-report
+      title: 'Output 2: Traceability Report'
+      level: 3
+      content: |-
+        **Save to:** `qa.qaLocation/assessments/{epic}.{story}-trace-{YYYYMMDD}.yaml`
+
+        Create a traceability report with:
+
+        ```markdown
+- id: requirements-traceability-matrix
+  title: Requirements Traceability Matrix
+  level: 1
+  sections:
+  - id: story-epic-story-title
+    title: 'Story: {epic}.{story} - {title}'
+    level: 2
+    sections:
+    - id: coverage-summary
+      title: Coverage Summary
+      level: 3
+      content: |-
+        - Total Requirements: X
+        - Fully Covered: Y (Z%)
+        - Partially Covered: A (B%)
+        - Not Covered: C (D%)
+    - id: requirement-mappings
+      title: Requirement Mappings
+      level: 3
+      sections:
+      - id: ac1-acceptance-criterion-1
+        title: 'AC1: {Acceptance Criterion 1}'
+        level: 4
+        content: |-
+          **Coverage: FULL**
+
+          Given-When-Then Mappings:
+
+          - **Unit Test**: `auth.service.test.ts::validateCredentials`
+            - Given: Valid user credentials
+            - When: Validation method called
+            - Then: Returns true with user object
+
+          - **Integration Test**: `auth.integration.test.ts::loginFlow`
+            - Given: User with valid account
+            - When: Login API called
+            - Then: JWT token returned and session created
+      - id: ac2-acceptance-criterion-2
+        title: 'AC2: {Acceptance Criterion 2}'
+        level: 4
+        content: |-
+          **Coverage: PARTIAL**
+
+          [Continue for all ACs...]
+    - id: critical-gaps
+      title: Critical Gaps
+      level: 3
+      content: |-
+        1. **Performance Requirements**
+           - Gap: No load testing for concurrent users
+           - Risk: High - Could fail under production load
+           - Action: Implement load tests using k6 or similar
+
+        2. **Security Requirements**
+           - Gap: Rate limiting not tested
+           - Risk: Medium - Potential DoS vulnerability
+           - Action: Add rate limit tests to integration suite
+    - id: test-design-recommendations
+      title: Test Design Recommendations
+      level: 3
+      content: |-
+        Based on gaps identified, recommend:
+
+        1. Additional test scenarios needed
+        2. Test types to implement (unit/integration/e2e/performance)
+        3. Test data requirements
+        4. Mock/stub strategies
+    - id: risk-assessment
+      title: Risk Assessment
+      level: 3
+      content: |-
+        - **High Risk**: Requirements with no coverage
+        - **Medium Risk**: Requirements with only partial coverage
+        - **Low Risk**: Requirements with full unit + integration coverage
+        ```
+  - id: traceability-best-practices
+    title: Traceability Best Practices
+    level: 2
+    sections:
+    - id: given-when-then-for-mapping-not-test-code
+      title: Given-When-Then for Mapping (Not Test Code)
+      level: 3
+      content: |-
+        Use Given-When-Then to document what each test validates:
+
+        **Given**: The initial context the test sets up
+
+        - What state/data the test prepares
+        - User context being simulated
+        - System preconditions
+
+        **When**: The action the test performs
+
+        - What the test executes
+        - API calls or user actions tested
+        - Events triggered
+
+        **Then**: What the test asserts
+
+        - Expected outcomes verified
+        - State changes checked
+        - Values validated
+
+        **Note**: This is for documentation only. Actual test code follows your project's standards (e.g., describe/it blocks, no BDD syntax).
+    - id: coverage-priority
+      title: Coverage Priority
+      level: 3
+      content: |-
+        Prioritize coverage based on:
+
+        1. Critical business flows
+        2. Security-related requirements
+        3. Data integrity requirements
+        4. User-facing features
+        5. Performance SLAs
+    - id: test-granularity
+      title: Test Granularity
+      level: 3
+      content: |-
+        Map at appropriate levels:
+
+        - Unit tests for business logic
+        - Integration tests for component interaction
+        - E2E tests for user journeys
+        - Performance tests for NFRs
+  - id: quality-indicators
+    title: Quality Indicators
+    level: 2
+    content: |-
+      Good traceability shows:
+
+      - Every AC has at least one test
+      - Critical paths have multiple test levels
+      - Edge cases are explicitly covered
+      - NFRs have appropriate test types
+      - Clear Given-When-Then for each test
+  - id: red-flags
+    title: Red Flags
+    level: 2
+    content: |-
+      Watch for:
+
+      - ACs with no test coverage
+      - Tests that don't map to requirements
+      - Vague test descriptions
+      - Missing edge case coverage
+      - NFRs without specific tests
+  - id: integration-with-gates
+    title: Integration with Gates
+    level: 2
+    content: |-
+      This traceability feeds into quality gates:
+
+      - Critical gaps → FAIL
+      - Minor gaps → CONCERNS
+      - Missing P0 tests from test-design → CONCERNS
+    sections:
+    - id: output-3-story-hook-line
+      title: 'Output 3: Story Hook Line'
+      level: 3
+      content: |-
+        **Print this line for review task to quote:**
+
+        ```text
+        Trace matrix: qa.qaLocation/assessments/{epic}.{story}-trace-{YYYYMMDD}.yaml
+        ```
+
+        - Full coverage → PASS contribution
+  - id: key-principles
+    title: Key Principles
+    level: 2
+    content: |-
+      - Every requirement must be testable
+      - Use Given-When-Then for clarity
+      - Identify both presence and absence
+      - Prioritize based on risk
+      - Make recommendations actionable

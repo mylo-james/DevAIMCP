@@ -1,0 +1,99 @@
+type: task
+id: new_langgraph/lib/tasks/kb-mode-interaction
+title: KB Mode Interaction Task
+version: 1
+source_path: new_langgraph/lib/tasks/kb-mode-interaction.yaml
+summary: Provide a user-friendly interface to the BMad knowledge base without overwhelming
+  users with information upfront.
+metadata:
+  powered_by: BMAD Core
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/tasks/kb-mode-interaction.md
+sections:
+- id: kb-mode-interaction-task
+  title: KB Mode Interaction Task
+  level: 1
+  sections:
+  - id: purpose
+    title: Purpose
+    level: 2
+    content: Provide a user-friendly interface to the BMad knowledge base without
+      overwhelming users with information upfront.
+  - id: instructions
+    title: Instructions
+    level: 2
+    content: 'When entering KB mode (\*kb-mode), follow these steps:'
+    sections:
+    - id: 1-welcome-and-guide
+      title: 1. Welcome and Guide
+      level: 3
+      content: Announce entering KB mode with a brief, friendly introduction.
+    - id: 2-present-topic-areas
+      title: 2. Present Topic Areas
+      level: 3
+      content: |-
+        Offer a concise list of main topic areas the user might want to explore:
+
+        **What would you like to know more about?**
+
+        1. **Setup & Installation** - Getting started with BMad
+        2. **Workflows** - Choosing the right workflow for your project
+        3. **Web vs IDE** - When to use each environment
+        4. **Agents** - Understanding specialized agents and their roles
+        5. **Documents** - PRDs, Architecture, Stories, and more
+        6. **Agile Process** - How BMad implements Agile methodologies
+        7. **Configuration** - Customizing BMad for your needs
+        8. **Best Practices** - Tips for effective BMad usage
+
+        Or ask me about anything else related to BMad-Method!
+    - id: 3-respond-contextually
+      title: 3. Respond Contextually
+      level: 3
+      content: |-
+        - Wait for user's specific question or topic selection
+        - Provide focused, relevant information from the knowledge base
+        - Offer to dive deeper or explore related topics
+        - Keep responses concise unless user asks for detailed explanations
+    - id: 4-interactive-exploration
+      title: 4. Interactive Exploration
+      level: 3
+      content: |-
+        - After answering, suggest related topics they might find helpful
+        - Maintain conversational flow rather than data dumping
+        - Use examples when appropriate
+        - Reference specific documentation sections when relevant
+    - id: 5-exit-gracefully
+      title: 5. Exit Gracefully
+      level: 3
+      content: |-
+        When user is done or wants to exit KB mode:
+
+        - Summarize key points discussed if helpful
+        - Remind them they can return to KB mode anytime with \*kb-mode
+        - Suggest next steps based on what was discussed
+  - id: example-interaction
+    title: Example Interaction
+    level: 2
+    content: |-
+      **User**: \*kb-mode
+
+      **Assistant**: I've entered KB mode and have access to the full BMad knowledge base. I can help you with detailed information about any aspect of BMad-Method.
+
+      **What would you like to know more about?**
+
+      1. **Setup & Installation** - Getting started with BMad
+      2. **Workflows** - Choosing the right workflow for your project
+      3. **Web vs IDE** - When to use each environment
+      4. **Agents** - Understanding specialized agents and their roles
+      5. **Documents** - PRDs, Architecture, Stories, and more
+      6. **Agile Process** - How BMad implements Agile methodologies
+      7. **Configuration** - Customizing BMad for your needs
+      8. **Best Practices** - Tips for effective BMad usage
+
+      Or ask me about anything else related to BMad-Method!
+
+      **User**: Tell me about workflows
+
+      **Assistant**: [Provides focused information about workflows from the KB, then offers to explore specific workflow types or related topics]

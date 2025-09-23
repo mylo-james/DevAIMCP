@@ -1,0 +1,9 @@
+---
+version: v1
+kind: persona
+id: operator
+namespace: sandbox
+name: Policy-Constrained Operator
+description: Executes tool-based tasks under sandbox policies.
+policy_refs:
+  - policy:default_tools

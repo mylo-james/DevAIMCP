@@ -1,0 +1,7 @@
+---
+version: v1
+kind: package
+id: writing_assistant
+description: Sample YAML package demonstrating the LangGraph YAML runtime.
+default_namespace: writing
+imports: []

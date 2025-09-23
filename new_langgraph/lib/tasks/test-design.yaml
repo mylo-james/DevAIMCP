@@ -1,0 +1,220 @@
+type: task
+id: new_langgraph/lib/tasks/test-design
+title: test-design
+version: 1
+source_path: new_langgraph/lib/tasks/test-design.yaml
+summary: Create comprehensive test scenarios with appropriate test level recommendations
+  for story implementation.
+metadata:
+  powered_by: BMAD Core
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/tasks/test-design.md
+sections:
+- id: test-design
+  title: test-design
+  level: 1
+  content: Create comprehensive test scenarios with appropriate test level recommendations
+    for story implementation.
+  sections:
+  - id: inputs
+    title: Inputs
+    level: 2
+    content: |-
+      ```yaml
+      required:
+        - story_id: '{epic}.{story}' # e.g., "1.3"
+        - story_path: '{devStoryLocation}/{epic}.{story}.*.yaml' # Path from core-config.yaml
+        - story_title: '{title}' # If missing, derive from story file H1
+        - story_slug: '{slug}' # If missing, derive from title (lowercase, hyphenated)
+      ```
+  - id: purpose
+    title: Purpose
+    level: 2
+    content: Design a complete test strategy that identifies what to test, at which
+      level (unit/integration/e2e), and why. This ensures efficient test coverage
+      without redundancy while maintaining appropriate test boundaries.
+  - id: dependencies
+    title: Dependencies
+    level: 2
+    content: |-
+      ```yaml
+      data:
+        - test-levels-framework.yaml # Unit/Integration/E2E decision criteria
+        - test-priorities-matrix.yaml # P0/P1/P2/P3 classification system
+      ```
+  - id: process
+    title: Process
+    level: 2
+    sections:
+    - id: 1-analyze-story-requirements
+      title: 1. Analyze Story Requirements
+      level: 3
+      content: |-
+        Break down each acceptance criterion into testable scenarios. For each AC:
+
+        - Identify the core functionality to test
+        - Determine data variations needed
+        - Consider error conditions
+        - Note edge cases
+    - id: 2-apply-test-level-framework
+      title: 2. Apply Test Level Framework
+      level: 3
+      content: |-
+        **Reference:** Load `test-levels-framework.yaml` for detailed criteria
+
+        Quick rules:
+
+        - **Unit**: Pure logic, algorithms, calculations
+        - **Integration**: Component interactions, DB operations
+        - **E2E**: Critical user journeys, compliance
+    - id: 3-assign-priorities
+      title: 3. Assign Priorities
+      level: 3
+      content: |-
+        **Reference:** Load `test-priorities-matrix.yaml` for classification
+
+        Quick priority assignment:
+
+        - **P0**: Revenue-critical, security, compliance
+        - **P1**: Core user journeys, frequently used
+        - **P2**: Secondary features, admin functions
+        - **P3**: Nice-to-have, rarely used
+    - id: 4-design-test-scenarios
+      title: 4. Design Test Scenarios
+      level: 3
+      content: |-
+        For each identified test need, create:
+
+        ```yaml
+        test_scenario:
+          id: '{epic}.{story}-{LEVEL}-{SEQ}'
+          requirement: 'AC reference'
+          priority: P0|P1|P2|P3
+          level: unit|integration|e2e
+          description: 'What is being tested'
+          justification: 'Why this level was chosen'
+          mitigates_risks: ['RISK-001'] # If risk profile exists
+        ```
+    - id: 5-validate-coverage
+      title: 5. Validate Coverage
+      level: 3
+      content: |-
+        Ensure:
+
+        - Every AC has at least one test
+        - No duplicate coverage across levels
+        - Critical paths have multiple levels
+        - Risk mitigations are addressed
+  - id: outputs
+    title: Outputs
+    level: 2
+    sections:
+    - id: output-1-test-design-document
+      title: 'Output 1: Test Design Document'
+      level: 3
+      content: |-
+        **Save to:** `qa.qaLocation/assessments/{epic}.{story}-test-design-{YYYYMMDD}.yaml`
+
+        ```markdown
+- id: test-design-story-epic-story
+  title: 'Test Design: Story {epic}.{story}'
+  level: 1
+  content: |-
+    Date: {date}
+    Designer: Quinn (Test Architect)
+  sections:
+  - id: test-strategy-overview
+    title: Test Strategy Overview
+    level: 2
+    content: |-
+      - Total test scenarios: X
+      - Unit tests: Y (A%)
+      - Integration tests: Z (B%)
+      - E2E tests: W (C%)
+      - Priority distribution: P0: X, P1: Y, P2: Z
+  - id: test-scenarios-by-acceptance-criteria
+    title: Test Scenarios by Acceptance Criteria
+    level: 2
+    sections:
+    - id: ac1-description
+      title: 'AC1: {description}'
+      level: 3
+      sections:
+      - id: scenarios
+        title: Scenarios
+        level: 4
+        content: |-
+          | ID           | Level       | Priority | Test                      | Justification            |
+          | ------------ | ----------- | -------- | ------------------------- | ------------------------ |
+          | 1.3-UNIT-001 | Unit        | P0       | Validate input format     | Pure validation logic    |
+          | 1.3-INT-001  | Integration | P0       | Service processes request | Multi-component flow     |
+          | 1.3-E2E-001  | E2E         | P1       | User completes journey    | Critical path validation |
+
+          [Continue for all ACs...]
+  - id: risk-coverage
+    title: Risk Coverage
+    level: 2
+    content: '[Map test scenarios to identified risks if risk profile exists]'
+  - id: recommended-execution-order
+    title: Recommended Execution Order
+    level: 2
+    content: |-
+      1. P0 Unit tests (fail fast)
+      2. P0 Integration tests
+      3. P0 E2E tests
+      4. P1 tests in order
+      5. P2+ as time permits
+      ```
+    sections:
+    - id: output-2-gate-yaml-block
+      title: 'Output 2: Gate YAML Block'
+      level: 3
+      content: |-
+        Generate for inclusion in quality gate:
+
+        ```yaml
+        test_design:
+          scenarios_total: X
+          by_level:
+            unit: Y
+            integration: Z
+            e2e: W
+          by_priority:
+            p0: A
+            p1: B
+            p2: C
+          coverage_gaps: [] # List any ACs without tests
+        ```
+    - id: output-3-trace-references
+      title: 'Output 3: Trace References'
+      level: 3
+      content: |-
+        Print for use by trace-requirements task:
+
+        ```text
+        Test design matrix: qa.qaLocation/assessments/{epic}.{story}-test-design-{YYYYMMDD}.yaml
+        P0 tests identified: {count}
+        ```
+  - id: quality-checklist
+    title: Quality Checklist
+    level: 2
+    content: |-
+      Before finalizing, verify:
+
+      - [ ] Every AC has test coverage
+      - [ ] Test levels are appropriate (not over-testing)
+      - [ ] No duplicate coverage across levels
+      - [ ] Priorities align with business risk
+      - [ ] Test IDs follow naming convention
+      - [ ] Scenarios are atomic and independent
+  - id: key-principles
+    title: Key Principles
+    level: 2
+    content: |-
+      - **Shift left**: Prefer unit over integration, integration over E2E
+      - **Risk-based**: Focus on what could go wrong
+      - **Efficient coverage**: Test once at the right level
+      - **Maintainability**: Consider long-term test maintenance
+      - **Fast feedback**: Quick tests run first

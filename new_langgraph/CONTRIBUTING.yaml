@@ -1,0 +1,47 @@
+type: doc
+id: new_langgraph/CONTRIBUTING
+title: Contributing
+version: 1
+source_path: new_langgraph/CONTRIBUTING.yaml
+summary: Thank you for helping improve the BMAD LangGraph workspace. To keep the repository
+  AI-friendly, please follow these structural guidelines derived from `AGENTS.yaml`.
+metadata:
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/CONTRIBUTING.md
+sections:
+- id: contributing
+  title: Contributing
+  level: 1
+  content: Thank you for helping improve the BMAD LangGraph workspace. To keep the
+    repository AI-friendly, please follow these structural guidelines derived from
+    `AGENTS.yaml`.
+  sections:
+  - id: pull-request-checklist
+    title: Pull Request Checklist
+    level: 2
+    content: |-
+      - [ ] Each new or modified Python module is ≤300 lines (≈700 tokens) or includes a tracking issue justifying an exception.
+      - [ ] The module-level docstring summarizes the purpose in 2–3 sentences.
+      - [ ] All public classes and functions include a 2–3 sentence docstring describing intent and major behaviors.
+      - [ ] Complex code paths add brief inline comments explaining key variables, constraints, or algorithms.
+      - [ ] New files are listed in `catalog/index.yaml` with summary, tags, and estimated token count.
+      - [ ] `scripts/report_repo_metrics.py` and `scripts/check_chunk_size.py` (once available) run cleanly locally.
+      - [ ] `pytest`, `ruff`, and `mypy` pass before submitting.
+  - id: getting-started
+    title: Getting Started
+    level: 2
+    content: |-
+      1. Install dependencies listed in `pyproject.toml` and activate your virtual environment.
+      2. Install pre-commit hooks:
+         ```bash
+         pre-commit install
+         ```
+      3. Run the baseline metrics script to confirm the repo complies:
+         ```bash
+         python scripts/report_repo_metrics.py
+         ```
+      4. If you split modules, update `reports/chunking-backlog.csv` by rerunning the metrics script and ensure the backlog shrinks over time.
+
+      Questions? Reach out in the `#bmad-langgraph` channel before large refactors.

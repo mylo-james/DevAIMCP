@@ -1,0 +1,19 @@
+---
+version: v1
+kind: state
+id: draft_state
+namespace: writing
+fields:
+  - name: title
+    type: string
+  - name: outline
+    type: array
+    default: []
+  - name: draft
+    type: string
+persist:
+  - title
+  - draft
+artifacts:
+  - outline.md
+  - draft.md

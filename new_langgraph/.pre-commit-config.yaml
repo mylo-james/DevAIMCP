@@ -1,0 +1,14 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.8
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+  - repo: local
+    hooks:
+      - id: chunk-size
+        name: Enforce chunk size limits
+        entry: python scripts/check_chunk_size.py
+        language: system
+        pass_filenames: false

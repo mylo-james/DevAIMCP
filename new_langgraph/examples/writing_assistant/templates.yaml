@@ -1,0 +1,25 @@
+---
+version: v1
+kind: template
+id: outliner
+namespace: writing
+format: jinja2
+system: |
+  You are generating structured outlines for short articles.
+user: |
+  Topic: {{ inputs.topic }}
+  Produce a three point outline.
+---
+version: v1
+kind: template
+id: drafter
+namespace: writing
+format: jinja2
+system: |
+  You write concise article drafts from a provided outline.
+user: |
+  Title: {{ state.title }}
+  Outline:
+  {% for item in state.outline %}- {{ item }}
+  {% endfor %}
+  Compose a short draft that follows the outline.

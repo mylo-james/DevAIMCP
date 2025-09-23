@@ -1,0 +1,28 @@
+type: report
+id: new_langgraph/reports/migration-checks
+title: Migration Validation Checks — 2025-09-20
+version: 1
+source_path: new_langgraph/reports/migration-checks.yaml
+summary: |-
+  | Command | Status | Notes |
+  | --- | --- | --- |
+  | `pytest` | ❌ | 2 failures in `bmad_langgraph/test_agents_file_ops.py` complaining about missing async plugin support. 20 tests passed, 1 warning. |
+  | `ruff check` | ❌ | Command unavailable (`ruff` executable not installed in environment). |
+  | `mypy bmad_langgraph` | ❌ | 50 type errors (missing stubs for `pgvector`, optional-to-str conversions in config/tracing, agent factory typing issues, story/planning nodes TypedDict mismatches, missing `json` import). |
+metadata:
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/reports/migration-checks.md
+sections:
+- id: migration-validation-checks-2025-09-20
+  title: Migration Validation Checks — 2025-09-20
+  level: 1
+  content: |-
+    | Command | Status | Notes |
+    | --- | --- | --- |
+    | `pytest` | ❌ | 2 failures in `bmad_langgraph/test_agents_file_ops.py` complaining about missing async plugin support. 20 tests passed, 1 warning. |
+    | `ruff check` | ❌ | Command unavailable (`ruff` executable not installed in environment). |
+    | `mypy bmad_langgraph` | ❌ | 50 type errors (missing stubs for `pgvector`, optional-to-str conversions in config/tracing, agent factory typing issues, story/planning nodes TypedDict mismatches, missing `json` import). |
+
+    > Follow-up: install/enable async pytest plugin or mark async tests, add `ruff` dependency, and triage mypy findings (consider `py.typed` stubs, stricter TypedDict definitions, and config typing).

@@ -1,0 +1,10 @@
+type: example
+id: sandbox/exampleProject2/AGENTS
+title: AGENTS
+version: 1
+source_path: sandbox/exampleProject2/AGENTS.yaml
+metadata:
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: sandbox/exampleProject2/AGENTS.md

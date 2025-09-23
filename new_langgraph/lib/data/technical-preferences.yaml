@@ -1,0 +1,17 @@
+type: data
+id: new_langgraph/lib/data/technical-preferences
+title: User-Defined Preferred Patterns and Preferences
+version: 1
+source_path: new_langgraph/lib/data/technical-preferences.yaml
+summary: None Listed
+metadata:
+  powered_by: BMAD Core
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/data/technical-preferences.md
+sections:
+- id: user-defined-preferred-patterns-and-preferences
+  title: User-Defined Preferred Patterns and Preferences
+  level: 1
+  content: None Listed

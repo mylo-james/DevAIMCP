@@ -1,0 +1,506 @@
+type: checklist
+id: new_langgraph/lib/checklists/po-master-checklist
+title: Product Owner (PO) Master Validation Checklist
+version: 1
+source_path: new_langgraph/lib/checklists/po-master-checklist.yaml
+summary: This checklist serves as a comprehensive framework for the Product Owner
+  to validate project plans before development execution. It adapts intelligently
+  based on project type (greenfield vs brownfield) and includes UI/UX considerations
+  when applicable.
+metadata:
+  powered_by: BMAD Core
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/checklists/po-master-checklist.md
+sections:
+- id: product-owner-po-master-validation-checklist
+  title: Product Owner (PO) Master Validation Checklist
+  level: 1
+  content: |-
+    This checklist serves as a comprehensive framework for the Product Owner to validate project plans before development execution. It adapts intelligently based on project type (greenfield vs brownfield) and includes UI/UX considerations when applicable.
+
+    [[LLM: INITIALIZATION INSTRUCTIONS - PO MASTER CHECKLIST
+
+    PROJECT TYPE DETECTION:
+    First, determine the project type by checking:
+
+    1. Is this a GREENFIELD project (new from scratch)?
+       - Look for: New project initialization, no existing codebase references
+       - Check for: prd.yaml, architecture.yaml, new project setup stories
+
+    2. Is this a BROWNFIELD project (enhancing existing system)?
+       - Look for: References to existing codebase, enhancement/modification language
+       - Check for: brownfield-prd.yaml, brownfield-architecture.yaml, existing system analysis
+
+    3. Does the project include UI/UX components?
+       - Check for: frontend-architecture.yaml, UI/UX specifications, design files
+       - Look for: Frontend stories, component specifications, user interface mentions
+
+    DOCUMENT REQUIREMENTS:
+    Based on project type, ensure you have access to:
+
+    For GREENFIELD projects:
+
+    - prd.yaml - The Product Requirements Document
+    - architecture.yaml - The system architecture
+    - frontend-architecture.yaml - If UI/UX is involved
+    - All epic and story definitions
+
+    For BROWNFIELD projects:
+
+    - brownfield-prd.yaml - The brownfield enhancement requirements
+    - brownfield-architecture.yaml - The enhancement architecture
+    - Existing project codebase access (CRITICAL - cannot proceed without this)
+    - Current deployment configuration and infrastructure details
+    - Database schemas, API documentation, monitoring setup
+
+    SKIP INSTRUCTIONS:
+
+    - Skip sections marked [[BROWNFIELD ONLY]] for greenfield projects
+    - Skip sections marked [[GREENFIELD ONLY]] for brownfield projects
+    - Skip sections marked [[UI/UX ONLY]] for backend-only projects
+    - Note all skipped sections in your final report
+
+    VALIDATION APPROACH:
+
+    1. Deep Analysis - Thoroughly analyze each item against documentation
+    2. Evidence-Based - Cite specific sections or code when validating
+    3. Critical Thinking - Question assumptions and identify gaps
+    4. Risk Assessment - Consider what could go wrong with each decision
+
+    EXECUTION MODE:
+    Ask the user if they want to work through the checklist:
+
+    - Section by section (interactive mode) - Review each section, get confirmation before proceeding
+    - All at once (comprehensive mode) - Complete full analysis and present report at end]]
+  sections:
+  - id: 1-project-setup-initialization
+    title: 1. PROJECT SETUP & INITIALIZATION
+    level: 2
+    content: '[[LLM: Project setup is the foundation. For greenfield, ensure clean
+      start. For brownfield, ensure safe integration with existing system. Verify
+      setup matches project type.]]'
+    sections:
+    - id: 1-1-project-scaffolding-greenfield-only
+      title: 1.1 Project Scaffolding [[GREENFIELD ONLY]]
+      level: 3
+      content: |-
+        - [ ] Epic 1 includes explicit steps for project creation/initialization
+        - [ ] If using a starter template, steps for cloning/setup are included
+        - [ ] If building from scratch, all necessary scaffolding steps are defined
+        - [ ] Initial README or documentation setup is included
+        - [ ] Repository setup and initial commit processes are defined
+    - id: 1-2-existing-system-integration-brownfield-only
+      title: 1.2 Existing System Integration [[BROWNFIELD ONLY]]
+      level: 3
+      content: |-
+        - [ ] Existing project analysis has been completed and documented
+        - [ ] Integration points with current system are identified
+        - [ ] Development environment preserves existing functionality
+        - [ ] Local testing approach validated for existing features
+        - [ ] Rollback procedures defined for each integration point
+    - id: 1-3-development-environment
+      title: 1.3 Development Environment
+      level: 3
+      content: |-
+        - [ ] Local development environment setup is clearly defined
+        - [ ] Required tools and versions are specified
+        - [ ] Steps for installing dependencies are included
+        - [ ] Configuration files are addressed appropriately
+        - [ ] Development server setup is included
+    - id: 1-4-core-dependencies
+      title: 1.4 Core Dependencies
+      level: 3
+      content: |-
+        - [ ] All critical packages/libraries are installed early
+        - [ ] Package management is properly addressed
+        - [ ] Version specifications are appropriately defined
+        - [ ] Dependency conflicts or special requirements are noted
+        - [ ] [[BROWNFIELD ONLY]] Version compatibility with existing stack verified
+  - id: 2-infrastructure-deployment
+    title: 2. INFRASTRUCTURE & DEPLOYMENT
+    level: 2
+    content: '[[LLM: Infrastructure must exist before use. For brownfield, must integrate
+      with existing infrastructure without breaking it.]]'
+    sections:
+    - id: 2-1-database-data-store-setup
+      title: 2.1 Database & Data Store Setup
+      level: 3
+      content: |-
+        - [ ] Database selection/setup occurs before any operations
+        - [ ] Schema definitions are created before data operations
+        - [ ] Migration strategies are defined if applicable
+        - [ ] Seed data or initial data setup is included if needed
+        - [ ] [[BROWNFIELD ONLY]] Database migration risks identified and mitigated
+        - [ ] [[BROWNFIELD ONLY]] Backward compatibility ensured
+    - id: 2-2-api-service-configuration
+      title: 2.2 API & Service Configuration
+      level: 3
+      content: |-
+        - [ ] API frameworks are set up before implementing endpoints
+        - [ ] Service architecture is established before implementing services
+        - [ ] Authentication framework is set up before protected routes
+        - [ ] Middleware and common utilities are created before use
+        - [ ] [[BROWNFIELD ONLY]] API compatibility with existing system maintained
+        - [ ] [[BROWNFIELD ONLY]] Integration with existing authentication preserved
+    - id: 2-3-deployment-pipeline
+      title: 2.3 Deployment Pipeline
+      level: 3
+      content: |-
+        - [ ] CI/CD pipeline is established before deployment actions
+        - [ ] Infrastructure as Code (IaC) is set up before use
+        - [ ] Environment configurations are defined early
+        - [ ] Deployment strategies are defined before implementation
+        - [ ] [[BROWNFIELD ONLY]] Deployment minimizes downtime
+        - [ ] [[BROWNFIELD ONLY]] Blue-green or canary deployment implemented
+    - id: 2-4-testing-infrastructure
+      title: 2.4 Testing Infrastructure
+      level: 3
+      content: |-
+        - [ ] Testing frameworks are installed before writing tests
+        - [ ] Test environment setup precedes test implementation
+        - [ ] Mock services or data are defined before testing
+        - [ ] [[BROWNFIELD ONLY]] Regression testing covers existing functionality
+        - [ ] [[BROWNFIELD ONLY]] Integration testing validates new-to-existing connections
+  - id: 3-external-dependencies-integrations
+    title: 3. EXTERNAL DEPENDENCIES & INTEGRATIONS
+    level: 2
+    content: '[[LLM: External dependencies often block progress. For brownfield, ensure
+      new dependencies don''t conflict with existing ones.]]'
+    sections:
+    - id: 3-1-third-party-services
+      title: 3.1 Third-Party Services
+      level: 3
+      content: |-
+        - [ ] Account creation steps are identified for required services
+        - [ ] API key acquisition processes are defined
+        - [ ] Steps for securely storing credentials are included
+        - [ ] Fallback or offline development options are considered
+        - [ ] [[BROWNFIELD ONLY]] Compatibility with existing services verified
+        - [ ] [[BROWNFIELD ONLY]] Impact on existing integrations assessed
+    - id: 3-2-external-apis
+      title: 3.2 External APIs
+      level: 3
+      content: |-
+        - [ ] Integration points with external APIs are clearly identified
+        - [ ] Authentication with external services is properly sequenced
+        - [ ] API limits or constraints are acknowledged
+        - [ ] Backup strategies for API failures are considered
+        - [ ] [[BROWNFIELD ONLY]] Existing API dependencies maintained
+    - id: 3-3-infrastructure-services
+      title: 3.3 Infrastructure Services
+      level: 3
+      content: |-
+        - [ ] Cloud resource provisioning is properly sequenced
+        - [ ] DNS or domain registration needs are identified
+        - [ ] Email or messaging service setup is included if needed
+        - [ ] CDN or static asset hosting setup precedes their use
+        - [ ] [[BROWNFIELD ONLY]] Existing infrastructure services preserved
+  - id: 4-ui-ux-considerations-ui-ux-only
+    title: 4. UI/UX CONSIDERATIONS [[UI/UX ONLY]]
+    level: 2
+    content: '[[LLM: Only evaluate this section if the project includes user interface
+      components. Skip entirely for backend-only projects.]]'
+    sections:
+    - id: 4-1-design-system-setup
+      title: 4.1 Design System Setup
+      level: 3
+      content: |-
+        - [ ] UI framework and libraries are selected and installed early
+        - [ ] Design system or component library is established
+        - [ ] Styling approach (CSS modules, styled-components, etc.) is defined
+        - [ ] Responsive design strategy is established
+        - [ ] Accessibility requirements are defined upfront
+    - id: 4-2-frontend-infrastructure
+      title: 4.2 Frontend Infrastructure
+      level: 3
+      content: |-
+        - [ ] Frontend build pipeline is configured before development
+        - [ ] Asset optimization strategy is defined
+        - [ ] Frontend testing framework is set up
+        - [ ] Component development workflow is established
+        - [ ] [[BROWNFIELD ONLY]] UI consistency with existing system maintained
+    - id: 4-3-user-experience-flow
+      title: 4.3 User Experience Flow
+      level: 3
+      content: |-
+        - [ ] User journeys are mapped before implementation
+        - [ ] Navigation patterns are defined early
+        - [ ] Error states and loading states are planned
+        - [ ] Form validation patterns are established
+        - [ ] [[BROWNFIELD ONLY]] Existing user workflows preserved or migrated
+  - id: 5-user-agent-responsibility
+    title: 5. USER/AGENT RESPONSIBILITY
+    level: 2
+    content: '[[LLM: Clear ownership prevents confusion. Ensure tasks are assigned
+      appropriately based on what only humans can do.]]'
+    sections:
+    - id: 5-1-user-actions
+      title: 5.1 User Actions
+      level: 3
+      content: |-
+        - [ ] User responsibilities limited to human-only tasks
+        - [ ] Account creation on external services assigned to users
+        - [ ] Purchasing or payment actions assigned to users
+        - [ ] Credential provision appropriately assigned to users
+    - id: 5-2-developer-agent-actions
+      title: 5.2 Developer Agent Actions
+      level: 3
+      content: |-
+        - [ ] All code-related tasks assigned to developer agents
+        - [ ] Automated processes identified as agent responsibilities
+        - [ ] Configuration management properly assigned
+        - [ ] Testing and validation assigned to appropriate agents
+  - id: 6-feature-sequencing-dependencies
+    title: 6. FEATURE SEQUENCING & DEPENDENCIES
+    level: 2
+    content: '[[LLM: Dependencies create the critical path. For brownfield, ensure
+      new features don''t break existing ones.]]'
+    sections:
+    - id: 6-1-functional-dependencies
+      title: 6.1 Functional Dependencies
+      level: 3
+      content: |-
+        - [ ] Features depending on others are sequenced correctly
+        - [ ] Shared components are built before their use
+        - [ ] User flows follow logical progression
+        - [ ] Authentication features precede protected features
+        - [ ] [[BROWNFIELD ONLY]] Existing functionality preserved throughout
+    - id: 6-2-technical-dependencies
+      title: 6.2 Technical Dependencies
+      level: 3
+      content: |-
+        - [ ] Lower-level services built before higher-level ones
+        - [ ] Libraries and utilities created before their use
+        - [ ] Data models defined before operations on them
+        - [ ] API endpoints defined before client consumption
+        - [ ] [[BROWNFIELD ONLY]] Integration points tested at each step
+    - id: 6-3-cross-epic-dependencies
+      title: 6.3 Cross-Epic Dependencies
+      level: 3
+      content: |-
+        - [ ] Later epics build upon earlier epic functionality
+        - [ ] No epic requires functionality from later epics
+        - [ ] Infrastructure from early epics utilized consistently
+        - [ ] Incremental value delivery maintained
+        - [ ] [[BROWNFIELD ONLY]] Each epic maintains system integrity
+  - id: 7-risk-management-brownfield-only
+    title: 7. RISK MANAGEMENT [[BROWNFIELD ONLY]]
+    level: 2
+    content: '[[LLM: This section is CRITICAL for brownfield projects. Think pessimistically
+      about what could break.]]'
+    sections:
+    - id: 7-1-breaking-change-risks
+      title: 7.1 Breaking Change Risks
+      level: 3
+      content: |-
+        - [ ] Risk of breaking existing functionality assessed
+        - [ ] Database migration risks identified and mitigated
+        - [ ] API breaking change risks evaluated
+        - [ ] Performance degradation risks identified
+        - [ ] Security vulnerability risks evaluated
+    - id: 7-2-rollback-strategy
+      title: 7.2 Rollback Strategy
+      level: 3
+      content: |-
+        - [ ] Rollback procedures clearly defined per story
+        - [ ] Feature flag strategy implemented
+        - [ ] Backup and recovery procedures updated
+        - [ ] Monitoring enhanced for new components
+        - [ ] Rollback triggers and thresholds defined
+    - id: 7-3-user-impact-mitigation
+      title: 7.3 User Impact Mitigation
+      level: 3
+      content: |-
+        - [ ] Existing user workflows analyzed for impact
+        - [ ] User communication plan developed
+        - [ ] Training materials updated
+        - [ ] Support documentation comprehensive
+        - [ ] Migration path for user data validated
+  - id: 8-mvp-scope-alignment
+    title: 8. MVP SCOPE ALIGNMENT
+    level: 2
+    content: '[[LLM: MVP means MINIMUM viable product. For brownfield, ensure enhancements
+      are truly necessary.]]'
+    sections:
+    - id: 8-1-core-goals-alignment
+      title: 8.1 Core Goals Alignment
+      level: 3
+      content: |-
+        - [ ] All core goals from PRD are addressed
+        - [ ] Features directly support MVP goals
+        - [ ] No extraneous features beyond MVP scope
+        - [ ] Critical features prioritized appropriately
+        - [ ] [[BROWNFIELD ONLY]] Enhancement complexity justified
+    - id: 8-2-user-journey-completeness
+      title: 8.2 User Journey Completeness
+      level: 3
+      content: |-
+        - [ ] All critical user journeys fully implemented
+        - [ ] Edge cases and error scenarios addressed
+        - [ ] User experience considerations included
+        - [ ] [[UI/UX ONLY]] Accessibility requirements incorporated
+        - [ ] [[BROWNFIELD ONLY]] Existing workflows preserved or improved
+    - id: 8-3-technical-requirements
+      title: 8.3 Technical Requirements
+      level: 3
+      content: |-
+        - [ ] All technical constraints from PRD addressed
+        - [ ] Non-functional requirements incorporated
+        - [ ] Architecture decisions align with constraints
+        - [ ] Performance considerations addressed
+        - [ ] [[BROWNFIELD ONLY]] Compatibility requirements met
+  - id: 9-documentation-handoff
+    title: 9. DOCUMENTATION & HANDOFF
+    level: 2
+    content: '[[LLM: Good documentation enables smooth development. For brownfield,
+      documentation of integration points is critical.]]'
+    sections:
+    - id: 9-1-developer-documentation
+      title: 9.1 Developer Documentation
+      level: 3
+      content: |-
+        - [ ] API documentation created alongside implementation
+        - [ ] Setup instructions are comprehensive
+        - [ ] Architecture decisions documented
+        - [ ] Patterns and conventions documented
+        - [ ] [[BROWNFIELD ONLY]] Integration points documented in detail
+    - id: 9-2-user-documentation
+      title: 9.2 User Documentation
+      level: 3
+      content: |-
+        - [ ] User guides or help documentation included if required
+        - [ ] Error messages and user feedback considered
+        - [ ] Onboarding flows fully specified
+        - [ ] [[BROWNFIELD ONLY]] Changes to existing features documented
+    - id: 9-3-knowledge-transfer
+      title: 9.3 Knowledge Transfer
+      level: 3
+      content: |-
+        - [ ] [[BROWNFIELD ONLY]] Existing system knowledge captured
+        - [ ] [[BROWNFIELD ONLY]] Integration knowledge documented
+        - [ ] Code review knowledge sharing planned
+        - [ ] Deployment knowledge transferred to operations
+        - [ ] Historical context preserved
+  - id: 10-post-mvp-considerations
+    title: 10. POST-MVP CONSIDERATIONS
+    level: 2
+    content: '[[LLM: Planning for success prevents technical debt. For brownfield,
+      ensure enhancements don''t limit future growth.]]'
+    sections:
+    - id: 10-1-future-enhancements
+      title: 10.1 Future Enhancements
+      level: 3
+      content: |-
+        - [ ] Clear separation between MVP and future features
+        - [ ] Architecture supports planned enhancements
+        - [ ] Technical debt considerations documented
+        - [ ] Extensibility points identified
+        - [ ] [[BROWNFIELD ONLY]] Integration patterns reusable
+    - id: 10-2-monitoring-feedback
+      title: 10.2 Monitoring & Feedback
+      level: 3
+      content: |-
+        - [ ] Analytics or usage tracking included if required
+        - [ ] User feedback collection considered
+        - [ ] Monitoring and alerting addressed
+        - [ ] Performance measurement incorporated
+        - [ ] [[BROWNFIELD ONLY]] Existing monitoring preserved/enhanced
+  - id: validation-summary
+    title: VALIDATION SUMMARY
+    level: 2
+    content: |-
+      [[LLM: FINAL PO VALIDATION REPORT GENERATION
+
+      Generate a comprehensive validation report that adapts to project type:
+
+      1. Executive Summary
+         - Project type: [Greenfield/Brownfield] with [UI/No UI]
+         - Overall readiness (percentage)
+         - Go/No-Go recommendation
+         - Critical blocking issues count
+         - Sections skipped due to project type
+
+      2. Project-Specific Analysis
+
+         FOR GREENFIELD:
+         - Setup completeness
+         - Dependency sequencing
+         - MVP scope appropriateness
+         - Development timeline feasibility
+
+         FOR BROWNFIELD:
+         - Integration risk level (High/Medium/Low)
+         - Existing system impact assessment
+         - Rollback readiness
+         - User disruption potential
+
+      3. Risk Assessment
+         - Top 5 risks by severity
+         - Mitigation recommendations
+         - Timeline impact of addressing issues
+         - [BROWNFIELD] Specific integration risks
+
+      4. MVP Completeness
+         - Core features coverage
+         - Missing essential functionality
+         - Scope creep identified
+         - True MVP vs over-engineering
+
+      5. Implementation Readiness
+         - Developer clarity score (1-10)
+         - Ambiguous requirements count
+         - Missing technical details
+         - [BROWNFIELD] Integration point clarity
+
+      6. Recommendations
+         - Must-fix before development
+         - Should-fix for quality
+         - Consider for improvement
+         - Post-MVP deferrals
+
+      7. [BROWNFIELD ONLY] Integration Confidence
+         - Confidence in preserving existing functionality
+         - Rollback procedure completeness
+         - Monitoring coverage for integration points
+         - Support team readiness
+
+      After presenting the report, ask if the user wants:
+
+      - Detailed analysis of any failed sections
+      - Specific story reordering suggestions
+      - Risk mitigation strategies
+      - [BROWNFIELD] Integration risk deep-dive]]
+    sections:
+    - id: category-statuses
+      title: Category Statuses
+      level: 3
+      content: |-
+        | Category                                | Status | Critical Issues |
+        | --------------------------------------- | ------ | --------------- |
+        | 1. Project Setup & Initialization       | _TBD_  |                 |
+        | 2. Infrastructure & Deployment          | _TBD_  |                 |
+        | 3. External Dependencies & Integrations | _TBD_  |                 |
+        | 4. UI/UX Considerations                 | _TBD_  |                 |
+        | 5. User/Agent Responsibility            | _TBD_  |                 |
+        | 6. Feature Sequencing & Dependencies    | _TBD_  |                 |
+        | 7. Risk Management (Brownfield)         | _TBD_  |                 |
+        | 8. MVP Scope Alignment                  | _TBD_  |                 |
+        | 9. Documentation & Handoff              | _TBD_  |                 |
+        | 10. Post-MVP Considerations             | _TBD_  |                 |
+    - id: critical-deficiencies
+      title: Critical Deficiencies
+      level: 3
+      content: (To be populated during validation)
+    - id: recommendations
+      title: Recommendations
+      level: 3
+      content: (To be populated during validation)
+    - id: final-decision
+      title: Final Decision
+      level: 3
+      content: |-
+        - **APPROVED**: The plan is comprehensive, properly sequenced, and ready for implementation.
+        - **CONDITIONAL**: The plan requires specific adjustments before proceeding.
+        - **REJECTED**: The plan requires significant revision to address critical deficiencies.

@@ -1,0 +1,46 @@
+type: report
+id: new_langgraph/reports/migration_map
+title: Behavior Mapping Plan
+version: 1
+source_path: new_langgraph/reports/migration_map.yaml
+summary: Mapping of high-level callables/classes from the legacy `bmad_langgraph`
+  package into the new behavior-first tree.
+metadata:
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/reports/migration_map.md
+sections:
+- id: behavior-mapping-plan
+  title: Behavior Mapping Plan
+  level: 1
+  content: |-
+    Mapping of high-level callables/classes from the legacy `bmad_langgraph` package into the new behavior-first tree.
+
+    | Legacy Module & Symbol | Destination Module |
+    | --- | --- |
+    | `bmad_langgraph.bmad_flow.cli` commands (`plan`, `next_story`, `resume`, `status`, `ingest`, `search`, `init_db`) | `new_langgraph/cli/commands/*.py` (one command per file)
+    | `bmad_langgraph.bmad_flow._invoke`, `_print_interrupt`, `_load_app`, `_handle_result` | `new_langgraph/cli/runtime/invoke.py`, `new_langgraph/cli/runtime/result_logger.py`
+    | `bmad_langgraph.graph.build_app` | `new_langgraph/workflow/build_app.py`
+    | `bmad_langgraph.graph.initial_state` | `new_langgraph/workflow/initial_state.py`
+    | `bmad_langgraph.graph._load_workflow_profile` | `new_langgraph/workflow/profile_loader.py`
+    | `bmad_langgraph.graph.sm_router` | `new_langgraph/workflow/sm_router.py`
+    | `bmad_langgraph.tracing.get_tracing_callbacks` | `new_langgraph/workflow/tracing_hooks.py`
+    | `bmad_langgraph.config.PathConfig`, `default_paths`, `BMAD_CORE_DIR`, `BASE_DIR` | `new_langgraph/config/paths.py`
+    | `bmad_langgraph.config.get_env` | `new_langgraph/config/env.py`
+    | `bmad_langgraph.config.ensure_dirs` | `new_langgraph/config/dirs.py`
+    | `bmad_langgraph.config.DatabaseConfig`, `database_config` | `new_langgraph/config/database.py`
+    | `bmad_langgraph.assets.AssetMissingError`, loaders, renderers, writers | `new_langgraph/assets/errors.py`, `new_langgraph/assets/loaders/*`, `new_langgraph/assets/renderers/*`, `new_langgraph/assets/writers/*`
+    | `bmad_langgraph.chat.intake.LLMMessageIntake` & helpers | `new_langgraph/chat/intake/*.py`
+    | `bmad_langgraph.chat.handlers` command handlers | `new_langgraph/chat/handlers/*.py`
+    | `bmad_langgraph.nodes.planning.*` | `new_langgraph/nodes/planning/*.py`
+    | `bmad_langgraph.nodes.stories.*` | `new_langgraph/nodes/stories/*.py`
+    | Shared node helpers (`shared` modules) | `new_langgraph/nodes/*/shared/*.py`
+    | `bmad_langgraph.sandbox` utilities (tools, access, validators) | `new_langgraph/sandbox/shell/*.py`, `new_langgraph/sandbox/access/*.py`
+    | `bmad_langgraph.storage.*` services | `new_langgraph/storage/**/*`
+    | `bmad_langgraph.agents.*` personas/tools | `new_langgraph/agents/*`
+    | `bmad_langgraph.retrieval.retrieve_snippets` | `new_langgraph/retrieval/snippets.py`
+    | `bmad_langgraph.utils.slugify` | (pending location) `new_langgraph/utils/slugify.py` (to be added)
+    | `bmad_langgraph.state.BmadState` | `new_langgraph/state.py` (to be added)
+
+    This matrix will be updated as migrations progress and additional helpers (e.g., state, utils, embeddings) find their designated homes.

@@ -1,0 +1,7 @@
+---
+version: v1
+kind: persona
+id: writer
+namespace: writing
+name: Writing Companion
+description: Provides lightweight outlines and drafts for short articles.

@@ -1,0 +1,25 @@
+---
+version: v1
+kind: model
+id: primary
+namespace: llm
+provider: echo
+name: primary-echo
+params:
+  response_prefix: "Primary: "
+  force_failure: true
+  format: json
+  json_key: answer
+fallbacks:
+  - model_ref: model:fallback
+---
+version: v1
+kind: model
+id: fallback
+namespace: llm
+provider: echo
+name: fallback-echo
+params:
+  response_prefix: "Fallback: "
+  format: json
+  json_key: answer

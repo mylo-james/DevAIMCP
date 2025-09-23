@@ -1,0 +1,6 @@
+---
+version: v1
+kind: package
+id: llm_echo
+default_namespace: llm
+description: Minimal example showcasing the LLM runtime with fallbacks.

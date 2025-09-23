@@ -1,0 +1,22 @@
+type: task
+id: new_langgraph/lib/tasks/build-product-backlog
+title: Build Product Backlog
+version: 1
+source_path: new_langgraph/lib/tasks/build-product-backlog.yaml
+summary: |-
+  - Break the project goal into user-facing deliverables.
+  - Capture acceptance criteria with Given/When/Then examples.
+  - Prioritize according to user value and dependencies.
+metadata:
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/tasks/build-product-backlog.md
+sections:
+- id: build-product-backlog
+  title: Build Product Backlog
+  level: 2
+  content: |-
+    - Break the project goal into user-facing deliverables.
+    - Capture acceptance criteria with Given/When/Then examples.
+    - Prioritize according to user value and dependencies.

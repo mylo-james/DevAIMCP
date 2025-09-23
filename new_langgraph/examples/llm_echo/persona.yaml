@@ -1,0 +1,8 @@
+---
+version: v1
+kind: persona
+id: agent
+namespace: llm
+name: Echo Agent
+description: Responds to questions using the echo provider example.
+default_model_ref: model:primary

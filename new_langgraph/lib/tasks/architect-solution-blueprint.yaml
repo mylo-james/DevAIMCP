@@ -1,0 +1,22 @@
+type: task
+id: new_langgraph/lib/tasks/architect-solution-blueprint
+title: Architect Solution Blueprint
+version: 1
+source_path: new_langgraph/lib/tasks/architect-solution-blueprint.yaml
+summary: |-
+  - Summarize the system context and boundaries.
+  - Identify critical components and integrations.
+  - Call out risks, unknowns, and technical debts.
+metadata:
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/tasks/architect-solution-blueprint.md
+sections:
+- id: architect-solution-blueprint
+  title: Architect Solution Blueprint
+  level: 2
+  content: |-
+    - Summarize the system context and boundaries.
+    - Identify critical components and integrations.
+    - Call out risks, unknowns, and technical debts.

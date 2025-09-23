@@ -1,0 +1,31 @@
+name: Structural Integrity
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  structure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
+      - name: Run chunk size check
+        run: python scripts/check_chunk_size.py --root . --max-lines 300
+      - name: Ensure catalog is present
+        run: |
+          if [ ! -f catalog/index.yaml ]; then
+            echo "catalog/index.yaml is missing" >&2
+            exit 1
+          fi

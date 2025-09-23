@@ -1,0 +1,794 @@
+type: doc
+id: new_langgraph/lib/working-in-the-brownfield
+title: 'Working in the Brownfield: A Complete Guide'
+version: 1
+source_path: new_langgraph/lib/working-in-the-brownfield.yaml
+summary: Regardless of what you plan for your existing project you want to start agentic
+  coding with, producing contextual artifacts for agents is of the highest importance.
+metadata:
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/working-in-the-brownfield.md
+sections:
+- id: working-in-the-brownfield-a-complete-guide
+  title: 'Working in the Brownfield: A Complete Guide'
+  level: 1
+  sections:
+  - id: critical-tip
+    title: Critical Tip
+    level: 2
+    content: |-
+      Regardless of what you plan for your existing project you want to start agentic coding with, producing contextual artifacts for agents is of the highest importance.
+
+      If using Claude Code - it is recommended to use the document-project task with the architect to systematically produce important key artifacts for your codebase.
+
+      Optionally you can product context information and understanding for your repo utilizing web agents like Gemini. If its already in github, you can provide the project URL in gemini and use the agents to help analyze or document the project with the team fullstack or the architect specific gem.
+
+      If your project is too large, you can also flatten your codebase - which can make it easier to upload or use with some tools. You can read more about the optional tool in the [Flattener Guide](./flattener.yaml)
+  - id: what-is-brownfield-development
+    title: What is Brownfield Development?
+    level: 2
+    content: Brownfield development refers to adding features, fixing bugs, or modernizing
+      existing software projects. Unlike greenfield (new) projects, brownfield work
+      requires understanding existing code, respecting constraints, and ensuring new
+      changes integrate seamlessly without breaking existing functionality.
+  - id: when-to-use-bmad-for-brownfield
+    title: When to Use BMad for Brownfield
+    level: 2
+    content: |-
+      - Add significant new features to existing applications
+      - Modernize legacy codebases
+      - Integrate new technologies or services
+      - Refactor complex systems
+      - Fix bugs that require architectural understanding
+      - Document undocumented systems
+  - id: when-not-to-use-a-brownfield-flow
+    title: When NOT to use a Brownfield Flow
+    level: 2
+    content: If you have just completed an MVP with BMad, and you want to continue
+      with post-MVP, its easier to just talk to the PM and ask it to work with you
+      to create a new epic to add into the PRD, shard out the epic, update any architecture
+      documents with the architect, and just go from there.
+  - id: the-complete-brownfield-workflow
+    title: The Complete Brownfield Workflow
+    level: 2
+    content: |-
+      Starting in the Web Option (potentially save some cost but a potentially more frustrating experience):
+
+      1. **Follow the [<ins>User Guide - Installation</ins>](user-guide.yaml#installation) steps to setup your agent in the web.**
+      2. **Generate a 'flattened' single file of your entire codebase** run: `npx bmad-method flatten`
+
+      Starting in an IDE with large context and good models (Its important to use quality models for this process for the best results)
+
+      1. In Claude Code or a similar IDE, select the architect agent and then use the \*document-project task. You will want to ensure you are validating and directing the agent to produce the best possible documents for LLMs to understand your code base, and not include any misleading or unnecessary info.
+    sections:
+    - id: choose-your-approach
+      title: Choose Your Approach
+      level: 3
+      sections:
+      - id: approach-a-prd-first-recommended-if-adding-very-large-and-complex-new-features-single-or-multiple-epics-or-massive-changes
+        title: 'Approach A: PRD-First (Recommended if adding very large and complex
+          new features, single or multiple epics or massive changes)'
+        level: 4
+        content: |-
+          **Best for**: Large codebases, monorepos, or when you know exactly what you want to build
+
+          1. **Create PRD First** to define requirements
+          2. **Document only relevant areas** based on PRD needs
+          3. **More efficient** - avoids documenting unused code
+      - id: approach-b-document-first-good-for-smaller-projects
+        title: 'Approach B: Document-First (Good for Smaller Projects)'
+        level: 4
+        content: |-
+          **Best for**: Smaller codebases, unknown systems, or exploratory changes
+
+          1. **Document entire system** first
+          2. **Create PRD** with full context
+          3. **More thorough** - captures everything
+    - id: approach-a-prd-first-workflow-recommended
+      title: 'Approach A: PRD-First Workflow (Recommended)'
+      level: 3
+      sections:
+      - id: phase-1-define-requirements-first
+        title: 'Phase 1: Define Requirements First'
+        level: 4
+        content: |-
+          **In Gemini Web (with your flattened-codebase.xml uploaded):**
+
+          ```bash
+          @pm
+          *create-brownfield-prd
+          ```
+
+          The PM will:
+
+          - **Ask about your enhancement** requirements
+          - **Explore the codebase** to understand current state
+          - **Identify affected areas** that need documentation
+          - **Create focused PRD** with clear scope
+
+          **Key Advantage**: The PRD identifies which parts of your monorepo/large codebase actually need documentation!
+      - id: phase-2-focused-documentation
+        title: 'Phase 2: Focused Documentation'
+        level: 4
+        content: |-
+          **Still in Gemini Web, now with PRD context:**
+
+          ```bash
+          @architect
+          *document-project
+          ```
+
+          The architect will:
+
+          - **Ask about your focus** if no PRD was provided
+          - **Offer options**: Create PRD, provide requirements, or describe the enhancement
+          - **Reference the PRD/description** to understand scope
+          - **Focus on relevant modules** identified in PRD or your description
+          - **Skip unrelated areas** to keep docs lean
+          - **Generate ONE architecture document** for all environments
+
+          The architect creates:
+
+          - **One comprehensive architecture document** following fullstack-architecture template
+          - **Covers all system aspects** in a single file
+          - **Easy to copy and save** as `docs/architecture.yaml`
+          - **Can be sharded later** in IDE if desired
+
+          For example, if you say "Add payment processing to user service":
+
+          - Documents only: user service, API endpoints, database schemas, payment integrations
+          - Creates focused source tree showing only payment-related code paths
+          - Skips: admin panels, reporting modules, unrelated microservices
+    - id: approach-b-document-first-workflow
+      title: 'Approach B: Document-First Workflow'
+      level: 3
+      sections:
+      - id: phase-1-document-the-existing-system
+        title: 'Phase 1: Document the Existing System'
+        level: 4
+        content: |-
+          **Best Approach - Gemini Web with 1M+ Context**:
+
+          1. **Go to Gemini Web** (gemini.google.com)
+          2. **Upload your project**:
+             - **Option A**: Paste your GitHub repository URL directly
+             - **Option B**: Upload your flattened-codebase.xml file
+          3. **Load the architect agent**: Upload `dist/agents/architect.txt`
+          4. **Run documentation**: Type `*document-project`
+
+          The architect will generate comprehensive documentation of everything.
+      - id: phase-2-plan-your-enhancement
+        title: 'Phase 2: Plan Your Enhancement'
+        level: 4
+        sections:
+        - id: option-a-full-brownfield-workflow-recommended-for-major-changes
+          title: 'Option A: Full Brownfield Workflow (Recommended for Major Changes)'
+          level: 5
+          content: |-
+            **1. Create Brownfield PRD**:
+
+            ```bash
+            @pm
+            *create-brownfield-prd
+            ```
+
+            The PM agent will:
+
+            - **Analyze existing documentation** from Phase 1
+            - **Request specific enhancement details** from you
+            - **Assess complexity** and recommend approach
+            - **Create epic/story structure** for the enhancement
+            - **Identify risks and integration points**
+
+            **How PM Agent Gets Project Context**:
+
+            - In Gemini Web: Already has full project context from Phase 1 documentation
+            - In IDE: Will ask "Please provide the path to your existing project documentation"
+
+            **Key Prompts You'll Encounter**:
+
+            - "What specific enhancement or feature do you want to add?"
+            - "Are there any existing systems or APIs this needs to integrate with?"
+            - "What are the critical constraints we must respect?"
+            - "What is your timeline and team size?"
+
+            **2. Create Brownfield Architecture**:
+
+            ```bash
+            @architect
+            *create-brownfield-architecture
+            ```
+
+            The architect will:
+
+            - **Review the brownfield PRD**
+            - **Design integration strategy**
+            - **Plan migration approach** if needed
+            - **Identify technical risks**
+            - **Define compatibility requirements**
+        - id: option-b-quick-enhancement-for-focused-changes
+          title: 'Option B: Quick Enhancement (For Focused Changes)'
+          level: 5
+          content: |-
+            **For Single Epic Without Full PRD**:
+
+            ```bash
+            @pm
+            *create-brownfield-epic
+            ```
+
+            Use when:
+
+            - Enhancement is well-defined and isolated
+            - Existing documentation is comprehensive
+            - Changes don't impact multiple systems
+            - You need quick turnaround
+
+            **For Single Story**:
+
+            ```bash
+            @pm
+            *create-brownfield-story
+            ```
+
+            Use when:
+
+            - Bug fix or tiny feature
+            - Very isolated change
+            - No architectural impact
+            - Clear implementation path
+    - id: phase-3-validate-planning-artifacts
+      title: 'Phase 3: Validate Planning Artifacts'
+      level: 3
+      content: |-
+        ```bash
+        @po
+        *execute-checklist-po
+        ```
+
+        The PO ensures:
+
+        - Compatibility with existing system
+        - No breaking changes planned
+        - Risk mitigation strategies in place
+        - Clear integration approach
+    - id: phase-4-save-and-shard-documents
+      title: 'Phase 4: Save and Shard Documents'
+      level: 3
+      content: |-
+        1. Save your PRD and Architecture as:
+           docs/prd.yaml
+           docs/architecture.yaml
+           (Note: You can optionally prefix with 'brownfield-' if managing multiple versions)
+        2. Shard your docs:
+           In your IDE
+
+           ```bash
+           @po
+           shard docs/prd.yaml
+           ```
+
+           ```bash
+           @po
+           shard docs/architecture.yaml
+           ```
+    - id: phase-5-transition-to-development
+      title: 'Phase 5: Transition to Development'
+      level: 3
+      content: '**Follow the [<ins>Enhanced IDE Development Workflow</ins>](enhanced-ide-development-workflow.yaml)**'
+  - id: brownfield-best-practices
+    title: Brownfield Best Practices
+    level: 2
+    sections:
+    - id: 1-always-document-first
+      title: 1. Always Document First
+      level: 3
+      content: |-
+        Even if you think you know the codebase:
+
+        - Run `document-project` to capture current state
+        - AI agents need this context
+        - Discovers undocumented patterns
+    - id: 2-respect-existing-patterns
+      title: 2. Respect Existing Patterns
+      level: 3
+      content: |-
+        The brownfield templates specifically look for:
+
+        - Current coding conventions
+        - Existing architectural patterns
+        - Technology constraints
+        - Team preferences
+    - id: 3-plan-for-gradual-rollout
+      title: 3. Plan for Gradual Rollout
+      level: 3
+      content: |-
+        Brownfield changes should:
+
+        - Support feature flags
+        - Plan rollback strategies
+        - Include migration scripts
+        - Maintain backwards compatibility
+    - id: 4-test-integration-thoroughly
+      title: 4. Test Integration Thoroughly
+      level: 3
+      sections:
+      - id: why-the-test-architect-is-critical-for-brownfield
+        title: Why the Test Architect is Critical for Brownfield
+        level: 4
+        content: In brownfield projects, the Test Architect (Quinn) becomes your safety
+          net against breaking existing functionality. Unlike greenfield where you're
+          building fresh, brownfield requires careful validation that new changes
+          don't destabilize what already works.
+      - id: brownfield-specific-testing-challenges
+        title: Brownfield-Specific Testing Challenges
+        level: 4
+        content: |-
+          The Test Architect addresses unique brownfield complexities:
+
+          | **Challenge**               | **How Test Architect Helps**                      | **Command**         |
+          | --------------------------- | ------------------------------------------------- | ------------------- |
+          | **Regression Risks**        | Identifies which existing features might break    | `*risk`             |
+          | **Legacy Dependencies**     | Maps integration points and hidden dependencies   | `*trace`            |
+          | **Performance Degradation** | Validates no slowdown in existing flows           | `*nfr`              |
+          | **Coverage Gaps**           | Finds untested legacy code that new changes touch | `*design`           |
+          | **Breaking Changes**        | Detects API/contract violations                   | `*review`           |
+          | **Migration Safety**        | Validates data transformations and rollback plans | `*risk` + `*review` |
+      - id: complete-test-architect-workflow-for-brownfield
+        title: Complete Test Architect Workflow for Brownfield
+        level: 4
+        sections:
+        - id: stage-1-before-development-risk-strategy
+          title: 'Stage 1: Before Development (Risk & Strategy)'
+          level: 5
+          content: |-
+            **CRITICAL FOR BROWNFIELD - Run These First:**
+
+            ```bash
+- id: 1-risk-assessment-run-immediately-after-story-creation
+  title: 1. RISK ASSESSMENT (Run IMMEDIATELY after story creation)
+  level: 1
+  content: '@qa *risk {brownfield-story}'
+- id: identifies-legacy-dependencies-breaking-changes-integration-points
+  title: 'Identifies: Legacy dependencies, breaking changes, integration points'
+  level: 1
+- id: output-docs-qa-assessments-epic-story-risk-yyyymmdd-yaml
+  title: 'Output: docs/qa/assessments/{epic}.{story}-risk-{YYYYMMDD}.yaml'
+  level: 1
+- id: brownfield-focus
+  title: 'Brownfield Focus:'
+  level: 1
+- id: regression-probability-scoring
+  title: '- Regression probability scoring'
+  level: 1
+- id: affected-downstream-systems
+  title: '- Affected downstream systems'
+  level: 1
+- id: data-migration-risks
+  title: '- Data migration risks'
+  level: 1
+- id: rollback-complexity
+  title: '- Rollback complexity'
+  level: 1
+- id: 2-test-design-after-risk-assessment
+  title: 2. TEST DESIGN (After risk assessment)
+  level: 1
+  content: '@qa *design {brownfield-story}'
+- id: creates-regression-test-strategy-new-feature-tests
+  title: 'Creates: Regression test strategy + new feature tests'
+  level: 1
+- id: output-docs-qa-assessments-epic-story-test-design-yyyymmdd-yaml
+  title: 'Output: docs/qa/assessments/{epic}.{story}-test-design-{YYYYMMDD}.yaml'
+  level: 1
+- id: brownfield-focus-2
+  title: 'Brownfield Focus:'
+  level: 1
+- id: existing-functionality-that-needs-regression-tests
+  title: '- Existing functionality that needs regression tests'
+  level: 1
+- id: integration-test-requirements
+  title: '- Integration test requirements'
+  level: 1
+- id: performance-benchmarks-to-maintain
+  title: '- Performance benchmarks to maintain'
+  level: 1
+- id: feature-flag-test-scenarios
+  title: '- Feature flag test scenarios'
+  level: 1
+  content: '```'
+  sections:
+  - id: stage-2-during-development-continuous-validation
+    title: 'Stage 2: During Development (Continuous Validation)'
+    level: 5
+    content: |-
+      **Monitor Integration Health While Coding:**
+
+      ```bash
+- id: 3-requirements-tracing-mid-development-checkpoint
+  title: 3. REQUIREMENTS TRACING (Mid-development checkpoint)
+  level: 1
+  content: '@qa *trace {brownfield-story}'
+- id: maps-new-requirements-existing-functionality-preservation
+  title: 'Maps: New requirements + existing functionality preservation'
+  level: 1
+- id: output-docs-qa-assessments-epic-story-trace-yyyymmdd-yaml
+  title: 'Output: docs/qa/assessments/{epic}.{story}-trace-{YYYYMMDD}.yaml'
+  level: 1
+- id: brownfield-focus-3
+  title: 'Brownfield Focus:'
+  level: 1
+- id: existing-features-that-must-still-work
+  title: '- Existing features that must still work'
+  level: 1
+- id: new-old-feature-interactions
+  title: '- New/old feature interactions'
+  level: 1
+- id: api-contract-preservation
+  title: '- API contract preservation'
+  level: 1
+- id: missing-regression-test-coverage
+  title: '- Missing regression test coverage'
+  level: 1
+- id: 4-nfr-validation-before-considering-done
+  title: 4. NFR VALIDATION (Before considering "done")
+  level: 1
+  content: '@qa *nfr {brownfield-story}'
+- id: validates-performance-security-reliability-unchanged
+  title: 'Validates: Performance, security, reliability unchanged'
+  level: 1
+- id: output-docs-qa-assessments-epic-story-nfr-yyyymmdd-yaml
+  title: 'Output: docs/qa/assessments/{epic}.{story}-nfr-{YYYYMMDD}.yaml'
+  level: 1
+- id: brownfield-focus-4
+  title: 'Brownfield Focus:'
+  level: 1
+- id: performance-regression-detection
+  title: '- Performance regression detection'
+  level: 1
+- id: security-implications-of-integrations
+  title: '- Security implications of integrations'
+  level: 1
+- id: backward-compatibility-validation
+  title: '- Backward compatibility validation'
+  level: 1
+- id: load-stress-on-legacy-components
+  title: '- Load/stress on legacy components'
+  level: 1
+  content: '```'
+  sections:
+  - id: stage-3-code-review-deep-integration-analysis
+    title: 'Stage 3: Code Review (Deep Integration Analysis)'
+    level: 5
+    content: |-
+      **Comprehensive Brownfield Review:**
+
+      ```bash
+- id: 5-full-review-when-development-complete
+  title: 5. FULL REVIEW (When development complete)
+  level: 1
+  content: '@qa *review {brownfield-story}'
+- id: performs-deep-analysis-active-refactoring
+  title: 'Performs: Deep analysis + active refactoring'
+  level: 1
+- id: outputs
+  title: 'Outputs:'
+  level: 1
+- id: qa-results-in-story-file
+  title: '- QA Results in story file'
+  level: 1
+- id: gate-file-docs-qa-gates-epic-story-slug-yml
+  title: '- Gate file: docs/qa/gates/{epic}.{story}-{slug}.yml'
+  level: 1
+  content: |-
+    ```
+
+    The review specifically analyzes:
+
+    - **API Breaking Changes**: Validates all existing contracts maintained
+    - **Data Migration Safety**: Checks transformation logic and rollback procedures
+    - **Performance Regression**: Compares against baseline metrics
+    - **Integration Points**: Validates all touchpoints with legacy code
+    - **Feature Flag Logic**: Ensures proper toggle behavior
+    - **Dependency Impacts**: Maps affected downstream systems
+  sections:
+  - id: stage-4-post-review-gate-updates
+    title: 'Stage 4: Post-Review (Gate Updates)'
+    level: 5
+    content: '```bash'
+- id: 6-gate-status-update-after-addressing-issues
+  title: 6. GATE STATUS UPDATE (After addressing issues)
+  level: 1
+  content: '@qa *gate {brownfield-story}'
+- id: updates-quality-gate-decision-after-fixes
+  title: 'Updates: Quality gate decision after fixes'
+  level: 1
+- id: output-docs-qa-gates-epic-story-slug-yml
+  title: 'Output: docs/qa/gates/{epic}.{story}-{slug}.yml'
+  level: 1
+- id: brownfield-considerations
+  title: 'Brownfield Considerations:'
+  level: 1
+- id: may-waive-certain-legacy-code-issues
+  title: '- May WAIVE certain legacy code issues'
+  level: 1
+- id: documents-technical-debt-acceptance
+  title: '- Documents technical debt acceptance'
+  level: 1
+- id: tracks-migration-progress
+  title: '- Tracks migration progress'
+  level: 1
+  content: '```'
+  sections:
+  - id: brownfield-specific-risk-scoring
+    title: Brownfield-Specific Risk Scoring
+    level: 4
+    content: |-
+      The Test Architect uses enhanced risk scoring for brownfield:
+
+      | **Risk Category**      | **Brownfield Factors**                     | **Impact on Gate**  |
+      | ---------------------- | ------------------------------------------ | ------------------- |
+      | **Regression Risk**    | Number of integration points × Age of code | Score ≥9 = FAIL     |
+      | **Data Risk**          | Migration complexity × Data volume         | Score ≥6 = CONCERNS |
+      | **Performance Risk**   | Current load × Added complexity            | Score ≥6 = CONCERNS |
+      | **Compatibility Risk** | API consumers × Contract changes           | Score ≥9 = FAIL     |
+  - id: brownfield-testing-standards
+    title: Brownfield Testing Standards
+    level: 4
+    content: |-
+      Quinn enforces additional standards for brownfield:
+
+      - **Regression Test Coverage**: Every touched legacy module needs tests
+      - **Performance Baselines**: Must maintain or improve current metrics
+      - **Rollback Procedures**: Every change needs a rollback plan
+      - **Feature Flags**: All risky changes behind toggles
+      - **Integration Tests**: Cover all legacy touchpoints
+      - **Contract Tests**: Validate API compatibility
+      - **Data Validation**: Migration correctness checks
+  - id: quick-reference-brownfield-test-commands
+    title: 'Quick Reference: Brownfield Test Commands'
+    level: 4
+    content: |-
+      | **Scenario**                      | **Commands to Run**                                  | **Order**  | **Why Critical**              |
+      | --------------------------------- | ---------------------------------------------------- | ---------- | ----------------------------- |
+      | **Adding Feature to Legacy Code** | `*risk` → `*design` → `*trace` → `*review`           | Sequential | Map all dependencies first    |
+      | **API Modification**              | `*risk` → `*design` → `*nfr` → `*review`             | Sequential | Prevent breaking consumers    |
+      | **Performance-Critical Change**   | `*nfr` early and often → `*review`                   | Continuous | Catch degradation immediately |
+      | **Data Migration**                | `*risk` → `*design` → `*trace` → `*review` → `*gate` | Full cycle | Ensure data integrity         |
+      | **Bug Fix in Complex System**     | `*risk` → `*trace` → `*review`                       | Focused    | Prevent side effects          |
+  - id: integration-with-brownfield-scenarios
+    title: Integration with Brownfield Scenarios
+    level: 4
+    content: |-
+      **Scenario-Specific Guidance:**
+
+      1. **Legacy Code Modernization**
+         - Start with `*risk` to map all dependencies
+         - Use `*design` to plan strangler fig approach
+         - Run `*trace` frequently to ensure nothing breaks
+         - `*review` with focus on gradual migration
+
+      2. **Adding Features to Monolith**
+         - `*risk` identifies integration complexity
+         - `*design` plans isolation strategies
+         - `*nfr` monitors performance impact
+         - `*review` validates no monolith degradation
+
+      3. **Microservice Extraction**
+         - `*risk` maps service boundaries
+         - `*trace` ensures functionality preservation
+         - `*nfr` validates network overhead acceptable
+         - `*gate` documents accepted trade-offs
+
+      4. **Database Schema Changes**
+         - `*risk` assesses migration complexity
+         - `*design` plans backward-compatible approach
+         - `*trace` maps all affected queries
+         - `*review` validates migration safety
+  - id: 5-communicate-changes
+    title: 5. Communicate Changes
+    level: 3
+    content: |-
+      Document:
+
+      - What changed and why
+      - Migration instructions
+      - New patterns introduced
+      - Deprecation notices
+  - id: common-brownfield-scenarios
+    title: Common Brownfield Scenarios
+    level: 2
+    sections:
+    - id: scenario-1-adding-a-new-feature
+      title: 'Scenario 1: Adding a New Feature'
+      level: 3
+      content: |-
+        1. Document existing system
+        2. Create brownfield PRD focusing on integration
+        3. **Test Architect Early Involvement**:
+           - Run `@qa *risk` on draft stories to identify integration risks
+           - Use `@qa *design` to plan regression test strategy
+        4. Architecture emphasizes compatibility
+        5. Stories include integration tasks with test requirements
+        6. **During Development**:
+           - Developer runs `@qa *trace` to verify coverage
+           - Use `@qa *nfr` to monitor performance impact
+        7. **Review Stage**: `@qa *review` validates integration safety
+    - id: scenario-2-modernizing-legacy-code
+      title: 'Scenario 2: Modernizing Legacy Code'
+      level: 3
+      content: |-
+        1. Extensive documentation phase
+        2. PRD includes migration strategy
+        3. **Test Architect Strategy Planning**:
+           - `@qa *risk` assesses modernization complexity
+           - `@qa *design` plans parallel testing approach
+        4. Architecture plans gradual transition (strangler fig pattern)
+        5. Stories follow incremental modernization with:
+           - Regression tests for untouched legacy code
+           - Integration tests for new/old boundaries
+           - Performance benchmarks at each stage
+        6. **Continuous Validation**: Run `@qa *trace` after each increment
+        7. **Gate Management**: Use `@qa *gate` to track technical debt acceptance
+    - id: scenario-3-bug-fix-in-complex-system
+      title: 'Scenario 3: Bug Fix in Complex System'
+      level: 3
+      content: |-
+        1. Document relevant subsystems
+        2. Use `create-brownfield-story` for focused fix
+        3. **Test Architect Risk Assessment**: Run `@qa *risk` to identify side effect potential
+        4. Include regression test requirements from `@qa *design` output
+        5. **During Fix**: Use `@qa *trace` to map affected functionality
+        6. **Before Commit**: Run `@qa *review` for comprehensive validation
+        7. Test Architect validates no side effects using:
+           - Risk profiling for side effect analysis (probability × impact scoring)
+           - Trace matrix to ensure fix doesn't break related features
+           - NFR assessment to verify performance/security unchanged
+           - Gate decision documents fix safety
+    - id: scenario-4-api-integration
+      title: 'Scenario 4: API Integration'
+      level: 3
+      content: |-
+        1. Document existing API patterns
+        2. PRD defines integration requirements
+        3. **Test Architect Contract Analysis**:
+           - `@qa *risk` identifies breaking change potential
+           - `@qa *design` creates contract test strategy
+        4. Architecture ensures consistent patterns
+        5. **API Testing Focus**:
+           - Contract tests for backward compatibility
+           - Integration tests for new endpoints
+           - Performance tests for added load
+        6. Stories include API documentation updates
+        7. **Validation Checkpoints**:
+           - `@qa *trace` maps all API consumers
+           - `@qa *nfr` validates response times
+           - `@qa *review` ensures no breaking changes
+        8. **Gate Decision**: Document any accepted breaking changes with migration path
+  - id: troubleshooting
+    title: Troubleshooting
+    level: 2
+    sections:
+    - id: the-ai-doesn-t-understand-my-codebase
+      title: '"The AI doesn''t understand my codebase"'
+      level: 3
+      content: '**Solution**: Re-run `document-project` with more specific paths to
+        critical files'
+    - id: generated-plans-don-t-fit-our-patterns
+      title: '"Generated plans don''t fit our patterns"'
+      level: 3
+      content: '**Solution**: Update generated documentation with your specific conventions
+        before planning phase'
+    - id: too-much-boilerplate-for-small-changes
+      title: '"Too much boilerplate for small changes"'
+      level: 3
+      content: '**Solution**: Use `create-brownfield-story` instead of full workflow'
+    - id: integration-points-unclear
+      title: '"Integration points unclear"'
+      level: 3
+      content: '**Solution**: Provide more context during PRD creation, specifically
+        highlighting integration systems'
+  - id: quick-reference
+    title: Quick Reference
+    level: 2
+    sections:
+    - id: brownfield-specific-commands
+      title: Brownfield-Specific Commands
+      level: 3
+      content: '```bash'
+- id: document-existing-project
+  title: Document existing project
+  level: 1
+  content: '@architect *document-project'
+- id: create-enhancement-prd
+  title: Create enhancement PRD
+  level: 1
+  content: '@pm *create-brownfield-prd'
+- id: create-architecture-with-integration-focus
+  title: Create architecture with integration focus
+  level: 1
+  content: '@architect *create-brownfield-architecture'
+- id: quick-epic-creation
+  title: Quick epic creation
+  level: 1
+  content: '@pm *create-brownfield-epic'
+- id: single-story-creation
+  title: Single story creation
+  level: 1
+  content: |-
+    @pm *create-brownfield-story
+    ```
+  sections:
+  - id: test-architect-commands-for-brownfield
+    title: Test Architect Commands for Brownfield
+    level: 3
+    content: |-
+      Note: Short forms shown below. Full commands: `*risk-profile`, `*test-design`, `*nfr-assess`, `*trace-requirements`
+
+      ```bash
+- id: before-development-planning
+  title: BEFORE DEVELOPMENT (Planning)
+  level: 1
+  content: |-
+    @qa *risk {story}     # Assess regression & integration risks
+    @qa *design {story}   # Plan regression + new feature tests
+- id: during-development-validation
+  title: DURING DEVELOPMENT (Validation)
+  level: 1
+  content: |-
+    @qa *trace {story}    # Verify coverage of old + new
+    @qa *nfr {story}      # Check performance degradation
+- id: after-development-review
+  title: AFTER DEVELOPMENT (Review)
+  level: 1
+  content: |-
+    @qa *review {story}   # Deep integration analysis
+    @qa *gate {story}     # Update quality decision
+    ```
+  sections:
+  - id: decision-tree
+    title: Decision Tree
+    level: 3
+    content: |-
+      ```text
+      Do you have a large codebase or monorepo?
+      ├─ Yes → PRD-First Approach
+      │   └─ Create PRD → Document only affected areas
+      └─ No → Is the codebase well-known to you?
+          ├─ Yes → PRD-First Approach
+          └─ No → Document-First Approach
+
+      Is this a major enhancement affecting multiple systems?
+      ├─ Yes → Full Brownfield Workflow
+      │   └─ ALWAYS run Test Architect *risk + *design first
+      └─ No → Is this more than a simple bug fix?
+          ├─ Yes → *create-brownfield-epic
+          │   └─ Run Test Architect *risk for integration points
+          └─ No → *create-brownfield-story
+              └─ Still run *risk if touching critical paths
+
+      Does the change touch legacy code?
+      ├─ Yes → Test Architect is MANDATORY
+      │   ├─ *risk → Identify regression potential
+      │   ├─ *design → Plan test coverage
+      │   └─ *review → Validate no breakage
+      └─ No → Test Architect is RECOMMENDED
+          └─ *review → Ensure quality standards
+      ```
+  - id: conclusion
+    title: Conclusion
+    level: 2
+    content: |-
+      Brownfield development with BMad Method provides structure and safety when modifying existing systems. The Test Architect becomes your critical safety net, using risk assessment, regression testing, and continuous validation to ensure new changes don't destabilize existing functionality.
+
+      **The Brownfield Success Formula:**
+
+      1. **Document First** - Understand what exists
+      2. **Assess Risk Early** - Use Test Architect `*risk` before coding
+      3. **Plan Test Strategy** - Design regression + new feature tests
+      4. **Validate Continuously** - Check integration health during development
+      5. **Review Comprehensively** - Deep analysis before committing
+      6. **Gate Decisively** - Document quality decisions
+
+      Remember: **In brownfield, the Test Architect isn't optional - it's your insurance policy against breaking production.**

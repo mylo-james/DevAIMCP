@@ -1,0 +1,6 @@
+---
+version: v1
+kind: package
+id: policy_demo
+default_namespace: sandbox
+description: Demo package exercising tool invocation and policy enforcement.

@@ -1,0 +1,57 @@
+---
+version: v1
+kind: task
+id: make_outline
+namespace: writing
+persona_ref: persona:writer
+template_ref: template:outliner
+writes:
+  state:
+    title:
+      var: inputs.topic
+    outline:
+      - Introduction
+      -
+        concat:
+          - "Key Points about "
+          -
+            var: inputs.topic
+      - Conclusion
+  artifacts:
+    - name: outline.md
+      from:
+        concat:
+          - "# Outline for "
+          -
+            var: inputs.topic
+          - "\n\n- Introduction\n"
+          - "- Key Points about "
+          -
+            var: inputs.topic
+          - "\n- Conclusion\n"
+---
+version: v1
+kind: task
+id: write_draft
+namespace: writing
+persona_ref: persona:writer
+template_ref: template:drafter
+writes:
+  state:
+    draft:
+      concat:
+        - "Draft article on "
+        -
+          var: state.title
+        - "."
+  artifacts:
+    - name: draft.md
+      from:
+        concat:
+          - "# Draft for "
+          -
+            var: state.title
+          - "\n\nDraft article on "
+          -
+            var: state.title
+          - ".\n"

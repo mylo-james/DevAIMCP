@@ -1,0 +1,22 @@
+type: task
+id: new_langgraph/lib/tasks/plan-ux-research
+title: Plan UX Research
+version: 1
+source_path: new_langgraph/lib/tasks/plan-ux-research.yaml
+summary: |-
+  - Identify core personas and their goals.
+  - Outline qualitative and quantitative methods.
+  - Define success signals for the user experience.
+metadata:
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/tasks/plan-ux-research.md
+sections:
+- id: plan-ux-research
+  title: Plan UX Research
+  level: 2
+  content: |-
+    - Identify core personas and their goals.
+    - Outline qualitative and quantitative methods.
+    - Define success signals for the user experience.

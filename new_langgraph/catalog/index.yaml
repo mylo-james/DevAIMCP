@@ -1,0 +1,85 @@
+chunks:
+  - id: workflow-build-app
+    path: new_langgraph/workflow/build_app.py
+    summary: "Simplified workflow runner that orchestrates planning and story nodes via in-memory state."
+    tags: [workflow, graph]
+    collection: code
+    kind: python
+    chunk_tokens: 420
+  - id: workflow-initial-state
+    path: new_langgraph/workflow/initial_state.py
+    summary: "Constructs the initial LangGraph state, deriving project metadata and workflow profiles."
+    tags: [workflow, state]
+    collection: code
+    kind: python
+    chunk_tokens: 145
+  - id: planning-analyst-brief
+    path: new_langgraph/nodes/planning/analyst_brief.py
+    summary: "Analyst node that synthesizes a project brief using templates, tasks, and knowledge snippets."
+    tags: [planning, nodes]
+    collection: code
+    kind: python
+    chunk_tokens: 230
+  - id: planning-po-shard
+    path: new_langgraph/nodes/planning/po_shard_documents.py
+    summary: "Product owner node that shards PRD content into seed stories for the backlog."
+    tags: [planning, backlog]
+    collection: code
+    kind: python
+    chunk_tokens: 150
+  - id: story-dev-plan
+    path: new_langgraph/nodes/stories/dev_plan_story.py
+    summary: "Developer node generating a detailed plan, storing artifacts, and updating story metadata."
+    tags: [stories, dev]
+    collection: code
+    kind: python
+    chunk_tokens: 240
+  - id: story-qa-gate
+    path: new_langgraph/nodes/stories/qa_gate_update.py
+    summary: "QA node that records gate status after validation, marking stories ready for release."
+    tags: [stories, qa]
+    collection: code
+    kind: python
+    chunk_tokens: 120
+  - id: storage-hybrid-store
+    path: new_langgraph/storage/service/search.py
+    summary: "Hybrid in-memory knowledge store blending keyword and vector scoring for document retrieval."
+    tags: [storage, retrieval]
+    collection: code
+    kind: python
+    chunk_tokens: 260
+  - id: assets-loaders
+    path: new_langgraph/assets/__init__.py
+    summary: "Asset loader facade combining YAML, markdown, and rendered prompt helpers for templates."
+    tags: [assets]
+    collection: code
+    kind: python
+    chunk_tokens: 110
+  - id: chat-intake
+    path: new_langgraph/chat/intake/llm_message_intake.py
+    summary: "Message intake module converting chat turns into structured workflow commands with fallback heuristics."
+    tags: [chat, intake]
+    collection: code
+    kind: python
+    chunk_tokens: 210
+  - id: chat-dispatcher
+    path: new_langgraph/chat/handlers/dispatcher.py
+    summary: "Chat command dispatcher wiring plan, story, resume, and status handlers to the workflow app."
+    tags: [chat, handlers]
+    collection: code
+    kind: python
+    chunk_tokens: 180
+  - id: cli-plan
+    path: new_langgraph/cli/commands/plan.py
+    summary: "Typer command that invokes a planning run and logs state snapshots for the thread."
+    tags: [cli]
+    collection: code
+    kind: python
+    chunk_tokens: 130
+  - id: utils-slugify
+    path: new_langgraph/utils/slugify.py
+    summary: "Utility providing consistent slug generation for thread and artifact identifiers."
+    tags: [utils]
+    collection: code
+    kind: python
+    chunk_tokens: 60

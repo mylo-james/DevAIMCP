@@ -1,0 +1,16 @@
+---
+version: v1
+kind: policy
+id: default_tools
+namespace: sandbox
+rules:
+  - name: allow file writer
+    action: allow
+    'on': tools
+    tool_refs:
+      - tool:file_writer
+  - name: deny shell execution
+    action: deny
+    'on': tools
+    tool_refs:
+      - tool:echo_shell

@@ -1,0 +1,164 @@
+type: report
+id: new_langgraph/reports/baseline-metrics
+title: Repository Baseline Metrics
+version: 1
+source_path: new_langgraph/reports/baseline-metrics.yaml
+summary: |-
+  | Path | Lines | Docstring Coverage | Definitions |
+  | --- | ---: | ---: | ---: |
+  | bmad_langgraph/nodes/stories/qa.py | 219 | 0.00 | 3 |
+  | bmad_langgraph/chat/intake.py | 211 | 0.25 | 8 |
+  | bmad_langgraph/bmad_flow.py | 205 | 0.64 | 11 |
+  | bmad_langgraph/storage/bootstrap.py | 186 | 1.00 | 3 |
+  | bmad_langgraph/graph.py | 174 | 0.20 | 5 |
+  | bmad_langgraph/nodes/stories/shared.py | 164 | 0.00 | 9 |
+  | bmad_langgraph/storage/service/search.py | 161 | 0.40 | 5 |
+  | bmad_langgraph/nodes/stories/scrum_master.py | 155 | 0.00 | 2 |
+  | bmad_langgraph/test_file_operations.py | 150 | 1.00 | 3 |
+  | bmad_langgraph/nodes/planning/shared.py | 149 | 0.45 | 11 |
+  | scripts/report_repo_metrics.py | 129 | 0.00 | 9 |
+  | bmad_langgraph/retrieval.py | 128 | 0.20 | 5 |
+  | bmad_langgraph/test_agents_file_ops.py | 127 | 0.12 | 17 |
+  | bmad_langgraph/sandbox/validators.py | 127 | 1.00 | 5 |
+  | bmad_langgraph/agents/tools.py | 122 | 0.67 | 3 |
+  | bmad_langgraph/chat_summaries.py | 119 | 0.40 | 5 |
+  | bmad_langgraph/agents/factory.py | 119 | 0.83 | 6 |
+  | bmad_langgraph/chat/handlers.py | 115 | 0.25 | 8 |
+  | bmad_langgraph/config.py | 110 | 0.25 | 8 |
+  | bmad_langgraph/assets.py | 105 | 0.46 | 13 |
+  | bmad_langgraph/nodes/planning/pm.py | 102 | 0.00 | 2 |
+  | bmad_langgraph/tests/test_chat_routing.py | 97 | 0.00 | 14 |
+  | bmad_langgraph/nodes/planning/architect.py | 95 | 0.00 | 2 |
+  | bmad_langgraph/nodes/planning/po.py | 93 | 0.00 | 2 |
+  | bmad_langgraph/tests/test_storage.py | 93 | 0.00 | 10 |
+  | bmad_langgraph/sandbox/tools.py | 93 | 0.67 | 6 |
+  | bmad_langgraph/reflexion.py | 92 | 0.33 | 3 |
+  | bmad_langgraph/sandbox/executor.py | 91 | 1.00 | 2 |
+  | bmad_langgraph/tests/test_sandbox_tools.py | 84 | 0.00 | 10 |
+  | bmad_langgraph/test_complete_integration.py | 82 | 1.00 | 2 |
+  | bmad_langgraph/nodes/planning/analyst.py | 82 | 0.00 | 1 |
+  | bmad_langgraph/nodes/stories/dev.py | 79 | 0.00 | 1 |
+  | bmad_langgraph/storage/service/writer.py | 78 | 0.67 | 3 |
+  | bmad_langgraph/nodes/planning/ux.py | 74 | 0.00 | 1 |
+  | bmad_langgraph/quick_test.py | 73 | 1.00 | 2 |
+  | bmad_langgraph/nodes/stories/po.py | 71 | 0.00 | 1 |
+  | bmad_langgraph/storage/service/base.py | 70 | 0.25 | 4 |
+  | bmad_langgraph/agents/personas.py | 69 | 1.00 | 1 |
+  | bmad_langgraph/state.py | 65 | 0.20 | 5 |
+  | bmad_langgraph/agents/sdk.py | 61 | 0.33 | 3 |
+  | bmad_langgraph/sandbox/access.py | 60 | 1.00 | 3 |
+  | bmad_langgraph/chat/app.py | 58 | 1.00 | 1 |
+  | bmad_langgraph/tests/test_stories.py | 56 | 0.00 | 3 |
+  | bmad_langgraph/agents/__init__.py | 55 | 1.00 | 0 |
+  | bmad_langgraph/scripts/postgres_smoke.py | 52 | 0.00 | 7 |
+  | scripts/check_chunk_size.py | 50 | 0.00 | 3 |
+  | bmad_langgraph/llm.py | 47 | 0.33 | 3 |
+  | bmad_langgraph/chat/router.py | 44 | 1.00 | 1 |
+  | bmad_langgraph/storage/models.py | 39 | 1.00 | 2 |
+  | bmad_langgraph/nodes/__init__.py | 37 | 1.00 | 0 |
+  | bmad_langgraph/test_access_direct.py | 36 | 1.00 | 1 |
+  | bmad_langgraph/chat/smalltalk.py | 34 | 1.00 | 1 |
+  | bmad_langgraph/chat/__init__.py | 34 | 1.00 | 0 |
+  | bmad_langgraph/tracing.py | 33 | 1.00 | 1 |
+  | bmad_langgraph/embeddings.py | 24 | 1.00 | 1 |
+  | bmad_langgraph/test_sandbox_path.py | 23 | 1.00 | 0 |
+  | bmad_langgraph/storage/__init__.py | 18 | 1.00 | 0 |
+  | bmad_langgraph/nodes/planning/__init__.py | 17 | 1.00 | 0 |
+  | bmad_langgraph/nodes/stories/__init__.py | 17 | 1.00 | 0 |
+  | bmad_langgraph/storage/service/__init__.py | 16 | 0.50 | 2 |
+  | bmad_langgraph/utils.py | 15 | 0.00 | 2 |
+  | bmad_langgraph/chat/deps.py | 13 | 1.00 | 0 |
+  | bmad_langgraph/sandbox/__init__.py | 11 | 1.00 | 0 |
+  | bmad_langgraph/__init__.py | 6 | 1.00 | 0 |
+  | bmad_langgraph/app.py | 6 | 1.00 | 0 |
+  | bmad_langgraph/nodes/supervisor.py | 3 | 1.00 | 0 |
+metadata:
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/reports/baseline-metrics.md
+sections:
+- id: repository-baseline-metrics
+  title: Repository Baseline Metrics
+  level: 1
+  content: |-
+    | Path | Lines | Docstring Coverage | Definitions |
+    | --- | ---: | ---: | ---: |
+    | bmad_langgraph/nodes/stories/qa.py | 219 | 0.00 | 3 |
+    | bmad_langgraph/chat/intake.py | 211 | 0.25 | 8 |
+    | bmad_langgraph/bmad_flow.py | 205 | 0.64 | 11 |
+    | bmad_langgraph/storage/bootstrap.py | 186 | 1.00 | 3 |
+    | bmad_langgraph/graph.py | 174 | 0.20 | 5 |
+    | bmad_langgraph/nodes/stories/shared.py | 164 | 0.00 | 9 |
+    | bmad_langgraph/storage/service/search.py | 161 | 0.40 | 5 |
+    | bmad_langgraph/nodes/stories/scrum_master.py | 155 | 0.00 | 2 |
+    | bmad_langgraph/test_file_operations.py | 150 | 1.00 | 3 |
+    | bmad_langgraph/nodes/planning/shared.py | 149 | 0.45 | 11 |
+    | scripts/report_repo_metrics.py | 129 | 0.00 | 9 |
+    | bmad_langgraph/retrieval.py | 128 | 0.20 | 5 |
+    | bmad_langgraph/test_agents_file_ops.py | 127 | 0.12 | 17 |
+    | bmad_langgraph/sandbox/validators.py | 127 | 1.00 | 5 |
+    | bmad_langgraph/agents/tools.py | 122 | 0.67 | 3 |
+    | bmad_langgraph/chat_summaries.py | 119 | 0.40 | 5 |
+    | bmad_langgraph/agents/factory.py | 119 | 0.83 | 6 |
+    | bmad_langgraph/chat/handlers.py | 115 | 0.25 | 8 |
+    | bmad_langgraph/config.py | 110 | 0.25 | 8 |
+    | bmad_langgraph/assets.py | 105 | 0.46 | 13 |
+    | bmad_langgraph/nodes/planning/pm.py | 102 | 0.00 | 2 |
+    | bmad_langgraph/tests/test_chat_routing.py | 97 | 0.00 | 14 |
+    | bmad_langgraph/nodes/planning/architect.py | 95 | 0.00 | 2 |
+    | bmad_langgraph/nodes/planning/po.py | 93 | 0.00 | 2 |
+    | bmad_langgraph/tests/test_storage.py | 93 | 0.00 | 10 |
+    | bmad_langgraph/sandbox/tools.py | 93 | 0.67 | 6 |
+    | bmad_langgraph/reflexion.py | 92 | 0.33 | 3 |
+    | bmad_langgraph/sandbox/executor.py | 91 | 1.00 | 2 |
+    | bmad_langgraph/tests/test_sandbox_tools.py | 84 | 0.00 | 10 |
+    | bmad_langgraph/test_complete_integration.py | 82 | 1.00 | 2 |
+    | bmad_langgraph/nodes/planning/analyst.py | 82 | 0.00 | 1 |
+    | bmad_langgraph/nodes/stories/dev.py | 79 | 0.00 | 1 |
+    | bmad_langgraph/storage/service/writer.py | 78 | 0.67 | 3 |
+    | bmad_langgraph/nodes/planning/ux.py | 74 | 0.00 | 1 |
+    | bmad_langgraph/quick_test.py | 73 | 1.00 | 2 |
+    | bmad_langgraph/nodes/stories/po.py | 71 | 0.00 | 1 |
+    | bmad_langgraph/storage/service/base.py | 70 | 0.25 | 4 |
+    | bmad_langgraph/agents/personas.py | 69 | 1.00 | 1 |
+    | bmad_langgraph/state.py | 65 | 0.20 | 5 |
+    | bmad_langgraph/agents/sdk.py | 61 | 0.33 | 3 |
+    | bmad_langgraph/sandbox/access.py | 60 | 1.00 | 3 |
+    | bmad_langgraph/chat/app.py | 58 | 1.00 | 1 |
+    | bmad_langgraph/tests/test_stories.py | 56 | 0.00 | 3 |
+    | bmad_langgraph/agents/__init__.py | 55 | 1.00 | 0 |
+    | bmad_langgraph/scripts/postgres_smoke.py | 52 | 0.00 | 7 |
+    | scripts/check_chunk_size.py | 50 | 0.00 | 3 |
+    | bmad_langgraph/llm.py | 47 | 0.33 | 3 |
+    | bmad_langgraph/chat/router.py | 44 | 1.00 | 1 |
+    | bmad_langgraph/storage/models.py | 39 | 1.00 | 2 |
+    | bmad_langgraph/nodes/__init__.py | 37 | 1.00 | 0 |
+    | bmad_langgraph/test_access_direct.py | 36 | 1.00 | 1 |
+    | bmad_langgraph/chat/smalltalk.py | 34 | 1.00 | 1 |
+    | bmad_langgraph/chat/__init__.py | 34 | 1.00 | 0 |
+    | bmad_langgraph/tracing.py | 33 | 1.00 | 1 |
+    | bmad_langgraph/embeddings.py | 24 | 1.00 | 1 |
+    | bmad_langgraph/test_sandbox_path.py | 23 | 1.00 | 0 |
+    | bmad_langgraph/storage/__init__.py | 18 | 1.00 | 0 |
+    | bmad_langgraph/nodes/planning/__init__.py | 17 | 1.00 | 0 |
+    | bmad_langgraph/nodes/stories/__init__.py | 17 | 1.00 | 0 |
+    | bmad_langgraph/storage/service/__init__.py | 16 | 0.50 | 2 |
+    | bmad_langgraph/utils.py | 15 | 0.00 | 2 |
+    | bmad_langgraph/chat/deps.py | 13 | 1.00 | 0 |
+    | bmad_langgraph/sandbox/__init__.py | 11 | 1.00 | 0 |
+    | bmad_langgraph/__init__.py | 6 | 1.00 | 0 |
+    | bmad_langgraph/app.py | 6 | 1.00 | 0 |
+    | bmad_langgraph/nodes/supervisor.py | 3 | 1.00 | 0 |
+  sections:
+  - id: summary
+    title: Summary
+    level: 2
+    content: |-
+      Total Python files: 66
+
+      Mean line count: 82.2
+
+      Median line count: 76.0
+
+      Mean docstring coverage: 0.54

@@ -1,0 +1,22 @@
+type: utility
+id: new_langgraph/lib/utils/working-in-the-brownfield
+title: Working in the Brownfield
+version: 1
+source_path: new_langgraph/lib/utils/working-in-the-brownfield.yaml
+summary: |-
+  - Investigate existing systems, interfaces, and owners.
+  - Document constraints imposed by legacy technology.
+  - De-risk migrations with phased rollout plans.
+metadata:
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/utils/working-in-the-brownfield.md
+sections:
+- id: working-in-the-brownfield
+  title: Working in the Brownfield
+  level: 2
+  content: |-
+    - Investigate existing systems, interfaces, and owners.
+    - Document constraints imposed by legacy technology.
+    - De-risk migrations with phased rollout plans.

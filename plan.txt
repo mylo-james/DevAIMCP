@@ -1,0 +1,276 @@
+YAML-Driven LangGraph Architecture Plan
+
+Last updated: 2025-09-23
+
+**Goal**
+- Make YAML the source of truth for business logic (personas, tasks, workflows, tools, prompts, policies, state), with Python acting only as a loader, validator, renderer, and LangGraph runtime adapter.
+
+**Non-Goals**
+- Hardcoding domain-specific logic (e.g., BMAD) in Python.
+- Baking model- or vendor-specific assumptions into the YAML schema.
+- Maintaining legacy/dual runtimes, feature flags, or shims.
+
+**Outcomes**
+- Drop in ANY domain YAML set (e.g., writing assistant) and run it without code changes.
+- Validate and compile YAML into a LangGraph app at runtime.
+- Provide a CLI/API to run a chosen workflow with inputs and get outputs/artifacts.
+
+**High-Level Approach**
+- Define a small, composable YAML schema with a `kind` and `id` for every document; use cross-file references and versioning.
+- Build a Python intermediary that:
+  - Discovers and loads YAML packages recursively.
+  - Validates with Pydantic schemas and a JSON Schema export.
+  - Renders prompts (Jinja2), resolves `$ref`s, and compiles conditions.
+  - Constructs LangGraph nodes/edges dynamically and runs them with typed state.
+- Operate as a single, live YAML runtime only (no legacy code paths).
+
+**YAML Discovery & Packaging**
+- Loader scans any directory recursively for `*.yaml|*.yml`.
+- Each YAML file may contain multiple `---` docs.
+- Each document must include:
+  - `version: v1` (schema version)
+  - `kind: persona|task|workflow|tool|template|model|policy|state|package|knowledge|router`
+  - `id: <string>` unique within its namespace
+  - `namespace: <optional string>` for multi-package isolation
+- `package` docs can declare `imports: [path|package_id]` to pull other packages.
+
+**Reference Convention**
+- `$ref: <kind>:<id>` or `$ref: <namespace>:<kind>:<id>`.
+- `template_ref`, `tool_refs`, `task_refs`, `workflow_ref` follow the same pattern.
+
+**Schema Overview (v1, concise)**
+- `state`
+  - `fields: [{name, type, default?, required?}]`
+  - Optional `persist: [field, ...]` and `artifacts: [name]`.
+- `persona`
+  - `name`, `description`, `style?`, `default_model_ref?`, `tool_refs?`, `policies?`.
+- `tool`
+  - `type: shell|http|code|python|search|file|custom`
+  - `config: {...}` (e.g., allowlist paths, methods, base_url)
+  - `schema?: input/output JSON Schemas`
+- `template`
+  - `format: jinja2|fstring`, `system?`, `user?`, `messages?[]`, `vars?`.
+- `task`
+  - `persona_ref`, `input_schema?`, `output_schema?`, `template_ref|template`, `tool_refs?`, `llm?: {model_ref|inline, params}`, `retry?: {max, backoff}`, `stop?: {if, max_tokens}`
+  - `writes?: {state: {field: expr, ...}, artifacts?: [{name, from: expr}]}`
+  - `emits?: [event_name]`
+- `router`
+  - `type: switch|probabilistic|function|map`
+  - `when: <expr>` or `cases: [{if: <expr>, to: node_id}]` (see Conditions DSL)
+- `workflow`
+  - `state_ref`
+  - `entry: node_id`, `nodes: {node_id: {task_ref|subflow_ref|router_ref}}`, `edges: [{from, to, when?}]`
+  - `concurrency?: {max_parallel}`
+- `policy`
+  - `rules: [{name, allow|deny, on: tools|files|network, when?: <expr>}]`
+- `model`
+  - `provider`, `name`, `params?`, `fallbacks?[]`
+- `knowledge`
+  - `sources: [{type: file|dir|url|md|yaml, path|url, tags?}]`, `ingest?: {chunk, embed_model_ref?}`
+
+**Conditions DSL**
+- Adopt JSONLogic (safe, portable) for `when` conditions and `expr` fields.
+- Evaluate against the typed state and the last node’s result.
+- Provide helpers: `has(field)`, `equals`, `contains`, `and`, `or`, `not`, `lt`, `gt`.
+
+**Prompt Rendering**
+- Jinja2 environment with filters: `yaml`, `json`, `md_table`, `dedent`, `wrap`.
+- Context includes: `state`, `inputs`, `persona`, `tools`, `env`, `knowledge.snippets`.
+- Supports `include` and template inheritance for reuse.
+
+**Runtime Semantics**
+- Each `task` compiles to a LangGraph node that:
+  - Renders prompt → calls LLM/toolchain per `llm` config → validates output → writes to state/artifacts.
+- `router` nodes evaluate conditions and choose next edge.
+- `workflow` compiles to a LangGraph graph with typed `state_ref`.
+- Retries and halting controlled by task-level `retry/stop` and policy gates.
+
+**Python Intermediary Components**
+- `yaml_runtime.loader`:
+  - Recursively load YAML, split docs, attach file/line provenance.
+  - Resolve `$ref`s, validate uniqueness, build in-memory registry.
+- `yaml_runtime.schema`:
+  - Pydantic models for each `kind`, JSON Schema export, versioning + migrations.
+- `yaml_runtime.templates`:
+  - Jinja2 env + shared filters; file-based and registry-based template lookup.
+- `yaml_runtime.conditions`:
+  - JSONLogic evaluator with safe ops, bound to state and node outputs.
+- `yaml_runtime.tools`
+  - Pluggable tool adapters; built-ins: `shell` (allowlist), `http` (domain allowlist), `file` (sandbox), `search`.
+- `yaml_runtime.builder`:
+  - Registry → LangGraph graph; constructs nodes/edges; binds tools/models/personas; wires tracing hooks.
+- `yaml_runtime.state`
+  - Typed container, defaulting, persistence, artifact store paths.
+- `yaml_runtime.run`
+  - `run_workflow(workflow_ref, inputs, options)` returning updated state + artifacts + trace.
+
+**CLI/API**
+- `lg run --pkg <dir|file> --workflow <id> --input '{...}' --out ./artifacts`.
+- `lg validate --pkg <dir>` prints schema, missing refs, cycles.
+- `lg graphviz --pkg <dir> --workflow <id> -o flow.svg`.
+
+**Security & Sandboxing**
+- Tools enforce policies declared in YAML policies and environment defaults.
+- Shell/file/network tools use allowlists; violations are hard errors.
+
+**Testing Strategy**
+- Golden tests for: loading, validation errors, prompt rendering, router decisions, tool sandboxing.
+- End-to-end tests with a domain-agnostic “Writing Assistant” package.
+
+**Example Minimal Docs (sketch)**
+- `state:v1`
+  - fields: title:str, outline:list[str], draft:str
+- `persona:writer`
+  - style: concise, friendly
+- `task:make_outline` uses `template:outliner` → writes `outline`
+- `router:has_outline` when `{"has": ["outline"]}`
+- `workflow:writing_flow` entry `make_outline` → router → `task:write_draft`
+
+**Full Conversion (Live Only)**
+- Map existing YAML under `new_langgraph/lib/**` to `template|knowledge|policy|model` kinds.
+- Convert all Python node logic under `new_langgraph/nodes/**` into YAML `task` docs or tool adapters; keep Python only for loaders/adapters/runtime.
+- Remove any legacy entry points, toggles, and shims; fail fast if a non-YAML task is invoked.
+
+**Phased Delivery**
+1. Define v1 schemas + JSON Schema export.
+2. Build loader + validator + registry with `$ref` resolution.
+3. Implement templates + conditions.
+4. Implement tool adapters (shell, http, file, search).
+5. Build LangGraph builder and typed state.
+6. Wire CLI, tracing, and persistence.
+7. Add Writing Assistant example; run E2E.
+8. Convert all existing assets to YAML; remove legacy code and cut over.
+
+**Acceptance Criteria**
+- Given an unseen writing-focused YAML package, `lg run` executes a workflow end-to-end with no Python edits.
+- Schema validation catches missing refs, type errors, and cycles with clear messages.
+- Policies prevent disallowed tool actions at runtime.
+- Graph builds deterministically; graphviz export renders nodes/edges.
+- No legacy code paths or runtime toggles remain; only YAML-defined tasks/workflows execute.
+
+**Immediate Next Steps**
+- Approve schema v1 fields and `kind` list.
+- I’ll scaffold `yaml_runtime/*`, JSON Schema export, and `lg validate/run` CLI.
+- Confirm "Live Only" policy and remove any remaining references to legacy/shims in docs and code comments.
+
+---
+
+Implementation Checklist (Ordered)
+
+Legend: [ ] not started, [x] done
+
+0) Governance & Schema Freeze
+- [x] Confirm supported `kind`s and minimal required fields
+- [x] Draft JSON Schema for v1 and circulate for review
+- [ ] Approve v1 schema contract and versioning policy
+
+1) Schemas & Types
+- [x] Create `yaml_runtime/schema` package
+- [x] Define Pydantic models for: state, persona, tool, template, task, router, workflow, policy, model, knowledge, package
+- [x] Add schema validators (id format, namespace rules, field types)
+- [x] Implement versioning and migrations scaffold (`v1 -> vNext` hooks)
+- [x] Export JSON Schema (`lg schema > schema.v1.json`)
+
+2) Loader & Registry
+- [x] Implement recursive discovery for `*.y(a)ml` with multi-doc support
+- [x] Attach file/line provenance to every document
+- [x] Build in-memory registry keyed by `<namespace>:<kind>:<id>`
+- [x] Enforce uniqueness, detect duplicates with clear errors
+- [x] Implement `$ref` resolution across namespaces
+- [x] Detect reference cycles and missing refs
+- [x] Support `package.imports` for directory/package composition
+
+3) Validation & Lint
+- [x] Cross-document validation (e.g., workflow nodes reference existing tasks)
+- [x] Semantic checks (routers cases valid, edges connect existing nodes)
+- [x] Policy schema validation (actions, scopes, conditions)
+- [x] CLI `lg validate --pkg <dir>` returns non-zero on errors
+
+4) Templates
+- [x] Create `yaml_runtime/templates` with Jinja2 environment
+- [x] Add filters: `yaml`, `json`, `md_table`, `dedent`, `wrap`
+- [x] Implement template lookup by id and file inclusion
+- [x] Bind render context: `state`, `inputs`, `persona`, `tools`, `env`, `knowledge`
+- [x] Golden tests for rendering with variables and inheritance
+
+5) Conditions DSL
+- [x] Integrate JSONLogic evaluator with safe ops
+- [x] Bind evaluation context to state + last node result
+- [x] Unit tests for common predicates (`has`, `equals`, `contains`, `and/or`)
+
+6) Tools Adapters
+- [x] Create `yaml_runtime/tools` package with pluggable registry
+- [x] Implement `shell` tool with path allowlist
+- [x] Implement `http` tool with domain allowlist
+- [x] Implement `file` tool (read/write) with sandbox restrictions
+- [x] Implement `search` tool (stub adapter)
+- [x] Support `custom/python` callable tools (import string)
+- [x] Input/output schema enforcement per tool
+
+7) Model & LLM Adapter
+- [x] Implement `model` registry (provider, name, params, fallbacks)
+- [x] Abstraction for LLM calls (chat/completions) with retries/backoff
+- [x] Token/stop handling, structured output parsing/validation
+- [x] Optional streaming support
+
+8) State & Artifacts
+- [x] Typed state container from `state` schema (defaults, required)
+- [x] Persistence of selected fields (`persist`) to disk
+- [x] Artifact store management and path resolution
+- [x] Simple key/value event log on state
+
+9) Builder (LangGraph)
+- [x] Translate `task` to node: render → call → validate → write
+- [x] Translate `router` to node with JSONLogic branching
+- [x] Assemble graph from `workflow` nodes/edges (entry, concurrency)
+- [x] Integrate tracing hooks
+- [x] Compile graph with typed initial state
+
+10) Runtime API
+- [x] Implement `run_workflow(workflow_ref, inputs, options)`
+- [x] Return: final state, artifacts manifest, trace
+- [x] Error handling (policy violations, missing refs) with rich messages
+
+11) CLI
+- [x] `lg validate --pkg <dir>`
+- [x] `lg run --pkg <dir> --workflow <id> --input '{...}' --out ./artifacts`
+- [x] `lg graphviz --pkg <dir> --workflow <id> -o flow.svg`
+
+12) Example Package (Writing Assistant)
+- [x] `state` with fields: `title`, `outline[]`, `draft`
+- [x] `persona:writer` with style and default model
+- [x] `template:outliner`, `template:drafter`
+- [x] `task:make_outline` writes `outline`
+- [x] `router:has_outline` checks outline presence
+- [x] `task:write_draft` writes `draft`
+- [x] `workflow:writing_flow` end-to-end
+- [x] E2E test runs via `lg run`
+
+13) Full Conversion & Legacy Removal
+- [ ] Map `new_langgraph/lib/**` to `template|knowledge|policy|model`
+- [ ] Convert all Python nodes in `new_langgraph/nodes/**` to YAML `task`s or tool adapters
+- [ ] Remove legacy modules, entry points, and toggles (delete or archive)
+- [ ] Add guard: raise on attempts to execute non-YAML business logic
+- [ ] Document conversion patterns and examples
+
+16) CI Enforcement
+- [ ] Pre-commit rule to block new Python business-logic nodes
+- [ ] Lint to ensure tasks/workflows are sourced from YAML only
+- [ ] CI job running `lg validate` on all packages
+
+14) Security & Secrets
+- [x] Enforce policies at runtime for tools (allow/deny)
+- [x] Sandboxing defaults for shell/file/network
+- [ ] Secrets via environment; document required vars
+
+15) Documentation
+- [ ] YAML schema reference (v1) + JSON Schema link
+- [ ] Authoring guide with examples and anti-patterns
+- [ ] Troubleshooting and common validation errors
+- [ ] Graphviz visualization guide
+
+Definition of Done (DoD)
+- [x] Unknown domain YAML package executes a workflow end-to-end without Python changes
+- [x] `lg validate` detects missing refs, type errors, and cycles with clear messages
+- [ ] Policies prevent disallowed tool actions at runtime
+- [x] Graphviz export renders correct nodes/edges for a sample workflow

@@ -1,0 +1,13 @@
+---
+version: v1
+kind: router
+id: has_outline
+namespace: writing
+type: switch
+cases:
+  - if:
+      contains:
+        - Introduction
+        -
+          var: state.outline
+    to: draft

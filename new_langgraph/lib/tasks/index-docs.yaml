@@ -1,0 +1,216 @@
+type: task
+id: new_langgraph/lib/tasks/index-docs
+title: Index Documentation Task
+version: 1
+source_path: new_langgraph/lib/tasks/index-docs.yaml
+summary: This task maintains the integrity and completeness of the `docs/index.yaml`
+  file by scanning all documentation files and ensuring they are properly indexed
+  with descriptions. It handles both root-level documents and documents within subfolders,
+  organizing them hierarchically.
+metadata:
+  powered_by: BMAD Core
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/lib/tasks/index-docs.md
+sections:
+- id: index-documentation-task
+  title: Index Documentation Task
+  level: 1
+  sections:
+  - id: purpose
+    title: Purpose
+    level: 2
+    content: This task maintains the integrity and completeness of the `docs/index.yaml`
+      file by scanning all documentation files and ensuring they are properly indexed
+      with descriptions. It handles both root-level documents and documents within
+      subfolders, organizing them hierarchically.
+  - id: task-instructions
+    title: Task Instructions
+    level: 2
+    content: You are now operating as a Documentation Indexer. Your goal is to ensure
+      all documentation files are properly cataloged in the central index with proper
+      organization for subfolders.
+    sections:
+    - id: required-steps
+      title: Required Steps
+      level: 3
+      content: |-
+        1. First, locate and scan:
+           - The `docs/` directory and all subdirectories
+           - The existing `docs/index.yaml` file (create if absent)
+           - All markdown (`.yaml`) and text (`.txt`) files in the documentation structure
+           - Note the folder structure for hierarchical organization
+
+        2. For the existing `docs/index.yaml`:
+           - Parse current entries
+           - Note existing file references and descriptions
+           - Identify any broken links or missing files
+           - Keep track of already-indexed content
+           - Preserve existing folder sections
+
+        3. For each documentation file found:
+           - Extract the title (from first heading or filename)
+           - Generate a brief description by analyzing the content
+           - Create a relative markdown link to the file
+           - Check if it's already in the index
+           - Note which folder it belongs to (if in a subfolder)
+           - If missing or outdated, prepare an update
+
+        4. For any missing or non-existent files found in index:
+           - Present a list of all entries that reference non-existent files
+           - For each entry:
+             - Show the full entry details (title, path, description)
+             - Ask for explicit confirmation before removal
+             - Provide option to update the path if file was moved
+             - Log the decision (remove/update/keep) for final report
+
+        5. Update `docs/index.yaml`:
+           - Maintain existing structure and organization
+           - Create level 2 sections (`##`) for each subfolder
+           - List root-level documents first
+           - Add missing entries with descriptions
+           - Update outdated entries
+           - Remove only entries that were confirmed for removal
+           - Ensure consistent formatting throughout
+    - id: index-structure-format
+      title: Index Structure Format
+      level: 3
+      content: |-
+        The index should be organized as follows:
+
+        ```markdown
+- id: documentation-index
+  title: Documentation Index
+  level: 1
+  sections:
+  - id: root-documents
+    title: Root Documents
+    level: 2
+    sections:
+    - id: document-title-document-yaml
+      title: '[Document Title](./document.yaml)'
+      level: 3
+      content: Brief description of the document's purpose and contents.
+    - id: another-document-another-yaml
+      title: '[Another Document](./another.yaml)'
+      level: 3
+      content: Description here.
+  - id: folder-name
+    title: Folder Name
+    level: 2
+    content: 'Documents within the `folder-name/` directory:'
+    sections:
+    - id: document-in-folder-folder-name-document-yaml
+      title: '[Document in Folder](./folder-name/document.yaml)'
+      level: 3
+      content: Description of this document.
+    - id: another-in-folder-folder-name-another-yaml
+      title: '[Another in Folder](./folder-name/another.yaml)'
+      level: 3
+      content: Description here.
+  - id: another-folder
+    title: Another Folder
+    level: 2
+    content: 'Documents within the `another-folder/` directory:'
+    sections:
+    - id: nested-document-another-folder-document-yaml
+      title: '[Nested Document](./another-folder/document.yaml)'
+      level: 3
+      content: |-
+        Description of nested document.
+        ```
+    - id: index-entry-format
+      title: Index Entry Format
+      level: 3
+      content: |-
+        Each entry should follow this format:
+
+        ```markdown
+    - id: document-title-relative-path-to-file-yaml
+      title: '[Document Title](relative/path/to/file.yaml)'
+      level: 3
+      content: |-
+        Brief description of the document's purpose and contents.
+        ```
+    - id: rules-of-operation
+      title: Rules of Operation
+      level: 3
+      content: |-
+        1. NEVER modify the content of indexed files
+        2. Preserve existing descriptions in index.yaml when they are adequate
+        3. Maintain any existing categorization or grouping in the index
+        4. Use relative paths for all links (starting with `./`)
+        5. Ensure descriptions are concise but informative
+        6. NEVER remove entries without explicit confirmation
+        7. Report any broken links or inconsistencies found
+        8. Allow path updates for moved files before considering removal
+        9. Create folder sections using level 2 headings (`##`)
+        10. Sort folders alphabetically, with root documents listed first
+        11. Within each section, sort documents alphabetically by title
+    - id: process-output
+      title: Process Output
+      level: 3
+      content: |-
+        The task will provide:
+
+        1. A summary of changes made to index.yaml
+        2. List of newly indexed files (organized by folder)
+        3. List of updated entries
+        4. List of entries presented for removal and their status:
+           - Confirmed removals
+           - Updated paths
+           - Kept despite missing file
+        5. Any new folders discovered
+        6. Any other issues or inconsistencies found
+    - id: handling-missing-files
+      title: Handling Missing Files
+      level: 3
+      content: |-
+        For each file referenced in the index but not found in the filesystem:
+
+        1. Present the entry:
+
+           ```markdown
+           Missing file detected:
+           Title: [Document Title]
+           Path: relative/path/to/file.yaml
+           Description: Existing description
+           Section: [Root Documents | Folder Name]
+
+           Options:
+
+           1. Remove this entry
+           2. Update the file path
+           3. Keep entry (mark as temporarily unavailable)
+
+           Please choose an option (1/2/3):
+           ```
+
+        2. Wait for user confirmation before taking any action
+        3. Log the decision for the final report
+    - id: special-cases
+      title: Special Cases
+      level: 3
+      content: |-
+        1. **Sharded Documents**: If a folder contains an `index.yaml` file, treat it as a sharded document:
+           - Use the folder's `index.yaml` title as the section title
+           - List the folder's documents as subsections
+           - Note in the description that this is a multi-part document
+
+        2. **README files**: Convert `README.yaml` to more descriptive titles based on content
+
+        3. **Nested Subfolders**: For deeply nested folders, maintain the hierarchy but limit to 2 levels in the main index. Deeper structures should have their own index files.
+  - id: required-input
+    title: Required Input
+    level: 2
+    content: |-
+      Please provide:
+
+      1. Location of the `docs/` directory (default: `./docs`)
+      2. Confirmation of write access to `docs/index.yaml`
+      3. Any specific categorization preferences
+      4. Any files or directories to exclude from indexing (e.g., `.git`, `node_modules`)
+      5. Whether to include hidden files/folders (starting with `.`)
+
+      Would you like to proceed with documentation indexing? Please provide the required input above.

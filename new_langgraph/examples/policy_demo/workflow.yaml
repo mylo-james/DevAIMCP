@@ -1,0 +1,22 @@
+---
+version: v1
+kind: workflow
+id: file_flow
+namespace: sandbox
+state_ref: state:tool_state
+entry: writer
+nodes:
+  writer:
+    task_ref: task:write_message
+edges: []
+---
+version: v1
+kind: workflow
+id: shell_flow
+namespace: sandbox
+state_ref: state:tool_state
+entry: shell
+nodes:
+  shell:
+    task_ref: task:run_shell
+edges: []

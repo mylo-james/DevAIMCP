@@ -1,0 +1,13 @@
+---
+version: v1
+kind: state
+id: session
+namespace: llm
+fields:
+  - name: question
+    type: string
+  - name: answer
+    type: string
+    required: false
+persist: []
+artifacts: []

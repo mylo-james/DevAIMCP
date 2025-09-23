@@ -1,0 +1,41 @@
+---
+version: v1
+kind: task
+id: write_message
+namespace: sandbox
+persona_ref: persona:operator
+template:
+  format: jinja2
+  user: "{{ inputs.message }}"
+writes:
+  state:
+    message:
+      var: inputs.message
+    write_result:
+      call_tool:
+        ref: tool:file_writer
+        payload:
+          op: write
+          path: output.txt
+          content:
+            concat:
+              - var: inputs.message
+              - "\n"
+---
+version: v1
+kind: task
+id: run_shell
+namespace: sandbox
+persona_ref: persona:operator
+template:
+  format: jinja2
+  user: "Run shell command"
+writes:
+  state:
+    shell_output:
+      call_tool:
+        ref: tool:echo_shell
+        payload:
+          command:
+            - echo
+            - var: inputs.message

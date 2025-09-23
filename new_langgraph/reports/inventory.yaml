@@ -1,0 +1,71 @@
+type: report
+id: new_langgraph/reports/inventory
+title: Legacy Module Inventory
+version: 1
+source_path: new_langgraph/reports/inventory.yaml
+summary: Inventory captured from the pre-restructure `bmad_langgraph` package prior
+  to migration. Each entry reflects a Python module that exposes behaviors needing
+  relocation into the new `new_langgraph` layout.
+metadata:
+  content_format: markdown
+  original_extension: md
+  converted_at: '2025-09-22'
+  legacy_path: new_langgraph/reports/inventory.md
+sections:
+- id: legacy-module-inventory
+  title: Legacy Module Inventory
+  level: 1
+  content: |-
+    Inventory captured from the pre-restructure `bmad_langgraph` package prior to migration. Each entry reflects a Python module that exposes behaviors needing relocation into the new `new_langgraph` layout.
+
+    ```
+    bmad_langgraph/__init__.py
+    bmad_langgraph/app.py
+    bmad_langgraph/assets.py
+    bmad_langgraph/bmad_flow.py
+    bmad_langgraph/chat/__init__.py
+    bmad_langgraph/chat/app.py
+    bmad_langgraph/chat/deps.py
+    bmad_langgraph/chat/handlers.py
+    bmad_langgraph/chat/intake.py
+    bmad_langgraph/chat/router.py
+    bmad_langgraph/chat/smalltalk.py
+    bmad_langgraph/config.py
+    bmad_langgraph/embeddings.py
+    bmad_langgraph/graph.py
+    bmad_langgraph/llm.py
+    bmad_langgraph/nodes/__init__.py
+    bmad_langgraph/nodes/planning/__init__.py
+    bmad_langgraph/nodes/planning/analyst.py
+    bmad_langgraph/nodes/planning/architect.py
+    bmad_langgraph/nodes/planning/pm.py
+    bmad_langgraph/nodes/planning/po.py
+    bmad_langgraph/nodes/planning/shared.py
+    bmad_langgraph/nodes/planning/ux.py
+    bmad_langgraph/nodes/supervisor.py
+    bmad_langgraph/nodes/stories/__init__.py
+    bmad_langgraph/nodes/stories/dev.py
+    bmad_langgraph/nodes/stories/po.py
+    bmad_langgraph/nodes/stories/qa.py
+    bmad_langgraph/nodes/stories/scrum_master.py
+    bmad_langgraph/nodes/stories/shared.py
+    bmad_langgraph/nodes/stories/story_done.py
+    bmad_langgraph/retrieval.py
+    bmad_langgraph/reflexion.py
+    bmad_langgraph/sandbox/__init__.py
+    bmad_langgraph/sandbox/access.py
+    bmad_langgraph/sandbox/executor.py
+    bmad_langgraph/sandbox/tools.py
+    bmad_langgraph/sandbox/validators.py
+    bmad_langgraph/state.py
+    bmad_langgraph/storage/__init__.py
+    bmad_langgraph/storage/bootstrap.py
+    bmad_langgraph/storage/models.py
+    bmad_langgraph/storage/service/__init__.py
+    bmad_langgraph/storage/service/base.py
+    bmad_langgraph/storage/service/search.py
+    bmad_langgraph/storage/service/writer.py
+    bmad_langgraph/testing helpers (various test_*.py)
+    ```
+
+    The inventory also includes helper scripts located under `bmad_langgraph/scripts/` and the integration tests within `bmad_langgraph/tests/`. These artifacts inform migration priorities and coverage expectations.
